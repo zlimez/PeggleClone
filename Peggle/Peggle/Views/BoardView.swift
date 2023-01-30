@@ -13,16 +13,12 @@ struct BoardView: View {
         Peg(pegColor: "peg-orange", radius: 30, x: 60, y: 60),
         Peg(pegColor: "peg-blue", radius: 30, x: 150, y: 150)
     ]), maxPegRadius: 30)
-    /// Board view should have a @State variable reference to the underlying
-    /// board. When it is being tap
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
                 GeometryReader { geo in
-                    Image("background")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: geo.size.width)
+                    fillPlayArea(geo)
                 }
                 ForEach($boardViewModel.allPegVMs) { pegVM in
                     PegView(pegVM: pegVM, parentBoardVM: $boardViewModel)
@@ -35,7 +31,21 @@ struct BoardView: View {
 
             ControlPanelView(boardViewModel: $boardViewModel)
         }
-            .ignoresSafeArea()
+        .ignoresSafeArea()
+//        .onAppear {
+//            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+//        }
+    }
+
+    func fillPlayArea(_ geo: GeometryProxy) -> some View {
+        if !boardViewModel.gridInitialized {
+            DispatchQueue.main.async { boardViewModel.initEmptyGrid(geo.size) }
+        }
+
+        return Image("background")
+            .resizable()
+            .scaledToFill()
+            .frame(width: geo.size.width)
     }
 }
 

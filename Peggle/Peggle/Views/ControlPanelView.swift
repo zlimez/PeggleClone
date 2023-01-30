@@ -17,22 +17,24 @@ struct ControlPanelView: View {
                 PegButtonView(pegVariant: "peg-blue", action: {
                     boardViewModel.switchToAddPeg(pegVariant: ("peg-blue", 30))
                 }, diameter: 60)
-                .tint(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-blue" ? .cyan : .clear)
+                .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-blue" ? 1 : 0.5)
                 PegButtonView(pegVariant: "peg-orange", action: {
                     boardViewModel.switchToAddPeg(pegVariant: ("peg-orange", 30))
                 }, diameter: 60)
-                .tint(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-orange" ? .cyan : .clear)
+                .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-orange" ? 1 : 0.5)
                 Spacer()
                 PegButtonView(pegVariant: "delete", action: {
                     boardViewModel.switchToDeletePeg()
                 }, diameter: 60)
-                .tint(boardViewModel.selectedAction == Action.delete ? .cyan : .clear)
+                .opacity(boardViewModel.selectedAction == Action.delete ? 1 : 0.5)
             }
             .padding([.leading, .trailing], 20)
             HStack {
                 Button("LOAD", action: {})
                 Button("SAVE", action: {})
-                Button("RESET", action: {})
+                Button("RESET", action: {
+                    boardViewModel.removeAllPegs()
+                })
                 TextField("Level Name", text: $levelName)
                     .border(.gray)
                     .textFieldStyle(.roundedBorder)
