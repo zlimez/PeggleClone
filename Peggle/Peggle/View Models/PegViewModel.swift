@@ -32,6 +32,10 @@ struct PegViewModel: Identifiable {
         }
 
         let sqrDistance = pow(self.peg.x - otherPegVM.peg.x, 2) + pow(self.peg.y - otherPegVM.peg.y, 2)
+        let isColliding = sqrDistance < pow(self.peg.radius + otherPegVM.peg.radius, 2)
+        print("This peg at \(row.description),\(col.description) "
+              + "and other peg at \(otherPegVM.row.description),\(otherPegVM.col.description) is colliding: " +
+              "sqrDist: \(sqrDistance.description) \(isColliding.description)")
         return sqrDistance < pow(self.peg.radius + otherPegVM.peg.radius, 2)
     }
 

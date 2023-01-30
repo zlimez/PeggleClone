@@ -25,11 +25,11 @@ struct BoardView: View {
                         .frame(width: geo.size.width)
                 }
                 ForEach($boardViewModel.allPegVMs) { pegVM in
-                    PegView(pegVM: pegVM)
+                    PegView(pegVM: pegVM, parentBoardVM: $boardViewModel)
                 }
             }
             .onTapGesture { location in
-                boardViewModel.tapResponse(x: location.x, y: location.y)
+                boardViewModel.tryAddPegAt(x: location.x, y: location.y)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -42,12 +42,21 @@ struct BoardView: View {
 /// Each peg should detect a drag to move the peg around or a long tap to signal its deletion
 struct PegView: View {
     @Binding var pegVM: PegViewModel
+    @Binding var parentBoardVM: BoardViewModel
 
     var body: some View {
         Image(pegVM.color)
             .resizable()
             .frame(width: pegVM.diameter, height: pegVM.diameter)
             .position(x: pegVM.x, y: pegVM.y)
+            .onTapGesture(
+                perform: { parentBoardVM.tryRemovePeg(isLongPress: false, targetPegVM: pegVM) }
+            )
+            .onLongPressGesture(
+                minimumDuration: 0.5,
+                maximumDistance: 10,
+                perform: { parentBoardVM.tryRemovePeg(isLongPress: true, targetPegVM: pegVM) }
+            )
     }
 }
 
