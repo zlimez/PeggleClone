@@ -17,7 +17,7 @@ struct Board {
     mutating func removePeg(_ removedPeg: Peg) {
         allPegs.remove(removedPeg)
     }
-    
+
     mutating func removeAllPegs() {
         allPegs.removeAll()
     }

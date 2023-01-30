@@ -12,6 +12,8 @@ enum Action {
 }
 
 struct BoardViewModel {
+    /// tryMovePeg() doesn't trigger UI rerender, seems to shallow compare grid state to determine if a rerender is necessary
+    var forceUpdate = 1
     var viewDim: CGSize?
     var board: Board
     var allPegVMs: [PegViewModel]
@@ -50,20 +52,12 @@ struct BoardViewModel {
 
         let selectedPegColor = selectedPegVariant!.0
         let selectedPegRadius = selectedPegVariant!.1
-        if x < selectedPegRadius || x > viewDim!.width - selectedPegRadius
-            || y < selectedPegRadius || y > viewDim!.height - selectedPegRadius {
+
+        if willCollide(pegRadius: selectedPegRadius, pegX: x, pegY: y) {
             return
         }
 
         let addedPeg = Peg(pegColor: selectedPegColor, radius: selectedPegRadius, x: x, y: y)
-        if isCollidingByGrid(PegViewModel(
-            peg: addedPeg,
-            row: Int(addedPeg.y / maxPegRadius),
-            col: Int(addedPeg.x / maxPegRadius)
-        )) {
-            return
-        }
-
         addPeg(addedPeg)
     }
 
@@ -71,6 +65,25 @@ struct BoardViewModel {
         if isLongPress || selectedAction == Action.delete {
             removePeg(targetPegVM)
         }
+    }
+
+    mutating func tryMovePeg(targetPegVM: PegViewModel, destination: CGPoint) {
+        if targetPegVM.isBlocked {
+            return
+        }
+
+        if willCollide(pegRadius: targetPegVM.radius, pegX: destination.x, pegY: destination.y, pegId: targetPegVM.id) {
+            targetPegVM.isBlocked = true
+            return
+        }
+
+        forceUpdate *= -1
+        let newRow = pointToGrid(destination.y)
+        let newCol = pointToGrid(destination.x)
+        // The conditional clause is not required when the assumption that all pegs are of same size holds
+        grid[targetPegVM.row][targetPegVM.col] = nil
+        grid[newRow][newCol] = targetPegVM
+        targetPegVM.updatePosition(newPosition: destination, newRow: newRow, newCol: newCol)
     }
 
     mutating func removeAllPegs() {
@@ -92,16 +105,16 @@ struct BoardViewModel {
 
     /// Used only for pegs saved from last session. Grid dimension not determined yet hence pegVM cannot be added to grid.
     private mutating func initPeg(_ savedPeg: Peg) {
-        let pegRow = Int(savedPeg.y / maxPegRadius)
-        let pegCol = Int(savedPeg.x / maxPegRadius)
+        let pegRow = pointToGrid(savedPeg.y)
+        let pegCol = pointToGrid(savedPeg.x)
         let pegVM = PegViewModel(peg: savedPeg, row: pegRow, col: pegCol)
         board.addPeg(savedPeg)
         allPegVMs.append(pegVM)
     }
 
     private mutating func addPeg(_ addedPeg: Peg) {
-        let pegRow = Int(addedPeg.y / maxPegRadius)
-        let pegCol = Int(addedPeg.x / maxPegRadius)
+        let pegRow = pointToGrid(addedPeg.y)
+        let pegCol = pointToGrid(addedPeg.x)
         let pegVM = PegViewModel(peg: addedPeg, row: pegRow, col: pegCol)
         board.addPeg(addedPeg)
         allPegVMs.append(pegVM)
@@ -115,17 +128,27 @@ struct BoardViewModel {
         grid[removedPegVM.row][removedPegVM.col] = nil
     }
 
-    private func isCollidingByGrid(_ thisPegVM: PegViewModel) -> Bool {
+    // Pegs yet to be created will have the special id -1
+    private func willCollide(pegRadius: CGFloat, pegX: CGFloat, pegY: CGFloat, pegId: Int = -1) -> Bool {
+        // Collides with play area border
+        if pegX < pegRadius || pegX > viewDim!.width - pegRadius
+            || pegY < pegRadius || pegY > viewDim!.height - pegRadius {
+            return true
+        }
+        
+        let thisPegRow = pointToGrid(pegY)
+        let thisPegCol = pointToGrid(pegX)
         let offsets: [Int] = [-2, -1, 0, 1, 2]
         for offsetX in offsets {
             for offsetY in offsets {
-                print("Checking for collision at cell " + (thisPegVM.row + offsetY).description + " " + (thisPegVM.col + offsetX).description)
+//                print("Checking for collision at cell " + (thisPegRow + offsetY).description + " " + (thisPegCol + offsetX).description)
                 guard let pegInCell
-                        = grid[max(min(thisPegVM.row + offsetY, grid.count - 1), 0)][max(min(thisPegVM.col + offsetX, grid.count - 1), 0)] else {
+                        = grid[max(min(thisPegRow + offsetY, grid.count - 1), 0)][max(min(thisPegCol + offsetX, grid.count - 1), 0)] else {
                     continue
                 }
 
-                if thisPegVM.isCollidingWith(pegInCell) {
+                if pegInCell.isCollidingWith(otherPegRadius: pegRadius, otherPegX: pegX, otherPegY: pegY, otherPegId: pegId) {
+                    print("Colliding with \(pegInCell.id.description) \(pegInCell.color)")
                     return true
                 }
             }
@@ -133,24 +156,8 @@ struct BoardViewModel {
 
         return false
     }
-
-    private func getTouchingPeg(x: CGFloat, y: CGFloat) -> PegViewModel? {
-        let touchRow = Int(y / maxPegRadius)
-        let touchCol = Int(x / maxPegRadius)
-        let offsets: [Int] = [-1, 0, 1]
-        for offsetX in offsets {
-            for offsetY in offsets {
-                print("Checking for touch " + (touchRow + offsetY).description + " " + (touchCol + offsetX).description)
-                guard let pegInCell
-                        = grid[max(min(touchRow + offsetY, grid.count - 1), 0)][max(min(touchCol + offsetX, grid.count - 1), 0)] else {
-                    continue
-                }
-
-                if pow(x - pegInCell.peg.x, 2) + pow(y - pegInCell.peg.y, 2) <= pow(pegInCell.peg.radius, 2) {
-                    return pegInCell
-                }
-            }
-        }
-        return nil
+        
+    private func pointToGrid(_ point: CGFloat) -> Int {
+        return Int(point / maxPegRadius)
     }
 }

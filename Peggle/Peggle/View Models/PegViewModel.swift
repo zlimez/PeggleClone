@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct PegViewModel: Identifiable {
+class PegViewModel: Identifiable, Equatable {
     let id: Int
-    let peg: Peg
+    var peg: Peg
+    var isBlocked = false
     // BoardViewModel grid coordinates
     var row: Int
     var col: Int
@@ -21,22 +22,25 @@ struct PegViewModel: Identifiable {
         self.col = col
     }
 
-    mutating func updateRowAndCol(newRow: Int, newCol: Int) {
+    func updatePosition(newPosition: CGPoint, newRow: Int, newCol: Int) {
+        self.peg.updatePositionTo(newPosition)
         self.row = newRow
         self.col = newCol
     }
 
-    func isCollidingWith(_ otherPegVM: PegViewModel) -> Bool {
-        if self.peg.id == otherPegVM.peg.id {
+    func isCollidingWith(otherPegRadius: CGFloat, otherPegX: CGFloat, otherPegY: CGFloat, otherPegId: Int) -> Bool {
+        if self.peg.id == otherPegId {
             return false
         }
 
-        let sqrDistance = pow(self.peg.x - otherPegVM.peg.x, 2) + pow(self.peg.y - otherPegVM.peg.y, 2)
-        let isColliding = sqrDistance < pow(self.peg.radius + otherPegVM.peg.radius, 2)
-        print("This peg at \(row.description),\(col.description) "
-              + "and other peg at \(otherPegVM.row.description),\(otherPegVM.col.description) is colliding: " +
-              "sqrDist: \(sqrDistance.description) \(isColliding.description)")
-        return sqrDistance < pow(self.peg.radius + otherPegVM.peg.radius, 2)
+        let sqrDistance = pow(self.peg.x - otherPegX, 2) + pow(self.peg.y - otherPegY, 2)
+        return sqrDistance < pow(self.peg.radius + otherPegRadius, 2)
+    }
+
+    func completeDrag() {
+        if isBlocked {
+            isBlocked = false
+        }
     }
 
     var x: CGFloat {
@@ -47,11 +51,19 @@ struct PegViewModel: Identifiable {
         peg.y
     }
 
+    var radius: CGFloat {
+        peg.radius
+    }
+
     var diameter: CGFloat {
         peg.radius * 2
     }
 
     var color: String {
         peg.pegColor
+    }
+
+    static func == (lhs: PegViewModel, rhs: PegViewModel) -> Bool {
+        lhs.peg == rhs.peg
     }
 }

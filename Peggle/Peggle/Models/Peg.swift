@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct Peg: Identifiable, Hashable {
+class Peg: Identifiable, Hashable {
     static var counter = 0
     let id: Int
     let pegColor: String
     let bounciness: Float
     let radius: CGFloat
     // Relative to center, x value increases to the right, y value increases downwards
-    let x: CGFloat
-    let y: CGFloat
+    var x: CGFloat
+    var y: CGFloat
 
     init(pegColor: String, radius: CGFloat, bounciness: Float, x: CGFloat, y: CGFloat) {
         self.id = Peg.counter
@@ -35,6 +35,11 @@ struct Peg: Identifiable, Hashable {
         self.x = x
         self.y = y
         Peg.counter += 1
+    }
+
+    func updatePositionTo(_ newPosition: CGPoint) {
+        self.x = newPosition.x
+        self.y = newPosition.y
     }
 
     static func == (lhs: Peg, rhs: Peg) -> Bool {
