@@ -9,13 +9,24 @@ import SwiftUI
 
 struct ControlPanelView: View {
     @State private var levelName = ""
+    @Binding var boardViewModel: BoardViewModel
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                PegButtonView(pegVariant: "peg-blue", action: {}, diameter: 60)
-                PegButtonView(pegVariant: "peg-orange", action: {}, diameter: 60)
+                PegButtonView(pegVariant: "peg-blue", action: {
+                    boardViewModel.switchToAddPeg(pegVariant: ("peg-blue", 30))
+                }, diameter: 60)
+                .tint(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-blue" ? .cyan : .clear)
+                PegButtonView(pegVariant: "peg-orange", action: {
+                    boardViewModel.switchToAddPeg(pegVariant: ("peg-orange", 30))
+                }, diameter: 60)
+                .tint(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-orange" ? .cyan : .clear)
                 Spacer()
-                PegButtonView(pegVariant: "delete", action: {}, diameter: 60)
+                PegButtonView(pegVariant: "delete", action: {
+                    boardViewModel.switchToDeletePeg()
+                }, diameter: 60)
+                .tint(boardViewModel.selectedAction == Action.delete ? .cyan : .clear)
             }
             .padding([.leading, .trailing], 20)
             HStack {
@@ -43,11 +54,5 @@ struct PegButtonView: View {
                 .resizable()
                 .frame(width: diameter, height: diameter)
         }
-    }
-}
-
-struct ControlPanelView_Previews: PreviewProvider {
-    static var previews: some View {
-        ControlPanelView()
     }
 }
