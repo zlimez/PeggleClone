@@ -40,12 +40,13 @@ struct ControlPanelView: View {
                 Button("SAVE") { levels.saveLevel(levelName: levelName, updatedBoard: boardViewModel.board) }
                 Button("RESET") { boardViewModel.removeAllPegs() }
                 TextField("Level Name", text: $levelName)
-                    .border(.gray)
                     .textFieldStyle(.roundedBorder)
+                    .border(.gray)
                 Button("START", action: {})
             }
         }
         .padding(.all, 20)
+        .background(.white)
     }
 }
 

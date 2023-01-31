@@ -30,14 +30,11 @@ struct BoardView: View {
             ControlPanelView(boardViewModel: $boardViewModel)
                 .environmentObject(levels)
         }
-//        .onAppear {
-//            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-//        }
     }
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
-        if !boardViewModel.gridInitialized {
-            DispatchQueue.main.async { boardViewModel.initEmptyGrid(geo.size) }
+        if !BoardViewModel.gridInitialized {
+            DispatchQueue.main.async { boardViewModel.initGrid(geo.size) }
         }
 
         return Image("background")

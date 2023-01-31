@@ -12,30 +12,39 @@ enum Action {
 }
 
 struct BoardViewModel {
+    private static var viewDim: CGSize?
+    private static var maxDim: Int = 0
     static var palette = [
         PegVariant(pegColor: "peg-orange", pegRadius: 30),
         PegVariant(pegColor: "peg-blue", pegRadius: 30)
     ]
+    static var gridInitialized = false
+
     /// Requires a dragUpdate to force rerender since properties are only shallow compared
     private var dragUpdate = 1
-    private var viewDim: CGSize?
     var board: Board
     var allPegVMs: [PegViewModel]
     /// assume all pegs have the same radius, thus each cell in grid can hold at most one peg reference
     var maxPegRadius: CGFloat
     var grid: [[PegViewModel?]]
-    var gridInitialized = false
     var selectedPegVariant: PegVariant?
     var selectedAction: Action?
 
     init(board: Board) {
         self.board = board
         self.allPegVMs = []
-        self.grid = [[]]
         self.maxPegRadius = BoardViewModel.palette.reduce(-1, { max($0, $1.pegRadius) })
 
-        for peg in board.allPegs {
-            initPeg(peg)
+        if BoardViewModel.gridInitialized {
+            self.grid = Array(
+                repeating: Array(repeating: nil, count: BoardViewModel.maxDim),
+                count: BoardViewModel.maxDim
+            )
+            self.maxPegRadius = BoardViewModel.palette.reduce(-1, { max($0, $1.pegRadius) })
+            board.allPegs.forEach { peg in addPeg(peg) }
+        } else {
+            self.grid = [[]]
+            board.allPegs.forEach { peg in initPeg(peg) }
         }
     }
 
@@ -95,7 +104,7 @@ struct BoardViewModel {
         dragUpdate *= -1
         let newRow = pointToGrid(destination.y)
         let newCol = pointToGrid(destination.x)
-        // The conditional clause is not required when the assumption that all pegs are of same size holds
+
         grid[targetPegVM.row][targetPegVM.col] = nil
         grid[newRow][newCol] = targetPegVM
         targetPegVM.updatePosition(newPosition: destination, newRow: newRow, newCol: newCol)
@@ -107,15 +116,15 @@ struct BoardViewModel {
         self.grid = Array(repeating: Array(repeating: nil, count: grid.count), count: grid.count)
     }
 
-    mutating func initEmptyGrid(_ viewDim: CGSize) {
-        self.viewDim = viewDim
-        let maxDim = Int(round(max(viewDim.width / self.maxPegRadius, viewDim.height / self.maxPegRadius)))
-        print("Max dim \(maxDim)")
-        self.grid = Array(repeating: Array(repeating: nil, count: maxDim), count: maxDim)
+    mutating func initGrid(_ viewDim: CGSize) {
+        BoardViewModel.viewDim = viewDim
+        BoardViewModel.maxDim = Int(round(max(viewDim.width / self.maxPegRadius, viewDim.height / self.maxPegRadius)))
+        print("Max dim \(BoardViewModel.maxDim)")
+        self.grid = Array(repeating: Array(repeating: nil, count: BoardViewModel.maxDim), count: BoardViewModel.maxDim)
         for initPegVM in allPegVMs {
             self.grid[initPegVM.row][initPegVM.col] = initPegVM
         }
-        self.gridInitialized = true
+        BoardViewModel.gridInitialized = true
     }
 
     private mutating func initPeg(_ savedPeg: Peg) {
@@ -144,8 +153,8 @@ struct BoardViewModel {
     // Pegs yet to be created will have the special id -1
     private func willCollide(pegRadius: CGFloat, pegX: CGFloat, pegY: CGFloat, pegId: Int = -1) -> Bool {
         // Collides with play area border
-        if pegX < pegRadius || pegX > viewDim!.width - pegRadius
-            || pegY < pegRadius || pegY > viewDim!.height - pegRadius {
+        if pegX < pegRadius || pegX > BoardViewModel.viewDim!.width - pegRadius
+            || pegY < pegRadius || pegY > BoardViewModel.viewDim!.height - pegRadius {
             return true
         }
 
@@ -166,7 +175,6 @@ struct BoardViewModel {
                     otherPegY: pegY,
                     otherPegId: pegId
                 ) {
-                    print("Colliding with \(pegInCell.id.description) \(pegInCell.color)")
                     return true
                 }
             }

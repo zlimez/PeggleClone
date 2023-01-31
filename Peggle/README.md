@@ -1,8 +1,8 @@
 # CS3217 Problem Set 2
 
-**Name:** Your name
+**Name:** Chiu Chi Kuan
 
-**Matric No:** Your matric no
+**Matric No:** A0234100E
 
 ## Tips
 1. CS3217's docs is at https://cs3217.github.io/cs3217-docs. Do visit the docs often, as
@@ -64,8 +64,6 @@ based on the state of the BoardViewModel with a single method (to delete a peg, 
 In this tap handler, I will need to custom detect if the tap occurs on a peg. Given swiftUI's support 
 for detecting gesture on a view component itself, I instead had the two tap detections handled by
 two methods, which reduced the code I need to write.
-
-Your answer here
 
 ### Persistence Justification
 > Please justify your choice of persistence method in your `README.md`. In
