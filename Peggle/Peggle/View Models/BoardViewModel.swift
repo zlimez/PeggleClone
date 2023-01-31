@@ -12,30 +12,38 @@ enum Action {
 }
 
 struct BoardViewModel {
-    /// tryMovePeg() doesn't trigger UI rerender, seems to shallow compare grid state to determine if a rerender is necessary
-    var forceUpdate = 1
-    var viewDim: CGSize?
+    static var palette = [
+        PegVariant(pegColor: "peg-orange", pegRadius: 30),
+        PegVariant(pegColor: "peg-blue", pegRadius: 30)
+    ]
+    /// Requires a dragUpdate to force rerender since properties are only shallow compared
+    private var dragUpdate = 1
+    private var viewDim: CGSize?
     var board: Board
     var allPegVMs: [PegViewModel]
     /// assume all pegs have the same radius, thus each cell in grid can hold at most one peg reference
     var maxPegRadius: CGFloat
     var grid: [[PegViewModel?]]
     var gridInitialized = false
-    var selectedPegVariant: (String, CGFloat)?
+    var selectedPegVariant: PegVariant?
     var selectedAction: Action?
 
-    init(board: Board, maxPegRadius: CGFloat) {
+    init(board: Board) {
         self.board = board
-        self.maxPegRadius = maxPegRadius
         self.allPegVMs = []
         self.grid = [[]]
+        self.maxPegRadius = BoardViewModel.palette.reduce(-1, { max($0, $1.pegRadius) })
 
         for peg in board.allPegs {
             initPeg(peg)
         }
     }
+    
+    static func getEmptyBoard() -> BoardViewModel {
+        BoardViewModel(board: Board(allPegs: Set()))
+    }
 
-    mutating func switchToAddPeg(pegVariant: (String, CGFloat)) {
+    mutating func switchToAddPeg(_ pegVariant: PegVariant) {
         self.selectedPegVariant = pegVariant
         self.selectedAction = Action.add
     }
@@ -49,9 +57,11 @@ struct BoardViewModel {
         if selectedAction != Action.add {
             return
         }
-
-        let selectedPegColor = selectedPegVariant!.0
-        let selectedPegRadius = selectedPegVariant!.1
+        
+        guard let selectedPegColor = selectedPegVariant?.pegColor, let selectedPegRadius = selectedPegVariant?.pegRadius else {
+            print("No peg variant from palette selected when trying to add a peg")
+            return
+        }
 
         if willCollide(pegRadius: selectedPegRadius, pegX: x, pegY: y) {
             return
@@ -77,7 +87,7 @@ struct BoardViewModel {
             return
         }
 
-        forceUpdate *= -1
+        dragUpdate *= -1
         let newRow = pointToGrid(destination.y)
         let newCol = pointToGrid(destination.x)
         // The conditional clause is not required when the assumption that all pegs are of same size holds
@@ -103,7 +113,6 @@ struct BoardViewModel {
         self.gridInitialized = true
     }
 
-    /// Used only for pegs saved from last session. Grid dimension not determined yet hence pegVM cannot be added to grid.
     private mutating func initPeg(_ savedPeg: Peg) {
         let pegRow = pointToGrid(savedPeg.y)
         let pegCol = pointToGrid(savedPeg.x)
@@ -135,19 +144,23 @@ struct BoardViewModel {
             || pegY < pegRadius || pegY > viewDim!.height - pegRadius {
             return true
         }
-        
+
         let thisPegRow = pointToGrid(pegY)
         let thisPegCol = pointToGrid(pegX)
         let offsets: [Int] = [-2, -1, 0, 1, 2]
         for offsetX in offsets {
             for offsetY in offsets {
-//                print("Checking for collision at cell " + (thisPegRow + offsetY).description + " " + (thisPegCol + offsetX).description)
                 guard let pegInCell
                         = grid[max(min(thisPegRow + offsetY, grid.count - 1), 0)][max(min(thisPegCol + offsetX, grid.count - 1), 0)] else {
                     continue
                 }
 
-                if pegInCell.isCollidingWith(otherPegRadius: pegRadius, otherPegX: pegX, otherPegY: pegY, otherPegId: pegId) {
+                if pegInCell.isCollidingWith(
+                    otherPegRadius: pegRadius,
+                    otherPegX: pegX,
+                    otherPegY: pegY,
+                    otherPegId: pegId
+                ) {
                     print("Colliding with \(pegInCell.id.description) \(pegInCell.color)")
                     return true
                 }
@@ -156,8 +169,17 @@ struct BoardViewModel {
 
         return false
     }
-        
+
     private func pointToGrid(_ point: CGFloat) -> Int {
-        return Int(point / maxPegRadius)
+        Int(point / maxPegRadius)
+    }
+}
+
+struct PegVariant: Equatable {
+    let pegColor: String
+    let pegRadius: CGFloat
+    
+    static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
+        lhs.pegColor == rhs.pegColor && lhs.pegRadius == rhs.pegRadius
     }
 }

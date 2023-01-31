@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Board {
+struct Board: Codable {
     var allPegs: Set<Peg>
 
     mutating func addPeg(_ newPeg: Peg) {
@@ -20,5 +20,14 @@ struct Board {
 
     mutating func removeAllPegs() {
         allPegs.removeAll()
+    }
+
+    /// Required to provide copy of pegs and not peg references
+    func getCopy() -> Board {
+        var allPegsCopy = Set<Peg>()
+        for peg in allPegs {
+            allPegsCopy.insert(peg.getCopy())
+        }
+        return Board(allPegs: allPegsCopy)
     }
 }

@@ -9,10 +9,8 @@ import SwiftUI
 import Foundation
 
 struct BoardView: View {
-    @State private var boardViewModel = BoardViewModel(board: Board(allPegs: [
-        Peg(pegColor: "peg-orange", radius: 30, x: 60, y: 60),
-        Peg(pegColor: "peg-blue", radius: 30, x: 150, y: 150)
-    ]), maxPegRadius: 30)
+    @StateObject private var levels = Levels()
+    @State private var boardViewModel = BoardViewModel.getEmptyBoard()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -30,6 +28,7 @@ struct BoardView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             ControlPanelView(boardViewModel: $boardViewModel)
+                .environmentObject(levels)
         }
         .ignoresSafeArea()
 //        .onAppear {
@@ -75,7 +74,7 @@ struct PegView: View {
     var longPress: some Gesture {
         LongPressGesture(minimumDuration: 0.4, maximumDistance: dragPressDistanceThreshold)
             .onEnded { _ in
-            parentBoardVM.tryRemovePeg(isLongPress: true, targetPegVM: pegVM)
+                parentBoardVM.tryRemovePeg(isLongPress: true, targetPegVM: pegVM)
             }
     }
 

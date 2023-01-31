@@ -8,20 +8,21 @@
 import SwiftUI
 
 struct ControlPanelView: View {
+    @EnvironmentObject var levels: Levels
     @State private var levelName = ""
     @Binding var boardViewModel: BoardViewModel
 
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                PegButtonView(pegVariant: "peg-blue", action: {
-                    boardViewModel.switchToAddPeg(pegVariant: ("peg-blue", 30))
-                }, diameter: 60)
-                .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-blue" ? 1 : 0.5)
-                PegButtonView(pegVariant: "peg-orange", action: {
-                    boardViewModel.switchToAddPeg(pegVariant: ("peg-orange", 30))
-                }, diameter: 60)
-                .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant!.0 == "peg-orange" ? 1 : 0.5)
+                /// Assumes palette is static upon loaded
+                ForEach(Array(BoardViewModel.palette.enumerated()), id: \.offset) { _, pegVariant in
+                    PegButtonView(
+                        pegVariant: pegVariant.pegColor,
+                        action: { boardViewModel.switchToAddPeg(pegVariant) },
+                        diameter: pegVariant.pegRadius * 2)
+                    .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant == pegVariant ? 1 : 0.5)
+                }
                 Spacer()
                 PegButtonView(pegVariant: "delete", action: {
                     boardViewModel.switchToDeletePeg()
@@ -30,8 +31,14 @@ struct ControlPanelView: View {
             }
             .padding([.leading, .trailing], 20)
             HStack {
-                Button("LOAD", action: {})
-                Button("SAVE", action: {})
+                Button("LOAD", action: {
+                    if let loadedBoard = levels.loadLevel(levelName) {
+                        boardViewModel = BoardViewModel(board: loadedBoard)
+                    }
+                })
+                Button("SAVE", action: {
+                    levels.saveLevel(levelName: levelName, updatedBoard: boardViewModel.board)
+                })
                 Button("RESET", action: {
                     boardViewModel.removeAllPegs()
                 })
