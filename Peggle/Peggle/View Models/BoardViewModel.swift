@@ -42,6 +42,10 @@ struct BoardViewModel {
     static func getEmptyBoard() -> BoardViewModel {
         BoardViewModel(board: Board(allPegs: Set()))
     }
+    
+    func isVariantActive(_ pegVariant: PegVariant) -> Bool {
+        selectedAction == Action.add && selectedPegVariant == pegVariant
+    }
 
     mutating func switchToAddPeg(_ pegVariant: PegVariant) {
         self.selectedPegVariant = pegVariant
@@ -127,7 +131,6 @@ struct BoardViewModel {
         let pegVM = PegViewModel(peg: addedPeg, row: pegRow, col: pegCol)
         board.addPeg(addedPeg)
         allPegVMs.append(pegVM)
-        print("PegVM added to " + pegRow.description + " " + pegCol.description + "\n")
         grid[pegRow][pegCol] = pegVM
     }
 
@@ -150,8 +153,9 @@ struct BoardViewModel {
         let offsets: [Int] = [-2, -1, 0, 1, 2]
         for offsetX in offsets {
             for offsetY in offsets {
-                guard let pegInCell
-                        = grid[max(min(thisPegRow + offsetY, grid.count - 1), 0)][max(min(thisPegCol + offsetX, grid.count - 1), 0)] else {
+                let adjacentRow = max(min(thisPegRow + offsetY, grid.count - 1), 0)
+                let adjacentCol = max(min(thisPegCol + offsetX, grid.count - 1), 0)
+                guard let pegInCell = grid[adjacentRow][adjacentCol] else {
                     continue
                 }
 
@@ -178,7 +182,7 @@ struct BoardViewModel {
 struct PegVariant: Equatable {
     let pegColor: String
     let pegRadius: CGFloat
-    
+
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
         lhs.pegColor == rhs.pegColor && lhs.pegRadius == rhs.pegRadius
     }

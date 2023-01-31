@@ -13,7 +13,7 @@ struct ControlPanelView: View {
     @Binding var boardViewModel: BoardViewModel
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             HStack {
                 /// Assumes palette is static upon loaded
                 ForEach(Array(BoardViewModel.palette.enumerated()), id: \.offset) { _, pegVariant in
@@ -21,7 +21,7 @@ struct ControlPanelView: View {
                         pegVariant: pegVariant.pegColor,
                         action: { boardViewModel.switchToAddPeg(pegVariant) },
                         diameter: pegVariant.pegRadius * 2)
-                    .opacity(boardViewModel.selectedAction == Action.add && boardViewModel.selectedPegVariant == pegVariant ? 1 : 0.5)
+                    .opacity(boardViewModel.isVariantActive(pegVariant) ? 1 : 0.5)
                 }
                 Spacer()
                 PegButtonView(pegVariant: "delete", action: {
@@ -29,27 +29,23 @@ struct ControlPanelView: View {
                 }, diameter: 60)
                 .opacity(boardViewModel.selectedAction == Action.delete ? 1 : 0.5)
             }
-            .padding([.leading, .trailing], 20)
             HStack {
-                Button("LOAD", action: {
+                Button("LOAD") {
                     if let loadedBoard = levels.loadLevel(levelName) {
                         boardViewModel = BoardViewModel(board: loadedBoard)
+                    } else {
+                        boardViewModel = BoardViewModel.getEmptyBoard()
                     }
-                })
-                Button("SAVE", action: {
-                    levels.saveLevel(levelName: levelName, updatedBoard: boardViewModel.board)
-                })
-                Button("RESET", action: {
-                    boardViewModel.removeAllPegs()
-                })
+                }
+                Button("SAVE") { levels.saveLevel(levelName: levelName, updatedBoard: boardViewModel.board) }
+                Button("RESET") { boardViewModel.removeAllPegs() }
                 TextField("Level Name", text: $levelName)
                     .border(.gray)
                     .textFieldStyle(.roundedBorder)
                 Button("START", action: {})
             }
-            .padding([.leading, .trailing], 20)
         }
-        .padding([.top, .bottom], 20)
+        .padding(.all, 20)
     }
 }
 

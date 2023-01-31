@@ -25,12 +25,11 @@ struct BoardView: View {
             .onTapGesture { location in
                 boardViewModel.tryAddPegAt(x: location.x, y: location.y)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
 
             ControlPanelView(boardViewModel: $boardViewModel)
                 .environmentObject(levels)
         }
-        .ignoresSafeArea()
 //        .onAppear {
 //            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
 //        }
