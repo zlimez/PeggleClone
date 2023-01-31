@@ -10,13 +10,13 @@ import Foundation
 final class DataManager {
     private static func fileURL(_ filename: String) throws -> URL {
         try FileManager.default.url(for: .documentDirectory,
-                                      in: .userDomainMask,
-                                      appropriateFor: nil,
-                                      create: false)
+                                    in: .userDomainMask,
+                                    appropriateFor: nil,
+                                    create: false)
            .appendingPathComponent(filename)
     }
-    
-    static func load<T: Decodable>(filename: String, initValue: T, completion: @escaping (Result<T, Error>)->Void) {
+
+    static func load<T: Decodable>(filename: String, initValue: T, completion: @escaping (Result<T, Error>) -> Void) {
           DispatchQueue.global(qos: .background).async {
               do {
                   let fileURL = try fileURL(filename)
@@ -38,8 +38,7 @@ final class DataManager {
           }
       }
 
-    
-    static func save<T: Encodable>(values: T, filename: String, completion: @escaping (Result<Bool, Error>)->Void) {
+    static func save<T: Encodable>(values: T, filename: String, completion: @escaping (Result<Bool, Error>) -> Void) {
        DispatchQueue.global(qos: .background).async {
            do {
                let data = try JSONEncoder().encode(values)
@@ -55,18 +54,4 @@ final class DataManager {
            }
        }
    }
-
-//    static func populate(levels:) -> {
-//        DataManager.load(filename: "levels.json", initValue: [:]) { result in
-//            switch result {
-//            case .failure(let error):
-//                fatalError(error.localizedDescription)
-//            }
-//        }
-//    }
-//
-//    static func storeLevels(_ levels: [String: Board]) throws {
-//        print("Storing levels")
-//        try DataManager.save(values: levels, filename: "levels.json")
-//    }
 }

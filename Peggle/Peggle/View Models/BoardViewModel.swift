@@ -38,11 +38,11 @@ struct BoardViewModel {
             initPeg(peg)
         }
     }
-    
+
     static func getEmptyBoard() -> BoardViewModel {
         BoardViewModel(board: Board(allPegs: Set()))
     }
-    
+
     func isVariantActive(_ pegVariant: PegVariant) -> Bool {
         selectedAction == Action.add && selectedPegVariant == pegVariant
     }
@@ -61,8 +61,9 @@ struct BoardViewModel {
         if selectedAction != Action.add {
             return
         }
-        
-        guard let selectedPegColor = selectedPegVariant?.pegColor, let selectedPegRadius = selectedPegVariant?.pegRadius else {
+
+        guard let selectedPegColor = selectedPegVariant?.pegColor,
+                let selectedPegRadius = selectedPegVariant?.pegRadius else {
             print("No peg variant from palette selected when trying to add a peg")
             return
         }

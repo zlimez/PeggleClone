@@ -16,7 +16,7 @@ class Peg: Identifiable, Hashable, Codable {
     // Relative to center, x value increases to the right, y value increases downwards
     var x: CGFloat
     var y: CGFloat
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case pegColor
@@ -25,7 +25,7 @@ class Peg: Identifiable, Hashable, Codable {
         case x
         case y
     }
-    
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try values.decode(Int.self, forKey: .id)
@@ -56,7 +56,7 @@ class Peg: Identifiable, Hashable, Codable {
         self.y = y
         Peg.counter += 1
     }
-    
+
     func getCopy() -> Peg {
         Peg(pegColor: self.pegColor, radius: self.radius, bounciness: self.bounciness, x: self.x, y: self.y)
     }
