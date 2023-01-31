@@ -44,6 +44,27 @@ tests in code, please delete this section.
 > `foo` instead of `bar`. Explain what are the advantages and disadvantages of
 > using `foo` and `bar`, and why you decided to go with `foo`.
 
+To prevent collision of two pegs, I thought of two options.
+1. Check the moving/added peg against all pegs on the board
+2. Divide the board into a grid whose cell height and width are equal to the 
+   radius of a peg, then check only the pegs in the 5x5 subgrid neighbourhood centered
+   on the moving/added peg
+Option 1 is simpler to implement and permits struct to be used to represent the pegs
+However, the time complexity of adding n pegs is O(n^2) and dragging a peg over m intervals
+is O(mn). On the other hand option 2 is more complicated to implement and prefers a class 
+implementation to maintain identical reference between the pegs populating the grid and the pegs
+in the peg list which the board view UI depends upon. The advantage is that it enables linear 
+time for addition and O(m) for dragging of pegs. I opted for option 2, as I thought it would b
+interesting to grant level designers the freedom to create and modify complicated maps without 
+any lag and performance degradation.
+
+As per the specification, I need to detect whether a tapping occurs on a peg or an unoccupied
+player area. Ideally, I would like to detect a tap in the game area, then determine the response
+based on the state of the BoardViewModel with a single method (to delete a peg, to add a peg). 
+In this tap handler, I will need to custom detect if the tap occurs on a peg. Given swiftUI's support 
+for detecting gesture on a view component itself, I instead had the two tap detections handled by
+two methods, which reduced the code I need to write.
+
 Your answer here
 
 ### Persistence Justification
@@ -51,4 +72,9 @@ Your answer here
 > other words, write your considerations in weighing the pros and cons of the
 > persistence methods you have considered.
 
-Your answer here
+I chose to encode and decode from a file. Encoding and decoding from a file is similar to
+using a NoSQL database of which I have experience in. Furthermore, swift's codable protocol
+makes the implementation simpler. Where this option suffers is the lack of schema present in
+SQL databases which can check the integrity of the data the game saves and prevent corruption.
+I do not have much of an understanding of Core data, but given it requires a schema to, it will
+add to the amount of effort required to ensure data persistence just like SQL databases.
