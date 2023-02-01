@@ -31,6 +31,47 @@ If you decide to write how you are going to do your tests instead of writing
 actual tests, please write in this section. If you decide to write all of your
 tests in code, please delete this section.
 
+**Unit tests**
+
+I have written unit tests for `Peg`, `Board`, `PegViewModel` and `BoardViewModel`
+under the folder PeggleTests. Some method tests are missing for `BoardViewModel`. 
+I omitted them due to their dependency on other units such as `Peg` and `PegViewModel`. 
+I thought these methods should instead be included under integration tests.
+
+Unit tests for `Levels` and `DataManager` will be described below instead.
+
+For `DataManager`, I will create a stub struct `foo` conforming to the `Codable` and `Equatable` 
+protocal with two properties `bar` of type `String` and `bob` of type `Int`.
+
+- `DataManager`
+   - `save` and `load` method
+   1. Invoke `save` passed with a `foo` object and a file name `foo.json`
+   2. Check `foo.json` exists at `documentDirectory` with `FileManager`
+   3. Invoke `load` passed with the same file name `foo.json`
+   4. Check equality between the loaded `foo` object and the original `foo` object
+
+- `Levels`
+   - `saveLevel` and `loadLevel` method
+   1. Invoke `saveLevel` with a `Board` object and level name `Trial`
+   2. Invoke `loadLevel` with the same level name `Trial` and store result in another `Board` object
+   3. Assert that the two `Board` objects' property `allPegs` are equal
+
+**Integration tests**
+
+**Test Palette**
+- Blue peg button
+1. When tapped, the peg button should light up.
+2. Tap near the edge of the board, no peg should be spawned.
+3. Tap anywhere but the edge of the board, a blue peg should appear.
+
+Test for the Orange peg button is the same as the Blue peg button
+
+- Delete button
+1. When tapped, the delete button should light up.
+2. Tap an empty area on the board, nothing should happen.
+3. Tap on a peg, the peg should be removed from the board.
+ 
+
 ## Written Answers
 
 ### Design Tradeoffs
