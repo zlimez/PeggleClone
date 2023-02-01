@@ -26,6 +26,10 @@ class Peg: Identifiable, Hashable, Codable {
         case y
     }
 
+    static func getCounter() -> Int {
+        Peg.counter
+    }
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try values.decode(Int.self, forKey: .id)
@@ -40,21 +44,26 @@ class Peg: Identifiable, Hashable, Codable {
     init(pegColor: String, radius: CGFloat, bounciness: Float, x: CGFloat, y: CGFloat) {
         self.id = Peg.counter
         self.pegColor = pegColor
-        self.radius = radius
-        self.bounciness = bounciness
         self.x = x
         self.y = y
+
+        if radius <= 0 {
+            self.radius = 1
+        } else {
+            self.radius = radius
+        }
+
+        if bounciness < 0 {
+            self.bounciness = 0
+        } else {
+            self.bounciness = bounciness
+        }
+
         Peg.counter += 1
     }
 
-    init(pegColor: String, radius: CGFloat, x: CGFloat, y: CGFloat) {
-        self.id = Peg.counter
-        self.pegColor = pegColor
-        self.radius = radius
-        self.bounciness = 1
-        self.x = x
-        self.y = y
-        Peg.counter += 1
+    convenience init(pegColor: String, radius: CGFloat, x: CGFloat, y: CGFloat) {
+        self.init(pegColor: pegColor, radius: radius, bounciness: 1, x: x, y: y)
     }
 
     func getCopy() -> Peg {

@@ -12,8 +12,8 @@ enum Action {
 }
 
 struct BoardViewModel {
-    private static var viewDim: CGSize?
-    private static var maxDim: Int = 0
+    static var viewDim: CGSize?
+    static var maxDim: Int = 0
     static var palette = [
         PegVariant(pegColor: "peg-orange", pegRadius: 30),
         PegVariant(pegColor: "peg-blue", pegRadius: 30)
