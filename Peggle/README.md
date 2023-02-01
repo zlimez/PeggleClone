@@ -26,12 +26,83 @@ You may put your dev guide either in this section, or in a new file entirely.
 You are encouraged to include diagrams where appropriate in order to enhance
 your guide.
 
-## Tests
-If you decide to write how you are going to do your tests instead of writing
-actual tests, please write in this section. If you decide to write all of your
-tests in code, please delete this section.
+The code for the Peggle clone follows the MVVM pattern. The guide is divided into components by feature basis. Currently, there is only
+one playable feature that is the Level Designer. The component enables players to layout and arrange pegs that can be played later.
 
+### Model
+There are three classes/structs under `Models` to support the Level Designer. They are `Peg`, `Board` and `Levels`. 
+Their structures are the blueprint for the data being saved to `levels.json` file.
+
+**Peg**
+
+Each `Peg` have the following properties:
+1. Color
+2. Radius
+3. Bounciness
+4. x-coordinate
+5. y-coordinate
+
+The intention of these properties are mostly self explanatory. The x and y coordinates are used to position the peg on the board.
+
+**Board**
+
+A `Board` consists of a set of `Pegs`.
+
+**Levels**
+
+`Levels` consists of a collection of `Boards`. Each `Board` in `Levels` can be thought of as a level identified by the name provided by
+the player who laid out the `Board`. This is implemented by the dictionary property `levelTable`. `Levels` is also responsible 
+for loading and saving a level both locally and remotely through `DataManager`. It is an `ObservableObject`, as it is the source of truth 
+for level related data consumed by the UI views.
+
+### View Models
+There are two classes/structs under `View Models`. They are `PegViewModel` and `BoardViewModel`. As their name suggests they are wrappers of 
+`Peg` and `Board` respectively, adapting the model data to be consumed by the UI views.
+
+**PegViewModel**
+
+A `PegViewModel` wraps a `Peg` object. There are two main adaptors the class provides.
+
+1. `isCollidingWith` method: Check for collision with another `PegViewModel` object.
+2. `isBlocked` property: Indicates whether the peg is being blocked by another peg or by the board boundaries when dragged.
+
+**BoardViewModel**
+
+A `BoardViewModel` wraps a `Board` object. There are several adaptors the struct provides.
+
+Important properties `BoardViewModel` possesses include:
+1. `viewDim`: The dimension of the board determined by the device the game runs on. It is necessary to prevent pegs from being laid out of the board area. The property is static as it only needs to be determined once when the game is first loaded.
+2. `grid`: The board divided into cells. It enables constant time collision checking, when player moves or adds a peg to prevent pegs from overlapping.
+3. `allPegVMs`: An array of all the pegs on the board. `BoardView` renders the pegs via iterating through this property.
+4. `selectedPegVariant`: The peg variant in the palette selected by the player to populate the board. 
+5. `selectedAction`: The action selected by the player to delete or to add a peg.
+
+Important functions `BoardViewModel` provides include:
+1. `getEmptyBoard`: A static function that generates an empty board.
+2. `isVariantActive`: A function that takes in a peg variant as parameter and determines whether the variant is the one currently selected by the player.
+3. `switchToAddPeg`: A function that takes in a peg variant as parameter and alters the `BoardViewModel` state to be ready to spawn the peg variant.
+4. `switchToDeletePeg`: A function that readies alters the `BoardViewModel` state to be ready to remove pegs from the board.
+5. `tryAddPegAt`: A function that tries to add a peg at the specified position on the board, provided that the added peg does not collide with existing pegs on the board and does not go out of bounds.
+6. `tryRemovePeg`: A function that removes a peg from the board provided that the triggering action is a long press or the `BoardViewModel` state is to delete pegs.
+7. `tryMovePeg`: A function that moves a peg to the destination coordinate provided that the peg does not collide with other pegs or move beyond the board boundaries.
+
+### View
+There are two views that belongs to the Level Designer component. They are `BoardView` and `ControlPanelView`. `ControlPanelView` is a subview pf `BoardView`. Both view observes `BoardViewModel` to display the correct content.
+
+**ControlPanelView**
+`ControlPanelView` consists of:
+1. A palette that allows player to select the peg variant they want to use. 
+2. A delete button that allows player to remove a peg from the board when the peg is tapped on.
+3. A text field that allows player to enter a level name.
+4. A load button that allows player to load the board they saved under the level name indicated in the text field.
+5. A save button that allows player to save the current board under the level name indicated in the text field.
+6. A reset button that restores the board to an empty state.
+
+`BoardView` is the area where all pegs of the board are displayed.
+
+## Tests
 **Unit tests**
+
 I have written unit tests for `Peg`, `Board`, `PegViewModel` and `BoardViewModel`
 under the folder PeggleTests.
 
