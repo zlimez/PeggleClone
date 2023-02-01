@@ -33,7 +33,7 @@ struct BoardView: View {
     }
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
-        if !BoardViewModel.gridInitialized {
+        if !BoardViewModel.dimInitialized {
             DispatchQueue.main.async { boardViewModel.initGrid(geo.size) }
         }
 

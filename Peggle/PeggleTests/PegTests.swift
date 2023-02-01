@@ -8,7 +8,7 @@
 import XCTest
 @testable import Peggle
 
-class PegTests: XCTestCase {
+final class PegTests: XCTestCase {
     func testInitWithAllValues() {
         let peg = Peg(pegColor: "red", radius: 10, bounciness: 0.5, x: 20, y: 30)
         XCTAssertEqual(peg.id, Peg.getCounter() - 1)
@@ -64,5 +64,7 @@ class PegTests: XCTestCase {
         XCTAssertEqual(set.count, 2)
 
         let peg3 = peg1
+        set.insert(peg3)
+        XCTAssertEqual(set.count, 2)
     }
 }

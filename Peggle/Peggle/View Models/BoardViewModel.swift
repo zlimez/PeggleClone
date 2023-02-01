@@ -18,7 +18,7 @@ struct BoardViewModel {
         PegVariant(pegColor: "peg-orange", pegRadius: 30),
         PegVariant(pegColor: "peg-blue", pegRadius: 30)
     ]
-    static var gridInitialized = false
+    static var dimInitialized = false
 
     /// Requires a dragUpdate to force rerender since properties are only shallow compared
     private var dragUpdate = 1
@@ -35,7 +35,7 @@ struct BoardViewModel {
         self.allPegVMs = []
         self.maxPegRadius = BoardViewModel.palette.reduce(-1, { max($0, $1.pegRadius) })
 
-        if BoardViewModel.gridInitialized {
+        if BoardViewModel.dimInitialized {
             self.grid = Array(
                 repeating: Array(repeating: nil, count: BoardViewModel.maxDim),
                 count: BoardViewModel.maxDim
@@ -124,7 +124,7 @@ struct BoardViewModel {
         for initPegVM in allPegVMs {
             self.grid[initPegVM.row][initPegVM.col] = initPegVM
         }
-        BoardViewModel.gridInitialized = true
+        BoardViewModel.dimInitialized = true
     }
 
     private mutating func initPeg(_ savedPeg: Peg) {

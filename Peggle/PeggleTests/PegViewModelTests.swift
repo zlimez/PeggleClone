@@ -8,7 +8,7 @@
 import XCTest
 @testable import Peggle
 
-class PegViewModelTests: XCTestCase {
+final class PegViewModelTests: XCTestCase {
     func testIsCollidingWith() {
         let peg = Peg(pegColor: "red", radius: 10, x: 0, y: 0)
         let pegViewModel = PegViewModel(peg: peg, row: 0, col: 0)
@@ -47,14 +47,12 @@ class PegViewModelTests: XCTestCase {
     func testEquality() {
         let peg = Peg(pegColor: "red", radius: 10, x: 0, y: 0)
         let pegViewModel = PegViewModel(peg: peg, row: 0, col: 0)
-        
+
         let peg2 = Peg(pegColor: "red", radius: 10, x: 0, y: 0)
         let pegViewModel2 = PegViewModel(peg: peg2, row: 0, col: 0)
 
         let pegViewModel3 = PegViewModel(peg: peg, row: 0, col: 0)
-        
         XCTAssertNotEqual(pegViewModel, pegViewModel2)
         XCTAssertEqual(pegViewModel, pegViewModel3)
     }
 }
-
