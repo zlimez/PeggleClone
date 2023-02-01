@@ -45,10 +45,12 @@ tests in code, please delete this section.
 > using `foo` and `bar`, and why you decided to go with `foo`.
 
 To prevent collision of two pegs, I thought of two options.
+
 1. Check the moving/added peg against all pegs on the board
 2. Divide the board into a grid whose cell height and width are equal to the 
    radius of a peg, then check only the pegs in the 5x5 subgrid neighbourhood centered
    on the moving/added peg
+
 Option 1 is simpler to implement and permits struct to be used to represent the pegs
 However, the time complexity of adding n pegs is O(n^2) and dragging a peg over m intervals
 is O(mn). On the other hand option 2 is more complicated to implement and prefers a class 
@@ -70,9 +72,12 @@ two methods, which reduced the code I need to write.
 > other words, write your considerations in weighing the pros and cons of the
 > persistence methods you have considered.
 
-I chose to encode and decode from a file. Encoding and decoding from a file is similar to
-using a NoSQL database of which I have experience in. Furthermore, swift's codable protocol
-makes the implementation simpler. Where this option suffers is the lack of schema present in
-SQL databases which can check the integrity of the data the game saves and prevent corruption.
-I do not have much of an understanding of Core data, but given it requires a schema to, it will
-add to the amount of effort required to ensure data persistence just like SQL databases.
+I chose to encode and decode from a file due to its similarity with using a NoSQL database 
+which I have prior experience in. Swift's `Codable` protocol makes the implementation straight 
+forward. The way I structure my class and structs is the blueprint of the data organization.
+
+However, the method lacks a schema present in SQL databases and ORMs. Hence, the integrity of data
+is not enforced which can result in malformed data that cannot be parsed by the application later.
+Another consideration that informed my choice is the stage of development I am in now. Models can
+still be refactored or extended. If I chose SQL or ORM I will need to update the schema as class and
+struct sepcifications change, slowing the development speed.
