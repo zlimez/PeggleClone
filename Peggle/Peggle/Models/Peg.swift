@@ -7,23 +7,22 @@
 
 import Foundation
 
+// TODO: Account for Peg scaling
 class Peg: Identifiable, Hashable, Codable {
     private static var counter = 0
     let id: Int
     let pegColor: String
-    let bounciness: Float
-    let radius: CGFloat
+    let unitRadius: CGFloat
     // Relative to center, x value increases to the right, y value increases downwards
-    var x: CGFloat
-    var y: CGFloat
+    var transform: Transform
+    var row: Int
+    var col: Int
 
     enum CodingKeys: String, CodingKey {
         case id
         case pegColor
-        case bounciness
-        case radius
-        case x
-        case y
+        case unitRadius
+        case transform
     }
 
     static func getCounter() -> Int {
@@ -34,45 +33,50 @@ class Peg: Identifiable, Hashable, Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try values.decode(Int.self, forKey: .id)
         self.pegColor = try values.decode(String.self, forKey: .pegColor)
-        self.bounciness = try values.decode(Float.self, forKey: .bounciness)
-        self.radius = try values.decode(CGFloat.self, forKey: .radius)
-        self.x = try values.decode(CGFloat.self, forKey: .x)
-        self.y = try values.decode(CGFloat.self, forKey: .y)
+        self.unitRadius = try values.decode(CGFloat.self, forKey: .unitRadius)
+        self.transform = try values.decode(Transform.self, forKey: .transform)
+        self.row = 0
+        self.col = 0
         Peg.counter = max(Peg.counter, self.id + 1)
     }
 
-    init(pegColor: String, radius: CGFloat, bounciness: Float, x: CGFloat, y: CGFloat) {
+    convenience init(pegColor: String, unitRadius: CGFloat, x: CGFloat, y: CGFloat, row: Int, col: Int) {
+        let transform = Transform(Vector2(x: x, y: y))
+        self.init(pegColor: pegColor, unitRadius: unitRadius, transform: transform, row: row, col: col)
+    }
+    
+    init(pegColor: String, unitRadius: CGFloat, transform: Transform, row: Int, col: Int) {
         self.id = Peg.counter
         self.pegColor = pegColor
-        self.x = x
-        self.y = y
+        self.transform = transform
+        self.row = row
+        self.col = col
 
-        if radius <= 0 {
-            self.radius = 1
+        if unitRadius <= 0 {
+            self.unitRadius = 1
         } else {
-            self.radius = radius
-        }
-
-        if bounciness < 0 {
-            self.bounciness = 0
-        } else {
-            self.bounciness = bounciness
+            self.unitRadius = unitRadius
         }
 
         Peg.counter += 1
     }
 
-    convenience init(pegColor: String, radius: CGFloat, x: CGFloat, y: CGFloat) {
-        self.init(pegColor: pegColor, radius: radius, bounciness: 1, x: x, y: y)
-    }
-
     func getCopy() -> Peg {
-        Peg(pegColor: self.pegColor, radius: self.radius, bounciness: self.bounciness, x: self.x, y: self.y)
+        Peg(pegColor: self.pegColor, unitRadius: self.unitRadius, transform: self.transform, row: self.row, col: self.col)
     }
 
-    func updatePositionTo(_ newPosition: CGPoint) {
-        x = newPosition.x
-        y = newPosition.y
+    func updatePositionTo(newPosition: Vector2, newRow: Int, newCol: Int) {
+        transform.position = newPosition
+    }
+    
+    func isCollidingWith(otherPegRadius: CGFloat, otherPegX: CGFloat, otherPegY: CGFloat, otherPegId: Int) -> Bool {
+        if id == otherPegId {
+            return false
+        }
+        
+        let otherPosition = Vector2(x: otherPegX, y: otherPegY)
+        let sqrDistance = (transform.position - otherPosition).sqrMagnitude
+        return sqrDistance < pow(unitRadius + otherPegRadius, 2)
     }
 
     static func == (lhs: Peg, rhs: Peg) -> Bool {

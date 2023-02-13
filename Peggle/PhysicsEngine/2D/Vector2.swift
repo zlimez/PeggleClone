@@ -9,6 +9,7 @@ import Foundation
 
 struct Vector2 {
     static let zero = Vector2(x: 0, y: 0)
+    static let one = Vector2(x: 1, y: 1)
     let x: CGFloat
     let y: CGFloat
     
@@ -72,3 +73,5 @@ struct Vector2 {
         return Vector2(x: x / length, y: y / length)
     }
 }
+
+extension Vector2: Codable {}

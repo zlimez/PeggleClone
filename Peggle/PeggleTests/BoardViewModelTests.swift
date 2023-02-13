@@ -17,7 +17,7 @@ final class BoardViewModelTests: XCTestCase {
 
     func testInitialization() {
         let peg = Peg(pegColor: "peg-orange", radius: 30, x: 0, y: 0)
-        let board = Board(allPegs: [peg])
+        let board = DesignBoard(allPegs: [peg])
         let boardVM = BoardViewModel(board: board)
 
         XCTAssertEqual(boardVM.allPegVMs.count, 1)
@@ -32,14 +32,14 @@ final class BoardViewModelTests: XCTestCase {
     }
 
     func testSwitchToAddPeg() {
-        var boardVM = BoardViewModel(board: Board(allPegs: Set()))
+        var boardVM = BoardViewModel(board: DesignBoard(allPegs: Set()))
         boardVM.switchToAddPeg(BoardViewModel.palette[0])
         XCTAssertEqual(boardVM.selectedPegVariant, BoardViewModel.palette[0])
         XCTAssertEqual(boardVM.selectedAction, .add)
     }
 
     func testSwitchToDeletePeg() {
-        var boardVM = BoardViewModel(board: Board(allPegs: Set()))
+        var boardVM = BoardViewModel(board: DesignBoard(allPegs: Set()))
         boardVM.switchToDeletePeg()
         XCTAssertNil(boardVM.selectedPegVariant)
         XCTAssertEqual(boardVM.selectedAction, .delete)
@@ -71,7 +71,7 @@ final class BoardViewModelTests: XCTestCase {
     }
 
     func testTryRemovePeg() {
-        let board = Board(allPegs: [Peg(pegColor: "peg-orange", radius: 30, x: 100, y: 100)])
+        let board = DesignBoard(allPegs: [Peg(pegColor: "peg-orange", radius: 30, x: 100, y: 100)])
         var boardViewModel = BoardViewModel(board: board)
         XCTAssertEqual(boardViewModel.allPegVMs.count, 1)
         boardViewModel.tryRemovePeg(isLongPress: true, targetPegVM: boardViewModel.allPegVMs[0])
@@ -87,7 +87,7 @@ final class BoardViewModelTests: XCTestCase {
     }
 
     func testMovePeg() {
-        let board = Board(allPegs: [
+        let board = DesignBoard(allPegs: [
             Peg(pegColor: "peg-orange", radius: 30, x: 100, y: 100),
             Peg(pegColor: "peg-orange", radius: 30, x: 200, y: 200)
         ])

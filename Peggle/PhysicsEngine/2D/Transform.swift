@@ -7,8 +7,18 @@
 
 import Foundation
 
+// Only rotation by the z-axis is allowed
 struct Transform {
+    static let standard = Transform(Vector2.zero)
     var position: Vector2
     var scale: Vector2
     var rotation: CGFloat
+    
+    init(_ position: Vector2) {
+        self.position = position
+        self.scale = Vector2.one
+        self.rotation = 0
+    }
 }
+
+extension Transform: Codable {}

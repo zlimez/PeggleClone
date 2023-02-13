@@ -10,53 +10,30 @@ import Foundation
 class PegViewModel: Identifiable, Equatable {
     let id: Int
     var peg: Peg
-    var isBlocked = false
-    // BoardViewModel grid coordinates
-    var row: Int
-    var col: Int
 
     init(peg: Peg, row: Int, col: Int) {
         self.id = peg.id
         self.peg = peg
-        self.row = row
-        self.col = col
     }
 
     func updatePosition(newPosition: CGPoint, newRow: Int, newCol: Int) {
-        self.peg.updatePositionTo(newPosition)
-        self.row = newRow
-        self.col = newCol
-    }
-
-    func isCollidingWith(otherPegRadius: CGFloat, otherPegX: CGFloat, otherPegY: CGFloat, otherPegId: Int) -> Bool {
-        if self.peg.id == otherPegId {
-            return false
-        }
-
-        let sqrDistance = pow(self.peg.x - otherPegX, 2) + pow(self.peg.y - otherPegY, 2)
-        return sqrDistance < pow(self.peg.radius + otherPegRadius, 2)
-    }
-
-    func completeDrag() {
-        if isBlocked {
-            isBlocked = false
-        }
+        self.peg.updatePositionTo(Vector2(x: newPosition.x, y: newPosition.y))
     }
 
     var x: CGFloat {
-        peg.x
+        peg.transform.position.x
     }
 
     var y: CGFloat {
-        peg.y
+        peg.transform.position.y
     }
 
     var radius: CGFloat {
-        peg.radius
+        peg.unitRadius
     }
 
     var diameter: CGFloat {
-        peg.radius * 2
+        peg.unitRadius * 2
     }
 
     var color: String {

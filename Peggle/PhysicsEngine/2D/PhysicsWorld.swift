@@ -10,18 +10,19 @@ import Foundation
 // Assumes one medium per world
 class PhysicsWorld {
     private let gravity: Vector2
-    private let dragFactor: CGFloat
+    private let drag: CGFloat
     // 30fps
-//    private let fixedDeltaTime: CGFloat = 1 / 30
+    // private let fixedDeltaTime: CGFloat = 1 / 30
     private var deltaTime: CGFloat
-    private var bodies: [RigidBody]
+    private var bodies: [RigidBody] = []
     private let impulseSolver: ImpulseSolver = ImpulseSolver()
+//    private var collidingBodies: Set<RigidBody> = []
+//    private var triggeringBodies: Set<RigidBody> = []
     
-    init(gravity: Vector2, dragFactor: CGFloat, deltaTime: CGFloat) {
+    init(gravity: Vector2, drag: CGFloat, deltaTime: CGFloat) {
         self.gravity = gravity
         self.deltaTime = deltaTime
-        self.dragFactor = dragFactor
-        self.bodies = []
+        self.drag = drag
     }
     
     func addBody(_ addedBody: RigidBody) {
@@ -30,10 +31,12 @@ class PhysicsWorld {
     
     func removeBody(_ removedBody: RigidBody) {
         bodies = bodies.filter{ $0 !== removedBody }
+//        collidingBodies.remove(removedBody)
     }
     
     func step() {
         applyGravity()
+        applyDrag()
         resolveCollisions()
         updateBodies()
     }
@@ -64,9 +67,10 @@ class PhysicsWorld {
         }
         
         // Invoke all listener responses for collision event
+        // Assumes collision detection and resolution is rapid enough such that collision is resolve in the next frame
         for collision in collisions {
-            collision.rbA.onCollision(otherBody: collision.rbB)
-            collision.rbB.onCollision(otherBody: collision.rbA)
+            collision.rbA.onCollisionEnter(collision.rbB)
+            collision.rbB.onCollisionEnter(collision.rbA)
         }
     }
     
@@ -77,6 +81,16 @@ class PhysicsWorld {
             }
             
             body.applyForce(force: gravity * body.mass, deltaTime: deltaTime)
+        }
+    }
+    
+    func applyDrag() {
+        for body in bodies {
+            if !body.isDynamic {
+                continue
+            }
+            
+            body.applyForce(force: -body.velocity * drag, deltaTime: deltaTime)
         }
     }
     
