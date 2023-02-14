@@ -10,15 +10,15 @@ import XCTest
 
 final class BoardViewModelTests: XCTestCase {
     override class func setUp() {
-        BoardViewModel.viewDim = CGSize(width: 600, height: 600)
-        BoardViewModel.maxDim = Int(BoardViewModel.viewDim!.width / 30 + 1)
-        BoardViewModel.dimInitialized = true
+        DesignBoardVM.viewDim = CGSize(width: 600, height: 600)
+        DesignBoardVM.maxDim = Int(DesignBoardVM.viewDim!.width / 30 + 1)
+        DesignBoardVM.dimInitialized = true
     }
 
     func testInitialization() {
         let peg = Peg(pegColor: "peg-orange", radius: 30, x: 0, y: 0)
         let board = DesignBoard(allPegs: [peg])
-        let boardVM = BoardViewModel(board: board)
+        let boardVM = DesignBoardVM(board: board)
 
         XCTAssertEqual(boardVM.allPegVMs.count, 1)
         XCTAssertNil(boardVM.selectedAction)
@@ -26,20 +26,20 @@ final class BoardViewModelTests: XCTestCase {
     }
 
     func testGetEmptyBoard() {
-        let boardVM = BoardViewModel.getEmptyBoard()
+        let boardVM = DesignBoardVM.getEmptyBoard()
         XCTAssertEqual(boardVM.board.allPegs.count, 0)
         XCTAssertEqual(boardVM.allPegVMs.count, 0)
     }
 
     func testSwitchToAddPeg() {
-        var boardVM = BoardViewModel(board: DesignBoard(allPegs: Set()))
-        boardVM.switchToAddPeg(BoardViewModel.palette[0])
-        XCTAssertEqual(boardVM.selectedPegVariant, BoardViewModel.palette[0])
+        var boardVM = DesignBoardVM(board: DesignBoard(allPegs: Set()))
+        boardVM.switchToAddPeg(DesignBoardVM.palette[0])
+        XCTAssertEqual(boardVM.selectedPegVariant, DesignBoardVM.palette[0])
         XCTAssertEqual(boardVM.selectedAction, .add)
     }
 
     func testSwitchToDeletePeg() {
-        var boardVM = BoardViewModel(board: DesignBoard(allPegs: Set()))
+        var boardVM = DesignBoardVM(board: DesignBoard(allPegs: Set()))
         boardVM.switchToDeletePeg()
         XCTAssertNil(boardVM.selectedPegVariant)
         XCTAssertEqual(boardVM.selectedAction, .delete)
@@ -47,7 +47,7 @@ final class BoardViewModelTests: XCTestCase {
 
     func testIsVariantActive() {
         let pegVariant = PegVariant(pegColor: "peg-orange", pegRadius: 30)
-        var boardVM = BoardViewModel.getEmptyBoard()
+        var boardVM = DesignBoardVM.getEmptyBoard()
 
         XCTAssertFalse(boardVM.isVariantActive(pegVariant))
 
@@ -59,8 +59,8 @@ final class BoardViewModelTests: XCTestCase {
     }
 
     func testTryAddPegAt() {
-        var boardViewModel = BoardViewModel.getEmptyBoard()
-        boardViewModel.switchToAddPeg(BoardViewModel.palette[0])
+        var boardViewModel = DesignBoardVM.getEmptyBoard()
+        boardViewModel.switchToAddPeg(DesignBoardVM.palette[0])
         XCTAssertEqual(boardViewModel.allPegVMs.count, 0)
         boardViewModel.tryAddPegAt(x: 100, y: 100)
         XCTAssertEqual(boardViewModel.grid[3][3]!.x, 100)
@@ -72,13 +72,13 @@ final class BoardViewModelTests: XCTestCase {
 
     func testTryRemovePeg() {
         let board = DesignBoard(allPegs: [Peg(pegColor: "peg-orange", radius: 30, x: 100, y: 100)])
-        var boardViewModel = BoardViewModel(board: board)
+        var boardViewModel = DesignBoardVM(board: board)
         XCTAssertEqual(boardViewModel.allPegVMs.count, 1)
         boardViewModel.tryRemovePeg(isLongPress: true, targetPegVM: boardViewModel.allPegVMs[0])
         XCTAssertEqual(boardViewModel.allPegVMs.count, 0)
         XCTAssertNil(boardViewModel.grid[3][3])
 
-        boardViewModel.switchToAddPeg(BoardViewModel.palette[0])
+        boardViewModel.switchToAddPeg(DesignBoardVM.palette[0])
         boardViewModel.tryAddPegAt(x: 100, y: 100)
         boardViewModel.switchToDeletePeg()
         boardViewModel.tryRemovePeg(isLongPress: false, targetPegVM: boardViewModel.allPegVMs[0])
@@ -91,7 +91,7 @@ final class BoardViewModelTests: XCTestCase {
             Peg(pegColor: "peg-orange", radius: 30, x: 100, y: 100),
             Peg(pegColor: "peg-orange", radius: 30, x: 200, y: 200)
         ])
-        var boardViewModel = BoardViewModel(board: board)
+        var boardViewModel = DesignBoardVM(board: board)
 
         boardViewModel.tryMovePeg(targetPegVM: boardViewModel.allPegVMs[0], destination: CGPoint(x: 30, y: 30))
         XCTAssertNil(boardViewModel.grid[3][3])

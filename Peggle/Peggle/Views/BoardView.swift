@@ -9,7 +9,7 @@ import SwiftUI
 import Foundation
 
 struct BoardView: View {
-    @State private var boardViewModel = BoardViewModel.getEmptyBoard()
+    @State private var designBoardVM = DesignBoardVM.getEmptyBoard()
     @EnvironmentObject var levels: Levels
 
     var body: some View {
@@ -18,23 +18,23 @@ struct BoardView: View {
                 GeometryReader { geo in
                     fillPlayArea(geo)
                 }
-                ForEach($boardViewModel.allPegVMs) { pegVM in
-                    PegView(pegVM: pegVM, parentBoardVM: $boardViewModel)
+                ForEach($designBoardVM.pegVMs) { pegVM in
+                    PegView(pegVM: pegVM, parentBoardVM: $designBoardVM)
                 }
             }
             .onTapGesture { location in
-                boardViewModel.tryAddPegAt(x: location.x, y: location.y)
+                designBoardVM.tryAddPegAt(x: location.x, y: location.y)
             }
             .ignoresSafeArea()
 
-            ControlPanelView(boardViewModel: $boardViewModel)
+            ControlPanelView(designBoardVM: $designBoardVM)
                 .environmentObject(levels)
         }
     }
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
-        if !BoardViewModel.dimInitialized {
-            DispatchQueue.main.async { boardViewModel.initGrid(geo.size) }
+        if !DesignBoard.dimInitialized {
+            DispatchQueue.main.async { designBoardVM.initGrid(geo.size) }
         }
 
         return Image("background")
@@ -46,8 +46,8 @@ struct BoardView: View {
 
 /// Each peg should detect a drag to move the peg around or a long tap to signal its deletion
 struct PegView: View {
-    @Binding var pegVM: PegViewModel
-    @Binding var parentBoardVM: BoardViewModel
+    @Binding var pegVM: PegVM
+    @Binding var parentBoardVM: DesignBoardVM
     @GestureState private var startLocation: CGPoint?
     let dragPressDistanceThreshold: CGFloat = 5
 
@@ -63,14 +63,14 @@ struct PegView: View {
 
     var tap: some Gesture {
         TapGesture()
-            .onEnded { _ in parentBoardVM.tryRemovePeg(isLongPress: false, targetPegVM: pegVM)
+            .onEnded { _ in parentBoardVM.tryRemovePeg(isLongPress: false, targetPeg: pegVM.peg)
             }
     }
 
     var longPress: some Gesture {
         LongPressGesture(minimumDuration: 0.4, maximumDistance: dragPressDistanceThreshold)
             .onEnded { _ in
-                parentBoardVM.tryRemovePeg(isLongPress: true, targetPegVM: pegVM)
+                parentBoardVM.tryRemovePeg(isLongPress: true, targetPeg: pegVM.peg)
             }
     }
 
@@ -81,14 +81,11 @@ struct PegView: View {
                     var destination = startLocation ?? CGPoint(x: pegVM.x, y: pegVM.y)
                     destination.x += value.translation.width
                     destination.y += value.translation.height
-                    parentBoardVM.tryMovePeg(targetPegVM: pegVM, destination: destination)
+                    parentBoardVM.tryMovePeg(targetPeg: pegVM.peg, destination: destination)
                 }
             }
             .updating($startLocation) { _, startLocation, _ in
                 startLocation = startLocation ?? CGPoint(x: pegVM.x, y: pegVM.y)
-            }
-            .onEnded { _ in
-                pegVM.completeDrag()
             }
     }
 }

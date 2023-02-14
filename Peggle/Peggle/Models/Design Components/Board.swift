@@ -8,25 +8,28 @@
 import Foundation
 
 struct Board: Codable {
-    var allPegs: Set<Peg>
+    var allPegs: [Peg]
 
     mutating func addPeg(_ newPeg: Peg) {
-        allPegs.insert(newPeg)
+        print("new peg added")
+        allPegs.append(newPeg)
     }
 
     mutating func removePeg(_ removedPeg: Peg) {
-        allPegs.remove(removedPeg)
+        print("peg removed")
+        allPegs = allPegs.filter { $0 != removedPeg }
     }
 
     mutating func removeAllPegs() {
+        print("all pegs removed")
         allPegs.removeAll()
     }
 
     /// Required to provide copy of pegs and not peg references
     func getCopy() -> Board {
-        var allPegsCopy = Set<Peg>()
+        var allPegsCopy: [Peg] = []
         for peg in allPegs {
-            allPegsCopy.insert(peg.getCopy())
+            allPegsCopy.append(peg.getCopy())
         }
         return Board(allPegs: allPegsCopy)
     }

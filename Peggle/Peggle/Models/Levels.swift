@@ -14,7 +14,7 @@ final class Levels: ObservableObject {
 
     init() {
         let initValue: [String: Board] = [:]
-        DataManager.load(filename: "gameLevels.json", initValue: initValue) { result in
+        DataManager.load(filename: "designLevels.json", initValue: initValue) { result in
             switch result {
             case .failure(let error):
                 fatalError(error.localizedDescription)
@@ -32,11 +32,12 @@ final class Levels: ObservableObject {
     // Copy is being saved to prevent two boards from sharing same peg reference
     func saveLevel(levelName: String, updatedBoard: Board) {
         if levelName.isEmpty {
+            print("Empty level name cannot be saved")
             return
         }
 
         levelTable[levelName] = updatedBoard.getCopy()
-        DataManager.save(values: levelTable, filename: "gameLevels.json") { result in
+        DataManager.save(values: levelTable, filename: "designLevels.json") { result in
             if case .failure(let error) = result {
                 fatalError(error.localizedDescription)
             }

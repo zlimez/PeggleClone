@@ -13,8 +13,12 @@ class Peg: Identifiable, Hashable, Codable {
     let id: Int
     let pegColor: String
     let unitRadius: CGFloat
-    // Relative to center, x value increases to the right, y value increases downwards
+    /// Relative to center, x value increases to the right, y value increases downwards
     var transform: Transform
+    
+    /// Relevant only during level design phase
+    var row: Int
+    var col: Int
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -26,6 +30,14 @@ class Peg: Identifiable, Hashable, Codable {
     static func getCounter() -> Int {
         Peg.counter
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(pegColor, forKey: .pegColor)
+        try container.encode(unitRadius, forKey: .unitRadius)
+        try container.encode(transform, forKey: .transform)
+    }
 
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -33,18 +45,22 @@ class Peg: Identifiable, Hashable, Codable {
         self.pegColor = try values.decode(String.self, forKey: .pegColor)
         self.unitRadius = try values.decode(CGFloat.self, forKey: .unitRadius)
         self.transform = try values.decode(Transform.self, forKey: .transform)
+        self.row = -1
+        self.col = -1
         Peg.counter = max(Peg.counter, self.id + 1)
     }
 
-    convenience init(pegColor: String, unitRadius: CGFloat, x: CGFloat, y: CGFloat) {
+    convenience init(pegColor: String, unitRadius: CGFloat, x: CGFloat, y: CGFloat, row: Int, col: Int) {
         let transform = Transform(Vector2(x: x, y: y))
-        self.init(pegColor: pegColor, unitRadius: unitRadius, transform: transform)
+        self.init(pegColor: pegColor, unitRadius: unitRadius, transform: transform, row: row, col: col)
     }
 
-    init(pegColor: String, unitRadius: CGFloat, transform: Transform) {
+    init(pegColor: String, unitRadius: CGFloat, transform: Transform, row: Int = -1, col: Int = -1) {
         self.id = Peg.counter
         self.pegColor = pegColor
         self.transform = transform
+        self.row = row
+        self.col = col
 
         if unitRadius <= 0 {
             self.unitRadius = 1
@@ -56,11 +72,13 @@ class Peg: Identifiable, Hashable, Codable {
     }
 
     func getCopy() -> Peg {
-        Peg(pegColor: self.pegColor, unitRadius: self.unitRadius, transform: self.transform)
+        Peg(pegColor: self.pegColor, unitRadius: self.unitRadius, transform: self.transform, row: self.row, col: self.col)
     }
 
-    func updatePositionTo(_ newPosition: Vector2) {
+    func updatePositionTo(newPosition: Vector2, newRow: Int, newCol: Int) {
         transform.position = newPosition
+        row = newRow
+        col = newCol
     }
 
     func isCollidingWith(otherPegRadius: CGFloat, otherPegX: CGFloat, otherPegY: CGFloat, otherPegId: Int) -> Bool {
