@@ -22,15 +22,15 @@ struct BoardViewModel {
 
     /// Requires a dragUpdate to force rerender since properties are only shallow compared
     private var dragUpdate = 1
-    var board: DesignBoard
+    var board: Board
     var allPegVMs: [PegViewModel]
     /// assume all pegs have the same radius, thus each cell in grid can hold at most one peg reference
-//    var maxPegRadius: CGFloat
-//    var grid: [[PegViewModel?]]
+    var maxPegRadius: CGFloat
+    var grid: [[PegViewModel?]]
     var selectedPegVariant: PegVariant?
     var selectedAction: Action?
 
-    init(board: DesignBoard) {
+    init(board: Board) {
         self.board = board
         self.allPegVMs = []
         self.maxPegRadius = BoardViewModel.palette.reduce(-1, { max($0, $1.pegRadius) })
@@ -49,7 +49,7 @@ struct BoardViewModel {
     }
 
     static func getEmptyBoard() -> BoardViewModel {
-        BoardViewModel(board: DesignBoard(allPegs: Set()))
+        BoardViewModel(board: Board(allPegs: Set()))
     }
 
     func isVariantActive(_ pegVariant: PegVariant) -> Bool {
@@ -185,5 +185,14 @@ struct BoardViewModel {
 
     private func pointToGrid(_ point: CGFloat) -> Int {
         Int(point / maxPegRadius)
+    }
+}
+
+struct PegVariant: Equatable {
+    let pegColor: String
+    let pegRadius: CGFloat
+
+    static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
+        lhs.pegColor == rhs.pegColor && lhs.pegRadius == rhs.pegRadius
     }
 }

@@ -9,12 +9,14 @@ import Foundation
 
 struct PolygonCollider: Collider {
     let stdVertices: [Vector2]
-    
-    static func getEdgeNormals(_ vertices: [Vector2]) -> [Vector2] {
+    let isBox: Bool
+
+    static func getEdgeNormals(vertices: [Vector2], isBox: Bool) -> [Vector2] {
         let numVertices = vertices.count
         var normals: [Vector2] = []
+        let steps = isBox ? 2 : 1
 
-        for i in 0..<numVertices {
+        for i in stride(from: 0, to: numVertices, by: steps) {
             let curr = vertices[i]
             let next = vertices[(i + 1) % numVertices]
             let edge = Vector2(x: next.x - curr.x, y: next.y - curr.y)
@@ -24,29 +26,51 @@ struct PolygonCollider: Collider {
 
         return normals
     }
-    
-    func testCollision(transform: Transform, otherCollider: SphereCollider, otherTransform: Transform) -> ContactPoints {
-        return otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform)
+
+    func testCollision(
+        transform: Transform,
+        otherCollider: CircleCollider,
+        otherTransform: Transform
+    ) -> ContactPoints {
+        otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform)
     }
-    
-    func testCollision(transform: Transform, otherCollider: PolygonCollider, otherTransform: Transform) -> ContactPoints {
-        let transformedVertices = stdVertices.map { Vector2.elementMultiply(a: $0, b: transform.scale).rotateBy(transform.rotation) + transform.position }
-        let transformedOtherVertices = otherCollider.stdVertices.map { Vector2.elementMultiply(a: $0, b: otherTransform.scale).rotateBy(otherTransform.rotation) + otherTransform.position }
-        
-        let allNormals = PolygonCollider.getEdgeNormals(transformedVertices) + PolygonCollider.getEdgeNormals(transformedOtherVertices)
+
+    func testCollision(
+        transform: Transform,
+        otherCollider: PolygonCollider,
+        otherTransform: Transform
+    ) -> ContactPoints {
+        let transformedVertices = stdVertices.map {
+            Vector2.elementMultiply(a: $0, b: transform.scale)
+                .rotateBy(transform.rotation) + transform.position
+        }
+        let transformedOtherVertices = otherCollider.stdVertices.map {
+            Vector2.elementMultiply(a: $0, b: otherTransform.scale)
+                .rotateBy(otherTransform.rotation) + otherTransform.position
+        }
+
+        let allNormals = PolygonCollider.getEdgeNormals(vertices: transformedVertices, isBox: isBox)
+        + PolygonCollider.getEdgeNormals(vertices: transformedOtherVertices, isBox: isBox)
 
         var normal = Vector2.zero
         var depth = CGFloat.infinity
         var minA = CGFloat.infinity, minB = CGFloat.infinity, maxA = -CGFloat.infinity, maxB = -CGFloat.infinity
-        var minVertices: [Vector2] = []
-        var maxVertices: [Vector2] = []
-        // To aid contact point solving
-        var minFromA: Bool = false
-        var minFromB: Bool = false
-        
+        var minVertices: [Vector2] = [], maxVertices: [Vector2] = []
+        var minFromA = false, minFromB = false
+
         for axis in allNormals {
-            let criticalVerticesA = PolygonCollider.projectVertices(vertices: transformedVertices, axis: axis, min: &minA, max: &maxA)
-            let criticalVerticesB = PolygonCollider.projectVertices(vertices: transformedOtherVertices, axis: axis, min: &minB, max: &maxB)
+            let criticalVerticesA = PolygonCollider.projectVertices(
+                vertices: transformedVertices,
+                axis: axis,
+                min: &minA,
+                max: &maxA
+            )
+            let criticalVerticesB = PolygonCollider.projectVertices(
+                vertices: transformedOtherVertices,
+                axis: axis,
+                min: &minB,
+                max: &maxB
+            )
 
             if minA >= maxB || minB >= maxA {
                 return ContactPoints.noContact
@@ -54,10 +78,10 @@ struct PolygonCollider: Collider {
 
             let axisDepth = min(maxB - minA, maxA - minB)
 
-            if (axisDepth < depth) {
+            if axisDepth < depth {
                 depth = axisDepth
                 normal = axis
-                
+
                 if axisDepth == maxB - minA {
                     maxVertices = criticalVerticesB.1
                     minVertices = criticalVerticesA.0
@@ -69,27 +93,52 @@ struct PolygonCollider: Collider {
                 }
             }
         }
-        
-        var pointA = Vector2.zero
-        var pointB = Vector2.zero
-        
+
+        var pointA = Vector2.zero, pointB = Vector2.zero
+
         if !minFromA && !minFromB {
             fatalError("Min should either be from colliders")
         }
-        
+
         if minFromA && minFromB {
             fatalError("There should only be one min")
         }
-        
-        if minVertices.count == 0 || maxVertices.count == 0 {
+
+        PolygonCollider.getContactPoints(
+            pointA: &pointA,
+            pointB: &pointB,
+            normal: normal,
+            depth: depth,
+            minVertices: minVertices,
+            maxVertices: maxVertices,
+            minFromA: minFromA
+        )
+
+        let direction = PolygonCollider.findCenter(transformedOtherVertices) - PolygonCollider.findCenter(transformedVertices)
+        if Vector2.dotProduct(a: direction, b: normal) < 0 {
+            normal *= -1
+        }
+
+        return ContactPoints(pointA: pointA, pointB: pointB, normal: normal, depth: depth, hasCollision: true)
+    }
+
+    static func getContactPoints(
+        pointA: inout Vector2,
+        pointB: inout Vector2,
+        normal: Vector2,
+        depth: CGFloat,
+        minVertices: [Vector2],
+        maxVertices: [Vector2],
+        minFromA: Bool
+    ) {
+        if minVertices.isEmpty || maxVertices.isEmpty {
             fatalError("There should be at least one vertice in min and max vertices")
         }
-        
+
         if minVertices.count > 2 || maxVertices.count > 2 {
             fatalError("Polygon is mal-defined with colinear vertices")
         }
-        
-        // Solve for contact points
+
         if minVertices.count == 1 {
             if minFromA {
                 pointA = minVertices[0]
@@ -111,10 +160,18 @@ struct PolygonCollider: Collider {
             if minFromA {
                 let possiblePointB = minVertices[0] + normal * depth
                 let nextPossiblePointB = minVertices[1] + normal * depth
-                if LineUtils.checkPointInLineSegment(startPoint: maxVertices[0], endPoint: maxVertices[1], checkedPoint: possiblePointB) {
+                if LineUtils.checkPointInLineSegment(
+                    startPoint: maxVertices[0],
+                    endPoint: maxVertices[1],
+                    checkedPoint: possiblePointB
+                ) {
                     pointA = minVertices[0]
                     pointB = possiblePointB
-                } else if LineUtils.checkPointInLineSegment(startPoint: maxVertices[0], endPoint: maxVertices[1], checkedPoint: nextPossiblePointB) {
+                } else if LineUtils.checkPointInLineSegment(
+                    startPoint: maxVertices[0],
+                    endPoint: maxVertices[1],
+                    checkedPoint: nextPossiblePointB
+                ) {
                     pointA = minVertices[1]
                     pointB = nextPossiblePointB
                 } else {
@@ -123,10 +180,18 @@ struct PolygonCollider: Collider {
             } else {
                 let possiblePointA = minVertices[0] + normal * depth
                 let nextPossiblePointA = minVertices[1] + normal * depth
-                if LineUtils.checkPointInLineSegment(startPoint: maxVertices[0], endPoint: maxVertices[1], checkedPoint: possiblePointA) {
+                if LineUtils.checkPointInLineSegment(
+                    startPoint: maxVertices[0],
+                    endPoint: maxVertices[1],
+                    checkedPoint: possiblePointA
+                ) {
                     pointB = minVertices[0]
                     pointA = possiblePointA
-                } else if LineUtils.checkPointInLineSegment(startPoint: maxVertices[0], endPoint: maxVertices[1], checkedPoint: nextPossiblePointA) {
+                } else if LineUtils.checkPointInLineSegment(
+                    startPoint: maxVertices[0],
+                    endPoint: maxVertices[1],
+                    checkedPoint: nextPossiblePointA
+                ) {
                     pointB = minVertices[1]
                     pointA = nextPossiblePointA
                 } else {
@@ -134,19 +199,9 @@ struct PolygonCollider: Collider {
                 }
             }
         }
-        
-        let center = PolygonCollider.findArithmeticMean(transformedVertices)
-        let otherCenter = PolygonCollider.findArithmeticMean(transformedOtherVertices)
-        let direction = otherCenter - center
-
-        if Vector2.dotProduct(a: direction, b: normal) < 0 {
-            normal = normal * -1
-        }
-        
-        return ContactPoints(pointA: pointA, pointB: pointB, normal: normal, depth: depth, hasCollision: true)
     }
-    
-    static func findArithmeticMean(_ vertices: [Vector2]) -> Vector2 {
+
+    static func findCenter(_ vertices: [Vector2]) -> Vector2 {
         var sumX: CGFloat = 0
         var sumY: CGFloat = 0
 
@@ -155,16 +210,22 @@ struct PolygonCollider: Collider {
             sumY += vertice.y
         }
 
-        return Vector2(x: sumX / CGFloat(vertices.count), y: sumY / CGFloat(vertices.count));
+        return Vector2(x: sumX / CGFloat(vertices.count), y: sumY / CGFloat(vertices.count))
     }
-    
+
     // Returns tuple of min - max vertices
-    static func projectVertices(vertices: [Vector2], axis: Vector2, min: inout CGFloat, max: inout CGFloat) -> ([Vector2], [Vector2]) {
-        // If the axis is based on edge of pplygon that contains this vertice, there will be two vertices in either minVertice or maxVertice
+    static func projectVertices(
+        vertices: [Vector2],
+        axis: Vector2,
+        min: inout CGFloat,
+        max: inout CGFloat
+    ) -> ([Vector2], [Vector2]) {
+        // If the axis is based on edge of pplygon that contains this vertice,
+        // there will be two vertices in either minVertice or maxVertice
         var minVertice: [Vector2] = []
         var maxVertice: [Vector2] = []
-        min = CGFloat.infinity;
-        max = -CGFloat.infinity;
+        min = CGFloat.infinity
+        max = -CGFloat.infinity
 
         for vertice in vertices {
             let proj = Vector2.dotProduct(a: vertice, b: axis)
@@ -176,8 +237,8 @@ struct PolygonCollider: Collider {
             } else if proj == min {
                 minVertice.append(vertice)
             }
-            
-            if(proj > max) {
+
+            if proj > max {
                 max = proj
                 maxVertice.removeAll()
                 maxVertice.append(vertice)
@@ -185,12 +246,16 @@ struct PolygonCollider: Collider {
                 maxVertice.append(vertice)
             }
         }
-        
+
         return (minVertice, maxVertice)
     }
-    
+
     func testCollision(transform: Transform, otherCollider: BoxCollider, otherTransform: Transform) -> ContactPoints {
-        return testCollision(transform: transform, otherCollider: otherCollider.polygonizedCollider, otherTransform: otherTransform)
+        testCollision(
+            transform: transform,
+            otherCollider: otherCollider.polygonizedCollider,
+            otherTransform: otherTransform
+        )
     }
 
     func testCollision(transform: Transform, otherCollider: Collider, otherTransform: Transform) -> ContactPoints {

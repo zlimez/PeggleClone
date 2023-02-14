@@ -10,7 +10,7 @@ import Foundation
 struct BoxCollider: Collider {
     let halfWidth: CGFloat
     let halfHeight: CGFloat
-    
+
     var polygonizedCollider: PolygonCollider {
         PolygonCollider(
             stdVertices: [
@@ -18,20 +18,38 @@ struct BoxCollider: Collider {
                 Vector2(x: halfWidth, y: -halfHeight),
                 Vector2(x: -halfWidth, y: -halfHeight),
                 Vector2(x: -halfWidth, y: halfHeight)
-            ]
+            ],
+            isBox: true
         )
     }
-    
-    func testCollision(transform: Transform, otherCollider: SphereCollider, otherTransform: Transform) -> ContactPoints {
-        otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform).reverse
+
+    func testCollision(transform: Transform, otherCollider: CircleCollider, otherTransform: Transform) -> ContactPoints {
+        otherCollider.testCollision(
+            transform: otherTransform,
+            otherCollider: self,
+            otherTransform: transform
+        ).reverse
     }
-    
-    func testCollision(transform: Transform, otherCollider: PolygonCollider, otherTransform: Transform) -> ContactPoints {
-        otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform).reverse
+
+    func testCollision(
+        transform: Transform,
+        otherCollider: PolygonCollider,
+        otherTransform:
+        Transform
+    ) -> ContactPoints {
+        otherCollider.testCollision(
+            transform: otherTransform,
+            otherCollider: self,
+            otherTransform: transform
+        ).reverse
     }
-    
+
     func testCollision(transform: Transform, otherCollider: BoxCollider, otherTransform: Transform) -> ContactPoints {
-        polygonizedCollider.testCollision(transform: transform, otherCollider: otherCollider.polygonizedCollider, otherTransform: otherTransform)
+        polygonizedCollider.testCollision(
+            transform: transform,
+            otherCollider: otherCollider.polygonizedCollider,
+            otherTransform: otherTransform
+        )
     }
 
     func testCollision(transform: Transform, otherCollider: Collider, otherTransform: Transform) -> ContactPoints {

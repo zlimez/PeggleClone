@@ -42,7 +42,10 @@ struct ControlPanelView: View {
                 TextField("Level Name", text: $levelName)
                     .textFieldStyle(.roundedBorder)
                     .border(.gray)
-                Button("START", action: {})
+                NavigationLink { GameView() } label: {
+                    Text("START")
+                        .foregroundColor(Color.blue)
+                }
             }
         }
         .padding(.all, 20)

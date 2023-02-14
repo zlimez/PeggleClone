@@ -10,11 +10,11 @@ import Combine
 
 final class Levels: ObservableObject {
     // local cache
-    @Published var levelTable: [String: DesignBoard] = [:]
+    @Published var levelTable: [String: Board] = [:]
 
     init() {
-        let initValue: [String: DesignBoard] = [:]
-        DataManager.load(filename: "levels.json", initValue: initValue) { result in
+        let initValue: [String: Board] = [:]
+        DataManager.load(filename: "gameLevels.json", initValue: initValue) { result in
             switch result {
             case .failure(let error):
                 fatalError(error.localizedDescription)
@@ -24,19 +24,19 @@ final class Levels: ObservableObject {
         }
     }
 
-    // Copy is provided to prevent changes from being save without explicit request
-    func loadLevel(_ levelName: String) -> DesignBoard? {
+    // Copy is provided to prevent changes from being saved without explicit request
+    func loadLevel(_ levelName: String) -> Board? {
         levelTable[levelName]?.getCopy()
     }
 
     // Copy is being saved to prevent two boards from sharing same peg reference
-    func saveLevel(levelName: String, updatedBoard: DesignBoard) {
+    func saveLevel(levelName: String, updatedBoard: Board) {
         if levelName.isEmpty {
             return
         }
 
         levelTable[levelName] = updatedBoard.getCopy()
-        DataManager.save(values: levelTable, filename: "levels.json") { result in
+        DataManager.save(values: levelTable, filename: "gameLevels.json") { result in
             if case .failure(let error) = result {
                 fatalError(error.localizedDescription)
             }

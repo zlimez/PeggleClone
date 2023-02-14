@@ -9,7 +9,7 @@ import Foundation
 
 class WorldObject {
     var transform: Transform
-    
+
     init(_ transform: Transform) {
         self.transform = transform
     }

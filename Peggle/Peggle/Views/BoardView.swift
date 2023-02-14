@@ -9,8 +9,8 @@ import SwiftUI
 import Foundation
 
 struct BoardView: View {
-    @StateObject private var levels = Levels()
     @State private var boardViewModel = BoardViewModel.getEmptyBoard()
+    @EnvironmentObject var levels: Levels
 
     var body: some View {
         VStack(spacing: 0) {
@@ -90,14 +90,5 @@ struct PegView: View {
             .onEnded { _ in
                 pegVM.completeDrag()
             }
-    }
-}
-
-struct BoardView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            BoardView()
-                .previewDevice(PreviewDevice(rawValue: "iPad Pro (11-inch) (4th generation)"))
-        }
     }
 }

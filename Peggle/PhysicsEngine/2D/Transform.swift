@@ -13,7 +13,7 @@ struct Transform {
     var position: Vector2
     var scale: Vector2
     var rotation: CGFloat
-    
+
     init(_ position: Vector2) {
         self.position = position
         self.scale = Vector2.one

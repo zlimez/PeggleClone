@@ -11,4 +11,8 @@ struct Collision {
     let rbA: RigidBody
     let rbB: RigidBody
     let contact: ContactPoints
+    
+    var reverse: Collision {
+        Collision(rbA: rbB, rbB: rbA, contact: contact.reverse)
+    }
 }

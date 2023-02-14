@@ -13,8 +13,14 @@ struct ContactPoints {
     let normal: Vector2
     let depth: CGFloat
     let hasCollision: Bool
-    static let noContact: ContactPoints = ContactPoints(pointA: Vector2.zero, pointB: Vector2.zero, normal: Vector2.zero, depth: 0, hasCollision: false)
-    
+    static let noContact = ContactPoints(
+        pointA: Vector2.zero,
+        pointB: Vector2.zero,
+        normal: Vector2.zero,
+        depth: 0,
+        hasCollision: false
+    )
+
     var reverse: ContactPoints {
         ContactPoints(pointA: pointB, pointB: pointA, normal: normal, depth: depth, hasCollision: hasCollision)
     }
