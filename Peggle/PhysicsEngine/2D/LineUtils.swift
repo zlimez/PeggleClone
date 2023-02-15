@@ -8,10 +8,11 @@
 import Foundation
 
 final class LineUtils {
-    static func checkPointInLineSegment(startPoint: Vector2, endPoint: Vector2, checkedPoint: Vector2) -> Bool {
-        let xRatio = (checkedPoint.x - startPoint.x) / (endPoint.x - startPoint.x)
-        let yRatio = (checkedPoint.y - startPoint.y) / (endPoint.y - startPoint.y)
+    static func checkPointInLineSegment(lineStart: Vector2, lineEnd: Vector2, checkedPoint: Vector2) -> Bool {
+        let lineLength = Vector2.distance(a: lineStart, b: lineEnd)
+        let distanceFromStart = Vector2.distance(a: lineStart, b: checkedPoint)
+        let distanceFromEnd = Vector2.distance(a: lineEnd, b: checkedPoint)
 
-        return xRatio == yRatio && xRatio >= 0 && xRatio <= 1
+        return distanceFromStart + distanceFromEnd == lineLength
     }
 }

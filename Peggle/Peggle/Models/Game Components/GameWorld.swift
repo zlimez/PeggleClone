@@ -1,5 +1,5 @@
 //
-//  GameBoard.swift
+//  GameWorld.swift
 //  Peggle
 //
 //  Created by James Chiu on 13/2/23.
@@ -8,14 +8,17 @@
 import Foundation
 import QuartzCore
 
-class GameBoard {
-    static var activeGameBoard: GameBoard?
+class GameWorld {
+    static var activeGameBoard: GameWorld?
+    var worldBoundsInitialized = false
     let preferredFrameRate: Int
-    let pegRemovalThreshold: Int
+    let pegRemovalHitCount: Int
+    let pegRemovalTimeInterval: Double
     let physicsWorld: PhysicsWorld
     var cannon: Cannon?
     var worldDim: CGSize?
     var activeDisplayLink: CADisplayLink?
+    var renderAdaptor: RenderAdaptor?
     var gameTime: Double {
         guard let displayLink = activeDisplayLink else {
             return 0
@@ -26,18 +29,28 @@ class GameBoard {
     // Pegs that have been hit during this launch
     var collidedPegBodies: Set<RigidBody> = []
 
-    init(board: Board, preferredFrameRate: Int = 30, pegRemovalThreshold: Int = 5) {
-        self.preferredFrameRate = preferredFrameRate
-        self.physicsWorld = PhysicsWorld()
-        self.pegRemovalThreshold = pegRemovalThreshold
+    static func getEmptyWorld() -> GameWorld {
+        GameWorld()
+    }
 
+    init(preferredFrameRate: Int = 30, pegRemovalHitCount: Int = 5, pegRemovalTimeInterval: Double = 2) {
+        self.preferredFrameRate = preferredFrameRate
+        self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 50)
+        self.pegRemovalHitCount = pegRemovalHitCount
+        self.pegRemovalTimeInterval = pegRemovalTimeInterval
+
+        GameWorld.activeGameBoard = self
+    }
+
+    func setNewBoard(_ board: Board) {
+        print("setting new board")
+        physicsWorld.removeAllBodies()
         for peg in board.allPegs {
             let pegRb = PegRigidBody(peg)
             physicsWorld.addBody(pegRb)
-            pegRb.collisionEnter?.append(queuePegRemoval)
         }
 
-        GameBoard.activeGameBoard = self
+        worldBoundsInitialized = false
     }
 
     func configWorldBounds(_ worldDim: CGSize) {
@@ -71,11 +84,18 @@ class GameBoard {
         physicsWorld.addBody(ballRecycler)
 
         // After all the bounds are initialized then start simulation
+        print("Starting physics simulation")
         startSimulation()
+    }
+
+    func fireCannonAt(_ aim: Vector2) {
+        cannon?.fireCannonAt(aim)
     }
 
     func removePeg(_ pegRb: PegRigidBody) {
         physicsWorld.removeBody(pegRb)
+        // To prevent duplicate removal when cannon exits screen
+        collidedPegBodies.remove(pegRb)
     }
 
     func removeCollidedPegs() {
@@ -87,18 +107,13 @@ class GameBoard {
         if !(cannonBall is CannonBall) {
             fatalError("Removing non-cannon ball body in removeCannonBall function")
         }
-  
+
+        cannon?.cannonReady = true
         physicsWorld.removeBody(cannonBall)
     }
 
-    private func queuePegRemoval(collision: Collision) {
-        if collidedPegBodies.contains(collision.rbA) {
-            return
-        }
-  
-        if collision.rbB is CannonBall {
-            collidedPegBodies.insert(collision.rbA)
-        }
+    func queuePegRemoval(_ hitPegRb: PegRigidBody) {
+        collidedPegBodies.insert(hitPegRb)
     }
 
     private func addCannonBall(cannonBall: CannonBall) {
@@ -108,7 +123,7 @@ class GameBoard {
     private func startSimulation() {
         activeDisplayLink?.invalidate()
         activeDisplayLink = CADisplayLink(target: self, selector: #selector(stepAdapter))
-        activeDisplayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 20, maximum: 60, __preferred: 30)
+        activeDisplayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 60, maximum: 120, __preferred: 90)
 
         activeDisplayLink?.add(to: .current, forMode: .default)
     }
@@ -117,7 +132,14 @@ class GameBoard {
         guard let displayLink = activeDisplayLink else {
             fatalError("Physics step invoked before display link is created")
         }
+
         physicsWorld.step(displayLink.targetTimestamp - displayLink.timestamp)
+        // Ask renderer to render scene
+        if renderAdaptor == nil {
+            return
+        }
+
+        renderAdaptor!.adaptScene(physicsWorld.getBodies())
     }
 }
 

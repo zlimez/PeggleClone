@@ -17,13 +17,12 @@ class BallRecycler: RigidBody {
             isTrigger: true
         )
     }
-    
-    override func onTrigger(_ collision: Collision) {
+
+    override func onTriggerEnter(_ collision: Collision) {
+        super.onTriggerEnter(collision)
         if collision.rbB is CannonBall {
-            GameBoard.activeGameBoard?.removeCannonBall(collision.rbB)
-            GameBoard.activeGameBoard?.removeCollidedPegs()
+            GameWorld.activeGameBoard?.removeCannonBall(collision.rbB)
+            GameWorld.activeGameBoard?.removeCollidedPegs()
         }
-        
-        super.onTrigger(collision)
     }
 }

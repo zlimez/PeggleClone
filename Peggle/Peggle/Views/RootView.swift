@@ -9,18 +9,33 @@ import SwiftUI
 
 struct RootView: View {
     @StateObject private var levels = Levels()
+    @StateObject private var gameBoardVM = GameBoardVM()
+    @State private var path: [Mode] = []
 
     var body: some View {
-        NavigationStack {
-            NavigationLink {
-                BoardView()
-                    .environmentObject(levels)
-            } label: {
-                Text("Design")
-                    .foregroundColor(Color.blue)
+        NavigationStack(path: $path) {
+            Button("Design") {
+                path.append(Mode.designMode)
+                print("path is \(path)")
             }
+            .navigationDestination(for: Mode.self) { mode in
+                if mode == Mode.designMode {
+                    BoardView(path: $path)
+                } else {
+                    GameView()
+                }
+            }
+            .foregroundColor(Color.blue)
         }
+        .environmentObject(gameBoardVM)
+        .environmentObject(levels)
     }
+}
+        
+struct Mode: Hashable {
+    static let designMode = Mode(name: "design")
+    static let playMode = Mode(name: "play")
+    let name: String
 }
 
 struct RootView_Previews: PreviewProvider {

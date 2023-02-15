@@ -8,17 +8,33 @@
 import SwiftUI
 
 struct GameView: View {
+    @EnvironmentObject var gameBoardVM: GameBoardVM
+
     var body: some View {
         ZStack {
             GeometryReader { geo in
                 generateGameArea(geo)
             }
+
+            ForEach(gameBoardVM.bodyVMs) { bodyVM in
+                RigidBodyView(rbVM: bodyVM)
+            }
+        }
+        .onTapGesture { location in
+            gameBoardVM.fireCannonAt(location)
         }
         .ignoresSafeArea()
     }
 
     func generateGameArea(_ geo: GeometryProxy) -> some View {
-        ZStack {
+        if let activeGameBoard = GameWorld.activeGameBoard {
+            if !activeGameBoard.worldBoundsInitialized {
+                activeGameBoard.worldBoundsInitialized = true
+                DispatchQueue.main.async { gameBoardVM.configScene(geo.size) }
+            }
+        }
+
+        return ZStack {
             Image("background")
                 .resizable()
                 .scaledToFill()
@@ -30,6 +46,20 @@ struct GameView: View {
     }
 }
 
+struct RigidBodyView: View {
+    var rbVM: RigidBodyVM
+
+    var body: some View {
+        let sprite = rbVM.sprite ?? "ball"
+
+        return Image(sprite)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: rbVM.spriteWidth, height: rbVM.spriteHeight)
+            .position(x: rbVM.x, y: rbVM.y)
+    }
+}
+
 struct CannonView: View {
     var width: CGFloat = 150
     var body: some View {
@@ -37,11 +67,5 @@ struct CannonView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: width)
-    }
-}
-
-struct GameView_Previews: PreviewProvider {
-    static var previews: some View {
-        GameView()
     }
 }

@@ -10,11 +10,11 @@ import Foundation
 
 struct BoardView: View {
     @State private var designBoardVM = DesignBoardVM.getEmptyBoard()
-    @EnvironmentObject var levels: Levels
+    @Binding var path: [Mode]
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
+            ZStack { 
                 GeometryReader { geo in
                     fillPlayArea(geo)
                 }
@@ -27,8 +27,7 @@ struct BoardView: View {
             }
             .ignoresSafeArea()
 
-            ControlPanelView(designBoardVM: $designBoardVM)
-                .environmentObject(levels)
+            ControlPanelView(designBoardVM: $designBoardVM, path: $path)
         }
     }
 

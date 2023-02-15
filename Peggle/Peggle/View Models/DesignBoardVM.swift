@@ -49,17 +49,13 @@ struct DesignBoardVM {
             return
         }
 
-        guard let selectedPegColor = selectedPegVariant?.pegColor,
-                let selectedPegRadius = selectedPegVariant?.pegRadius else {
+        guard let selectedPegVariant = selectedPegVariant else {
             print("No peg variant from palette selected when trying to add a peg")
             return
         }
 
         guard let addedPeg = designBoard.tryAddPegAt(
-            pegColor: selectedPegColor,
-            radius: selectedPegRadius,
-            x: x,
-            y: y
+            pegVariant: selectedPegVariant, x: x, y: y
         ) else {
             return
         }

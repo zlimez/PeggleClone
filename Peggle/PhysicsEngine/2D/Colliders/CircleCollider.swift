@@ -9,7 +9,7 @@ import Foundation
 
 struct CircleCollider: Collider {
     let standardRadius: CGFloat
-    
+
     init(_ standardRadius: CGFloat) {
         self.standardRadius = standardRadius
     }
@@ -29,12 +29,16 @@ struct CircleCollider: Collider {
 
         let pointA = transform.position + centerSeparation * (scaledRadius / centerSeparation.length)
         let pointB = otherTransform.position - centerSeparation * (otherScaledRadius / centerSeparation.length)
-        let normal = (pointB - pointA).normalize
-        let depth = (pointB - pointA).length
+        let normal = (pointA - pointB).normalize
+        let depth = (pointA - pointB).length
         return ContactPoints(pointA: pointA, pointB: pointB, normal: normal, depth: depth, hasCollision: true)
     }
 
-    func testCollision(transform: Transform, otherCollider: PolygonCollider, otherTransform: Transform) -> ContactPoints {
+    func testCollision(
+        transform: Transform,
+        otherCollider: PolygonCollider,
+        otherTransform: Transform
+    ) -> ContactPoints {
         let transformedVertices = otherCollider.stdVertices.map {
             Vector2.elementMultiply(a: $0, b: otherTransform.scale)
                 .rotateBy(otherTransform.rotation) + otherTransform.position
@@ -72,8 +76,10 @@ struct CircleCollider: Collider {
 
                 if axisDepth == maxB - minA {
                     minFromCircle = true
+                    minFromPolygon = false
                 } else {
                     minFromPolygon = true
+                    minFromCircle = false
                 }
             }
         }
@@ -82,7 +88,7 @@ struct CircleCollider: Collider {
             fatalError("Min should either be from colliders")
         }
 
-        if minFromCircle && minFromCircle {
+        if minFromCircle && minFromPolygon {
             fatalError("There should only be one min")
         }
 
@@ -123,7 +129,7 @@ struct CircleCollider: Collider {
 
     func testCollision(transform: Transform, otherCollider: Collider, otherTransform: Transform) -> ContactPoints {
         if transform.scale.x != transform.scale.y || otherTransform.scale.x != otherTransform.scale.y {
-            fatalError("Sphere's x and y transform should have identical scales")
+            fatalError("Circle's x and y transform should have identical scales")
         }
 
         return otherCollider.testCollision(

@@ -11,17 +11,17 @@ struct PolygonCollider: Collider {
     let stdVertices: [Vector2]
     let isBox: Bool
 
-    static func getEdgeNormals(vertices: [Vector2], isBox: Bool) -> [Vector2] {
+    static func getEdgeNormals(vertices: [Vector2], isBox: Bool) -> Set<Vector2> {
         let numVertices = vertices.count
-        var normals: [Vector2] = []
-        let steps = isBox ? 2 : 1
+        var normals = Set<Vector2>()
+        let primeVertices = isBox ? numVertices / 2 : numVertices
 
-        for i in stride(from: 0, to: numVertices, by: steps) {
+        for i in 0..<primeVertices {
             let curr = vertices[i]
             let next = vertices[(i + 1) % numVertices]
             let edge = Vector2(x: next.x - curr.x, y: next.y - curr.y)
             let normal = edge.getNormal()
-            normals.append(normal)
+            normals.insert(normal)
         }
 
         return normals
@@ -32,7 +32,7 @@ struct PolygonCollider: Collider {
         otherCollider: CircleCollider,
         otherTransform: Transform
     ) -> ContactPoints {
-        otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform)
+        otherCollider.testCollision(transform: otherTransform, otherCollider: self, otherTransform: transform).reverse
     }
 
     func testCollision(
@@ -50,7 +50,10 @@ struct PolygonCollider: Collider {
         }
 
         let allNormals = PolygonCollider.getEdgeNormals(vertices: transformedVertices, isBox: isBox)
-        + PolygonCollider.getEdgeNormals(vertices: transformedOtherVertices, isBox: isBox)
+            .union(PolygonCollider.getEdgeNormals(
+                vertices: transformedOtherVertices,
+                isBox: otherCollider.isBox)
+            )
 
         var normal = Vector2.zero
         var depth = CGFloat.infinity
@@ -86,10 +89,12 @@ struct PolygonCollider: Collider {
                     maxVertices = criticalVerticesB.1
                     minVertices = criticalVerticesA.0
                     minFromA = true
+                    minFromB = false
                 } else {
                     maxVertices = criticalVerticesA.1
                     minVertices = criticalVerticesB.0
                     minFromB = true
+                    minFromA = false
                 }
             }
         }
@@ -161,15 +166,15 @@ struct PolygonCollider: Collider {
                 let possiblePointB = minVertices[0] + normal * depth
                 let nextPossiblePointB = minVertices[1] + normal * depth
                 if LineUtils.checkPointInLineSegment(
-                    startPoint: maxVertices[0],
-                    endPoint: maxVertices[1],
+                    lineStart: maxVertices[0],
+                    lineEnd: maxVertices[1],
                     checkedPoint: possiblePointB
                 ) {
                     pointA = minVertices[0]
                     pointB = possiblePointB
                 } else if LineUtils.checkPointInLineSegment(
-                    startPoint: maxVertices[0],
-                    endPoint: maxVertices[1],
+                    lineStart: maxVertices[0],
+                    lineEnd: maxVertices[1],
                     checkedPoint: nextPossiblePointB
                 ) {
                     pointA = minVertices[1]
@@ -181,15 +186,15 @@ struct PolygonCollider: Collider {
                 let possiblePointA = minVertices[0] + normal * depth
                 let nextPossiblePointA = minVertices[1] + normal * depth
                 if LineUtils.checkPointInLineSegment(
-                    startPoint: maxVertices[0],
-                    endPoint: maxVertices[1],
+                    lineStart: maxVertices[0],
+                    lineEnd: maxVertices[1],
                     checkedPoint: possiblePointA
                 ) {
                     pointB = minVertices[0]
                     pointA = possiblePointA
                 } else if LineUtils.checkPointInLineSegment(
-                    startPoint: maxVertices[0],
-                    endPoint: maxVertices[1],
+                    lineStart: maxVertices[0],
+                    lineEnd: maxVertices[1],
                     checkedPoint: nextPossiblePointA
                 ) {
                     pointB = minVertices[1]

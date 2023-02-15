@@ -11,8 +11,8 @@ struct DesignBoard: Codable {
     static var viewDim: CGSize?
     static var maxDim: Int = 0
     static var palette = [
-        PegVariant(pegColor: "peg-orange", pegRadius: 30),
-        PegVariant(pegColor: "peg-blue", pegRadius: 30)
+        PegVariant(pegColor: "peg-orange", pegLitColor: "peg-orange-glow", pegRadius: 30),
+        PegVariant(pegColor: "peg-blue", pegLitColor: "peg-blue-glow", pegRadius: 30)
     ]
     static var dimInitialized = false
     
@@ -40,15 +40,15 @@ struct DesignBoard: Codable {
         }
     }
 
-    mutating func tryAddPegAt(pegColor: String, radius: CGFloat, x: CGFloat, y: CGFloat) -> Peg? {
-        if willCollide(pegRadius: radius, pegX: x, pegY: y) {
+    mutating func tryAddPegAt(pegVariant: PegVariant, x: CGFloat, y: CGFloat) -> Peg? {
+        if willCollide(pegRadius: pegVariant.pegRadius, pegX: x, pegY: y) {
             return nil
         }
 
         let addedCol = pointToGrid(x)
         let addedRow = pointToGrid(y)
 
-        let addedPeg = Peg(pegColor: pegColor, unitRadius: radius, x: x, y: y, row: addedRow, col: addedCol)
+        let addedPeg = Peg(pegVariant: pegVariant, x: x, y: y, row: addedRow, col: addedCol)
         addPeg(addedPeg)
         return addedPeg
     }
@@ -144,9 +144,12 @@ struct DesignBoard: Codable {
 
 struct PegVariant: Equatable {
     let pegColor: String
+    let pegLitColor: String
     let pegRadius: CGFloat
 
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
-        lhs.pegColor == rhs.pegColor && lhs.pegRadius == rhs.pegRadius
+        lhs.pegColor == rhs.pegColor && lhs.pegLitColor == rhs.pegLitColor && lhs.pegRadius == rhs.pegRadius
     }
 }
+
+extension PegVariant: Codable {}

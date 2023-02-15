@@ -22,6 +22,6 @@ struct ContactPoints {
     )
 
     var reverse: ContactPoints {
-        ContactPoints(pointA: pointB, pointB: pointA, normal: normal, depth: depth, hasCollision: hasCollision)
+        ContactPoints(pointA: pointB, pointB: pointA, normal: -normal, depth: depth, hasCollision: hasCollision)
     }
 }

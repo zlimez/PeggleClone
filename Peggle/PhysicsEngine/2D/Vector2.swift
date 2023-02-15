@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Vector2 {
+struct Vector2: Hashable {
     static let zero = Vector2(x: 0, y: 0)
     static let one = Vector2(x: 1, y: 1)
     let x: CGFloat
@@ -40,9 +40,18 @@ struct Vector2 {
     static func *= (a: inout Vector2, b: CGFloat) {
         a = a * b
     }
-    
+
     static func += (a: inout Vector2, b: Vector2) {
         a = a + b
+    }
+
+    static func == (lhs: Vector2, rhs: Vector2) -> Bool {
+        lhs.x == rhs.x && lhs.y == rhs.y
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(x)
+        hasher.combine(y)
     }
 
     static func distance(a: Vector2, b: Vector2) -> CGFloat {
@@ -50,12 +59,12 @@ struct Vector2 {
         let dy = a.y - b.y
         return sqrt(dx * dx + dy * dy)
     }
-    
+
     static func elementMultiply(a: Vector2, b: Vector2) -> Vector2 {
         Vector2(x: a.x * b.x, y: a.y * b.y)
     }
 
-    static prefix func -(a: Vector2) -> Vector2 {
+    static prefix func - (a: Vector2) -> Vector2 {
         Vector2(x: -a.x, y: -a.y)
     }
 

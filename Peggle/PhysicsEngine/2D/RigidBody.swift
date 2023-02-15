@@ -12,6 +12,7 @@ import Foundation
 // dynamic rigidbodies for objects that moves based on force and velocity
 class RigidBody: WorldObject, Hashable, Identifiable {
     private static var bodyCounter = 0
+    private static let defaultStaticMass: CGFloat = 10
     let id: Int
     let isDynamic: Bool
     let material: Material
@@ -19,10 +20,12 @@ class RigidBody: WorldObject, Hashable, Identifiable {
     let mass: CGFloat
     let collider: Collider
     let isTrigger: Bool
-    var collisionEnter: [(Collision) -> Void]?
-    var collisionExit: [() -> Void]?
-    var triggerEnter: [(Collision) -> Void] = []
-    var triggerExit: [() -> Void] = []
+    var lastCollidingBodies: [RigidBody: Collision]
+    var currCollidingBodies: [RigidBody: Collision]
+    
+    var momentum: Vector2 {
+        velocity * mass
+    }
 
     static func resetCounter() {
         bodyCounter = 0
@@ -42,15 +45,11 @@ class RigidBody: WorldObject, Hashable, Identifiable {
         self.velocity = initVelocity
         self.collider = collider
         self.isTrigger = isTrigger
-
-        if !isTrigger {
-            collisionEnter = []
-            collisionExit = []
-        }
+        self.lastCollidingBodies = [:]
+        self.currCollidingBodies = [:]
 
         if !isDynamic {
-            print("Static bodies have mass and material restitution defaulted to 1 regardless of input")
-            self.mass = 1
+            self.mass = 10
             self.material = Material.staticMaterial
         } else {
             self.mass = mass
@@ -61,40 +60,56 @@ class RigidBody: WorldObject, Hashable, Identifiable {
         super.init(transform)
     }
 
+    func moveCollidingBuffers() {
+        lastCollidingBodies = currCollidingBodies
+        currCollidingBodies.removeAll()
+    }
+
+    func onCollisionOrTrigger(_ collision: Collision) {
+        if lastCollidingBodies[collision.rbB] == nil {
+            if isTrigger || collision.rbB.isTrigger {
+                onTriggerEnter(collision)
+            } else {
+                onCollisionEnter(collision)
+            }
+        } else {
+            if isTrigger || collision.rbB.isTrigger {
+                onTriggerStay(collision)
+            } else {
+                onCollisionStay(collision)
+            }
+        }
+
+        currCollidingBodies[collision.rbB] = collision
+    }
+
+    func processEndedCollisionsOrTriggers() {
+        let endedCollisions = lastCollidingBodies.filter { currCollidingBodies[$0.key] == nil }
+        for bodyCollision in endedCollisions {
+            if isTrigger || bodyCollision.key.isTrigger {
+                onTriggerExit(bodyCollision.value)
+            } else {
+                onCollisionExit(bodyCollision.value)
+            }
+        }
+    }
+
     func onCollisionEnter(_ collision: Collision) {
-        guard let responses = collisionEnter else {
+        if isTrigger {
             fatalError("Collision enter event invoked on isTrigger body")
         }
-
-        for response in responses {
-            response(collision)
-        }
     }
 
-    func onCollisionExit() {
-        guard let responses = collisionExit else {
+    func onCollisionExit(_ collision: Collision) {
+        if isTrigger {
             fatalError("Collision exit event invoked on isTrigger body")
         }
-
-        for response in responses {
-            response()
-        }
     }
 
-    // Keeps getting invoked when another rb enters the trigger
-    // To differentiate between start and stay must compare frame by frame
-    // which triggers ended
-    func onTrigger(_ collision: Collision) {
-        for response in triggerEnter {
-            response(collision)
-        }
-    }
-
-    func onTriggerExit(_ otherBody: RigidBody) {
-        for response in triggerExit {
-            response()
-        }
-    }
+    func onCollisionStay(_ collision: Collision) {}
+    func onTriggerEnter(_ collision: Collision) {}
+    func onTriggerStay(_ collision: Collision) {}
+    func onTriggerExit(_ collision: Collision) {}
 
     func applyForce(force: Vector2, deltaTime: CGFloat) {
         if !isDynamic {
@@ -120,8 +135,8 @@ class RigidBody: WorldObject, Hashable, Identifiable {
         transform.position += velocity * deltaTime
     }
 
-    func moveTo(destination: Vector2) {
-        transform.position = destination
+    func move(_ displacement: Vector2) {
+        transform.position += displacement
     }
 
     static func == (lhs: RigidBody, rhs: RigidBody) -> Bool {

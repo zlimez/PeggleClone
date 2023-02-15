@@ -11,17 +11,14 @@ struct Board: Codable {
     var allPegs: [Peg]
 
     mutating func addPeg(_ newPeg: Peg) {
-        print("new peg added")
         allPegs.append(newPeg)
     }
 
     mutating func removePeg(_ removedPeg: Peg) {
-        print("peg removed")
         allPegs = allPegs.filter { $0 != removedPeg }
     }
 
     mutating func removeAllPegs() {
-        print("all pegs removed")
         allPegs.removeAll()
     }
 

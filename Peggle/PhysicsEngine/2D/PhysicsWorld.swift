@@ -8,21 +8,31 @@
 import Foundation
 
 // Assumes one medium per world
+// Units are based in meter and seconds should be scaled accordingly
+// to the game dimensions for visible effect of env factors
 class PhysicsWorld {
     static let defaultGravity = Vector2(x: 0, y: 9.81)
     static let defaultDrag: CGFloat = 0
+    private let scaleFactor: CGFloat
     private let gravity: Vector2
     private let drag: CGFloat
     // 30fps
     // private let fixedDeltaTime: CGFloat = 1 / 30
     private var bodies: [RigidBody] = []
-    private let impulseSolver = ImpulseSolver()
-    // private var collidingBodies: Set<RigidBody> = []
-    // private var triggeringBodies: Set<RigidBody> = []
+    private var lastCollidingBodies: Set<RigidBody> = []
+    private var currCollidingBodies: Set<RigidBody> = []
 
-    init(gravity: Vector2 = PhysicsWorld.defaultGravity, drag: CGFloat = PhysicsWorld.defaultDrag) {
+    private let impulseSolver = ImpulseSolver()
+    private let positionSolver = PositionSolver()
+
+    init(gravity: Vector2 = PhysicsWorld.defaultGravity, drag: CGFloat = PhysicsWorld.defaultDrag, scaleFactor: CGFloat = 1) {
         self.gravity = gravity
         self.drag = drag
+        self.scaleFactor = scaleFactor
+    }
+
+    func getBodies() -> [RigidBody] {
+        bodies
     }
 
     func addBody(_ addedBody: RigidBody) {
@@ -32,9 +42,15 @@ class PhysicsWorld {
     func removeBody(_ removedBody: RigidBody) {
         bodies = bodies.filter { $0 != removedBody }
     }
-    
+
     func removeBodies(_ removedBodies: Set<RigidBody>) {
         bodies = bodies.filter { !removedBodies.contains($0) }
+    }
+
+    func removeAllBodies() {
+        bodies.removeAll()
+        lastCollidingBodies.removeAll()
+        currCollidingBodies.removeAll()
     }
 
     func step(_ deltaTime: CGFloat) {
@@ -58,6 +74,9 @@ class PhysicsWorld {
                 )
 
                 if cp.hasCollision {
+                    currCollidingBodies.insert(rbA)
+                    currCollidingBodies.insert(rbB)
+
                     let collision = Collision(rbA: rbA, rbB: rbB, contact: cp)
                     if rbA.isTrigger || rbB.isTrigger {
                         triggers.append(collision)
@@ -70,20 +89,24 @@ class PhysicsWorld {
         }
 
         for collision in collisions {
+            positionSolver.solve(collision)
             impulseSolver.solve(collision)
         }
 
         // Invoke all listener responses for collision event
         // Assumes collision detection and resolution is rapid enough such that collision is resolve in the next frame
-        for collision in collisions {
-            collision.rbA.onCollisionEnter(collision)
-            collision.rbB.onCollisionEnter(collision.reverse)
+        for collision in collisions + triggers {
+            collision.rbA.onCollisionOrTrigger(collision)
+            collision.rbB.onCollisionOrTrigger(collision.reverse)
         }
-        
-        for trigger in triggers {
-            trigger.rbA.onCollisionEnter(trigger)
-            trigger.rbB.onCollisionEnter(trigger.reverse)
+
+        currCollidingBodies.union(lastCollidingBodies).forEach { body in
+            body.processEndedCollisionsOrTriggers()
+            body.moveCollidingBuffers()
         }
+
+        lastCollidingBodies = currCollidingBodies
+        currCollidingBodies.removeAll()
     }
 
     func applyGravity(_ deltaTime: CGFloat) {
@@ -92,7 +115,7 @@ class PhysicsWorld {
                 continue
             }
 
-            body.applyForce(force: gravity * body.mass, deltaTime: deltaTime)
+            body.applyForce(force: gravity * body.mass * scaleFactor, deltaTime: deltaTime)
         }
     }
 
@@ -102,7 +125,7 @@ class PhysicsWorld {
                 continue
             }
 
-            body.applyForce(force: -body.velocity * drag, deltaTime: deltaTime)
+            body.applyForce(force: -body.velocity * drag * scaleFactor, deltaTime: deltaTime)
         }
     }
 

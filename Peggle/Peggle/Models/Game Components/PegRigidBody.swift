@@ -7,11 +7,10 @@
 
 import Foundation
 
-class PegRigidBody: RigidBody {
+class PegRigidBody: VisibleRigidBody {
     let peg: Peg
-    // If more than threshold number of collisions occur,
-    // the pegRb is removed immediately to prevent cannon ball from being trapped
-    var collisionCount = 0
+    private var collisionCount = 0
+    private var ballHitStartTime: Double = 0
 
     init(_ peg: Peg) {
         self.peg = peg
@@ -21,16 +20,37 @@ class PegRigidBody: RigidBody {
             collider: CircleCollider(peg.unitRadius),
             transform: peg.transform
         )
+        self.sprite = peg.pegColor
+        self.unitWidth = peg.unitRadius * 2
+        self.unitHeight = peg.unitRadius * 2
     }
-    
+
     override func onCollisionEnter(_ collision: Collision) {
+        super.onCollisionEnter(collision)
         if collision.rbB is CannonBall {
+            guard let startTime = GameWorld.activeGameBoard?.gameTime else {
+                fatalError("No active board")
+            }
+            sprite = peg.pegLitColor
+            ballHitStartTime = startTime
+
             collisionCount += 1
-            if collisionCount == GameBoard.activeGameBoard?.pegRemovalThreshold {
-                GameBoard.activeGameBoard?.removePeg(self)
+            if collisionCount == GameWorld.activeGameBoard?.pegRemovalHitCount {
+                GameWorld.activeGameBoard?.removePeg(self)
+            }
+            GameWorld.activeGameBoard?.queuePegRemoval(self)
+        }
+    }
+
+    override func onCollisionStay(_ collision: Collision) {
+        if collision.rbB is CannonBall {
+            guard let activeGameBoard = GameWorld.activeGameBoard else {
+                fatalError("No active board")
+            }
+
+            if activeGameBoard.gameTime - ballHitStartTime >= activeGameBoard.pegRemovalTimeInterval {
+                activeGameBoard.removePeg(self)
             }
         }
-        
-        super.onCollisionEnter(collision)
     }
 }

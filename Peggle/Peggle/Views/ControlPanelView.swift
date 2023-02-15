@@ -9,8 +9,10 @@ import SwiftUI
 
 struct ControlPanelView: View {
     @EnvironmentObject var levels: Levels
+    @EnvironmentObject var gameBoardVM: GameBoardVM
     @State private var levelName = ""
     @Binding var designBoardVM: DesignBoardVM
+    @Binding var path: [Mode]
 
     var body: some View {
         VStack(alignment: .center) {
@@ -42,14 +44,21 @@ struct ControlPanelView: View {
                 TextField("Level Name", text: $levelName)
                     .textFieldStyle(.roundedBorder)
                     .border(.gray)
-                NavigationLink { GameView() } label: {
-                    Text("START")
-                        .foregroundColor(Color.blue)
-                }
+                createGameWorld()
             }
         }
         .padding(.all, 20)
         .background(.white)
+    }
+    
+    func createGameWorld() -> some View {
+        NavigationLink(value: Mode.playMode) {
+            Button("START") {
+                path.append(Mode.playMode)
+                gameBoardVM.setBackBoard(designBoardVM.designedBoard)
+            }
+            .foregroundColor(Color.blue)
+        }
     }
 }
 
