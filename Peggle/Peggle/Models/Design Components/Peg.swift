@@ -14,11 +14,11 @@ class Peg: Identifiable, Hashable, Codable {
     let pegVariant: PegVariant
     /// Relative to center, x value increases to the right, y value increases downwards
     var transform: Transform
-    
+
     /// Relevant only during level design phase
     var row: Int
     var col: Int
-    
+
     var pegColor: String { pegVariant.pegColor }
     var pegLitColor: String { pegVariant.pegLitColor }
     var unitRadius: CGFloat { pegVariant.pegRadius }
@@ -32,7 +32,7 @@ class Peg: Identifiable, Hashable, Codable {
     static func getCounter() -> Int {
         Peg.counter
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

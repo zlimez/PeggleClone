@@ -13,7 +13,7 @@ class Cannon {
     // Relative to cannon position facing downwards
     let spawnOffset: CGFloat
     var onCannonFired: [(CannonBall) -> Void] = []
-    var cannonReady: Bool = true
+    var cannonReady = true
 
     init(cannonPosition: Vector2, spawnOffset: CGFloat, cannonSpeed: CGFloat = 600) {
         self.cannonPosition = cannonPosition
@@ -22,17 +22,17 @@ class Cannon {
     }
 
     func fireCannonAt(_ aim: Vector2) {
-        if (!cannonReady) {
+        if !cannonReady {
             return
         }
-        
+
         cannonReady = false
         let direction = (aim - cannonPosition).normalize
         // Cannon should not fire downwards
         if direction.y < 0 {
             return
         }
-        
+
         let initVelocity = direction * cannonSpeed
         let ballSpawnPoint = Transform(cannonPosition + direction * spawnOffset)
         let cannonBall = CannonBall(launchTransform: ballSpawnPoint, initVelocity: initVelocity)

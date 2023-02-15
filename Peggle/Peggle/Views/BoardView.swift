@@ -14,10 +14,9 @@ struct BoardView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack { 
-                GeometryReader { geo in
-                    fillPlayArea(geo)
-                }
+            ZStack {
+                GeometryReader { geo in fillPlayArea(geo) }
+
                 ForEach($designBoardVM.pegVMs) { pegVM in
                     PegView(pegVM: pegVM, parentBoardVM: $designBoardVM)
                 }

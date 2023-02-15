@@ -119,7 +119,8 @@ struct PolygonCollider: Collider {
             minFromA: minFromA
         )
 
-        let direction = PolygonCollider.findCenter(transformedOtherVertices) - PolygonCollider.findCenter(transformedVertices)
+        let direction = PolygonCollider.findCenter(transformedOtherVertices)
+            - PolygonCollider.findCenter(transformedVertices)
         if Vector2.dotProduct(a: direction, b: normal) < 0 {
             normal *= -1
         }

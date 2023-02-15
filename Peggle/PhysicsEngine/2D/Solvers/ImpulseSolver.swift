@@ -12,12 +12,11 @@ class ImpulseSolver: Solver {
         let rbA = collision.rbA
         let rbB = collision.rbB
         let contact = collision.contact
-        
 
         if !rbA.isDynamic && !rbB.isDynamic {
             return
         }
-        
+
         if rbA.isDynamic && rbB.isDynamic {
             let rSpd = Vector2.dotProduct(a: rbB.velocity - rbA.velocity, b: contact.normal)
 
@@ -51,7 +50,9 @@ class ImpulseSolver: Solver {
             return
         }
 
-        let impulse = contact.normal * Vector2.dotProduct(a: rbA.momentum, b: contact.normal) * (1 + rbA.material.restitution)
+        let impulse = contact.normal
+            * Vector2.dotProduct(a: rbA.momentum, b: contact.normal)
+            * (1 + rbA.material.restitution)
         rbA.applyImpulse(-impulse)
     }
 }

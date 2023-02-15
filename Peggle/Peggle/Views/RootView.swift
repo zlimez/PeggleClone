@@ -31,7 +31,7 @@ struct RootView: View {
         .environmentObject(levels)
     }
 }
-        
+
 struct Mode: Hashable {
     static let designMode = Mode(name: "design")
     static let playMode = Mode(name: "play")

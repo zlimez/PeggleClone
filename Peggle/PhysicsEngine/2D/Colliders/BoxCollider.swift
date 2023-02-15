@@ -23,7 +23,11 @@ struct BoxCollider: Collider {
         )
     }
 
-    func testCollision(transform: Transform, otherCollider: CircleCollider, otherTransform: Transform) -> ContactPoints {
+    func testCollision(
+        transform: Transform,
+        otherCollider: CircleCollider,
+        otherTransform: Transform
+    ) -> ContactPoints {
         otherCollider.testCollision(
             transform: otherTransform,
             otherCollider: self,
