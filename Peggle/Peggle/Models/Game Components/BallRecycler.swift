@@ -22,7 +22,7 @@ class BallRecycler: RigidBody {
         super.onTriggerEnter(collision)
         if collision.rbB is CannonBall {
             GameWorld.activeGameBoard?.removeCannonBall(collision.rbB)
-            GameWorld.activeGameBoard?.removeCollidedPegs()
+            GameWorld.activeGameBoard?.fadeCollidedPegs()
         }
     }
 }

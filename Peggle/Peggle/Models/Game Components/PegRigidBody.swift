@@ -11,6 +11,7 @@ class PegRigidBody: VisibleRigidBody {
     let peg: Peg
     private var collisionCount = 0
     private var ballHitStartTime: Double = 0
+    private var pegFadeTime: Double = 1
 
     init(_ peg: Peg) {
         self.peg = peg
@@ -23,23 +24,33 @@ class PegRigidBody: VisibleRigidBody {
             isDynamic: false,
             material: Material.staticMaterial,
             collider: CircleCollider(peg.unitRadius),
-            transform: peg.transform,
-            spriteContainer: spriteContainer
+            spriteContainer: spriteContainer,
+            transform: peg.transform
         )
+    }
+
+    func fade(deltaTime: Double) -> Bool {
+        spriteContainer.opacity -= deltaTime / pegFadeTime
+        if spriteContainer.opacity <= 0 {
+            GameWorld.activeGameBoard?.removePeg(self)
+            return true
+        }
+
+        return false
     }
 
     override func onCollisionEnter(_ collision: Collision) {
         super.onCollisionEnter(collision)
         if collision.rbB is CannonBall {
-            guard let startTime = GameWorld.activeGameBoard?.gameTime else {
+            guard let activeGameBoard = GameWorld.activeGameBoard else {
                 fatalError("No active board")
             }
             spriteContainer.sprite = peg.pegLitColor
-            ballHitStartTime = startTime
+            ballHitStartTime = activeGameBoard.gameTime
 
             collisionCount += 1
-            if collisionCount == GameWorld.activeGameBoard?.pegRemovalHitCount {
-                GameWorld.activeGameBoard?.removePeg(self)
+            if collisionCount == activeGameBoard.pegRemovalHitCount {
+                activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
             }
             GameWorld.activeGameBoard?.queuePegRemoval(self)
         }
@@ -52,7 +63,7 @@ class PegRigidBody: VisibleRigidBody {
             }
 
             if activeGameBoard.gameTime - ballHitStartTime >= activeGameBoard.pegRemovalTimeInterval {
-                activeGameBoard.removePeg(self)
+                activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
             }
         }
     }

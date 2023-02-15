@@ -64,8 +64,8 @@ class CannonBall: VisibleRigidBody {
             isDynamic: true,
             material: material,
             collider: CircleCollider(radius),
-            transform: launchTransform,
             spriteContainer: spriteContainer,
+            transform: launchTransform,
             mass: mass,
             initVelocity: initVelocity
         )

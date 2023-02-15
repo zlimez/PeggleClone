@@ -29,6 +29,10 @@ class RigidBodyVM: Identifiable {
         visibleBody.y
     }
 
+    var spriteOpacity: CGFloat {
+        visibleBody.spriteOpacity
+    }
+
     var spriteWidth: CGFloat {
         visibleBody.spriteWidth
     }

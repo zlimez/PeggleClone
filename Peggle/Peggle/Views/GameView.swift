@@ -50,13 +50,14 @@ struct RigidBodyView: View {
     var rbVM: RigidBodyVM
 
     var body: some View {
-        let sprite = rbVM.sprite ?? "ball"
+        let sprite = rbVM.sprite
 
         return Image(sprite)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: rbVM.spriteWidth, height: rbVM.spriteHeight)
             .position(x: rbVM.x, y: rbVM.y)
+            .opacity(rbVM.spriteOpacity)
     }
 }
 

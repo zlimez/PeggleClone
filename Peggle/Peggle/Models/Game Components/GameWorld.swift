@@ -27,7 +27,8 @@ class GameWorld {
         return displayLink.timestamp
     }
     // Pegs that have been hit during this launch
-    var collidedPegBodies: Set<RigidBody> = []
+    var collidedPegBodies: Set<PegRigidBody> = []
+    var coroutines: Set<Coroutine> = []
 
     static func getEmptyWorld() -> GameWorld {
         GameWorld()
@@ -57,6 +58,7 @@ class GameWorld {
         self.worldDim = worldDim
         self.cannon = Cannon(cannonPosition: Vector2(x: worldDim.width / 2, y: 60), spawnOffset: 100)
         cannon?.onCannonFired.append(addCannonBall)
+        let bufferHeight: CGFloat = 100
 
         let wallThickness: CGFloat = 20
         // Set colliders along the top, left and right borders of the screen
@@ -65,17 +67,17 @@ class GameWorld {
             position: Vector2(x: worldDim.width / 2, y: -wallThickness / 2)
         )
         let rightWall = Wall(
-            dim: CGSize(width: wallThickness, height: worldDim.height),
-            position: Vector2(x: worldDim.width + wallThickness / 2, y: worldDim.height / 2)
+            dim: CGSize(width: wallThickness, height: worldDim.height + bufferHeight),
+            position: Vector2(x: worldDim.width + wallThickness / 2, y: (worldDim.height + bufferHeight) / 2)
         )
         let leftWall = Wall(
-            dim: CGSize(width: wallThickness, height: worldDim.height),
-            position: Vector2(x: -wallThickness / 2, y: worldDim.height / 2)
+            dim: CGSize(width: wallThickness, height: worldDim.height + bufferHeight),
+            position: Vector2(x: -wallThickness / 2, y: (worldDim.height + bufferHeight) / 2)
         )
 
         let ballRecycler = BallRecycler(
             dim: CGSize(width: worldDim.width, height: wallThickness),
-            position: Vector2(x: worldDim.width / 2, y: worldDim.height + wallThickness / 2)
+            position: Vector2(x: worldDim.width / 2, y: worldDim.height + wallThickness / 2 + bufferHeight)
         )
 
         physicsWorld.addBody(topWall)
@@ -92,14 +94,24 @@ class GameWorld {
         cannon?.fireCannonAt(aim)
     }
 
+    func addCoroutine(_ routine: Coroutine) {
+        coroutines.insert(routine)
+    }
+
+    func removeCoroutine(_ routine: Coroutine) {
+        coroutines.remove(routine)
+    }
+
     func removePeg(_ pegRb: PegRigidBody) {
         physicsWorld.removeBody(pegRb)
         // To prevent duplicate removal when cannon exits screen
         collidedPegBodies.remove(pegRb)
     }
 
-    func removeCollidedPegs() {
-        physicsWorld.removeBodies(collidedPegBodies)
+    func fadeCollidedPegs() {
+        for hitPeg in collidedPegBodies {
+            self.addCoroutine(Coroutine(routine: hitPeg.fade, onCompleted: removeCoroutine))
+        }
         collidedPegBodies.removeAll()
     }
 
@@ -132,8 +144,13 @@ class GameWorld {
         guard let displayLink = activeDisplayLink else {
             fatalError("Physics step invoked before display link is created")
         }
+        let deltaTime = displayLink.targetTimestamp - displayLink.timestamp
+        physicsWorld.step(deltaTime)
 
-        physicsWorld.step(displayLink.targetTimestamp - displayLink.timestamp)
+        // Exexute all coroutine
+        for coroutine in coroutines {
+            coroutine.execute(deltaTime)
+        }
         // Ask renderer to render scene
         if renderAdaptor == nil {
             return

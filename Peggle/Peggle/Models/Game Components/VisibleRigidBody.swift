@@ -9,12 +9,12 @@ import Foundation
 
 class VisibleRigidBody: RigidBody {
     var spriteContainer: SpriteContainer
-    
+
     init(isDynamic: Bool,
          material: Material,
          collider: Collider,
-         transform: Transform = Transform.standard,
          spriteContainer: SpriteContainer,
+         transform: Transform = Transform.standard,
          mass: CGFloat = 1,
          initVelocity: Vector2 = Vector2.zero,
          isTrigger: Bool = false
@@ -37,6 +37,10 @@ class VisibleRigidBody: RigidBody {
 
     var y: CGFloat {
         transform.position.y
+    }
+    
+    var spriteOpacity: CGFloat {
+        spriteContainer.opacity
     }
 
     var spriteWidth: CGFloat {
