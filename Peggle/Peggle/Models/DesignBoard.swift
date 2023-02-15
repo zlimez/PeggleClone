@@ -13,15 +13,15 @@ struct DesignBoard: Codable {
         PegVariant(pegColor: "peg-blue", pegRadius: 30)
     ]
     static var dimInitialized = false
-    
+
     var board: Board
     let unitPegRadius: CGFloat = 30
     var grid: [[Peg?]]
-    
+
     static func getEmptyBoard() -> DesignBoard {
         DesignBoard(board: Board(allPegs: Set()))
     }
-    
+
     init(board: Board) {
         self.board = board
 
@@ -41,7 +41,7 @@ struct DesignBoard: Codable {
         if willCollide(pegRadius: unitPegRadius, pegX: x, pegY: y) {
             return
         }
-        
+
         let pegRow = pointToGrid(x)
         let pegCol = pointToGrid(y)
 

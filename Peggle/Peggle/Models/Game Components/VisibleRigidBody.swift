@@ -38,7 +38,7 @@ class VisibleRigidBody: RigidBody {
     var y: CGFloat {
         transform.position.y
     }
-    
+
     var spriteOpacity: CGFloat {
         spriteContainer.opacity
     }

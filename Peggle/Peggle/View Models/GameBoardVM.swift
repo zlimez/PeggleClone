@@ -10,7 +10,7 @@ import Foundation
 class GameBoardVM: RenderAdaptor, ObservableObject {
     var gameWorld: GameWorld
     @Published var bodyVMs: [RigidBodyVM]
-    
+
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
         self.bodyVMs = []

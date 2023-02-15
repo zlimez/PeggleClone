@@ -15,7 +15,7 @@ struct DesignBoard: Codable {
         PegVariant(pegColor: "peg-blue", pegLitColor: "peg-blue-glow", pegRadius: 30)
     ]
     static var dimInitialized = false
-    
+
     var board: Board
     var allPegs: [Peg] {
         board.allPegs

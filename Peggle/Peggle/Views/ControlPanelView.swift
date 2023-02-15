@@ -50,7 +50,7 @@ struct ControlPanelView: View {
         .padding(.all, 20)
         .background(.white)
     }
-    
+
     func createGameWorld() -> some View {
         NavigationLink(value: Mode.playMode) {
             Button("START") {

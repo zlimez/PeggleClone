@@ -20,7 +20,7 @@ struct DesignBoardVM {
     var designedBoard: Board {
         designBoard.board
     }
-    
+
     init(_ designBoard: DesignBoard) {
         self.designBoard = designBoard
         pegVMs = designBoard.allPegs.map { peg in PegVM(peg) }

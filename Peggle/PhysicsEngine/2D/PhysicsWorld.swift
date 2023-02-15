@@ -25,7 +25,11 @@ class PhysicsWorld {
     private let impulseSolver = ImpulseSolver()
     private let positionSolver = PositionSolver()
 
-    init(gravity: Vector2 = PhysicsWorld.defaultGravity, drag: CGFloat = PhysicsWorld.defaultDrag, scaleFactor: CGFloat = 1) {
+    init(
+        gravity: Vector2 = PhysicsWorld.defaultGravity,
+        drag: CGFloat = PhysicsWorld.defaultDrag,
+        scaleFactor: CGFloat = 1
+    ) {
         self.gravity = gravity
         self.drag = drag
         self.scaleFactor = scaleFactor
