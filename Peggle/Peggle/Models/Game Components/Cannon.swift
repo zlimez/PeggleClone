@@ -46,7 +46,7 @@ class Cannon {
 class CannonBall: VisibleRigidBody {
     static let defaultRadius: CGFloat = 30
     static let defaultMass: CGFloat = 1
-    static let defaultMaterial = Material(restitution: 0.5)
+    static let defaultMaterial = Material(restitution: 0.75)
 
     init(
         launchTransform: Transform,

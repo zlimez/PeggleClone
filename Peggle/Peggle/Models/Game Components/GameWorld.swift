@@ -36,7 +36,7 @@ class GameWorld {
 
     init(preferredFrameRate: Int = 30, pegRemovalHitCount: Int = 5, pegRemovalTimeInterval: Double = 2) {
         self.preferredFrameRate = preferredFrameRate
-        self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 50)
+        self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
         self.pegRemovalHitCount = pegRemovalHitCount
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
 

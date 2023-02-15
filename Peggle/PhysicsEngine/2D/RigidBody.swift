@@ -20,8 +20,8 @@ class RigidBody: WorldObject, Hashable, Identifiable {
     let mass: CGFloat
     let collider: Collider
     let isTrigger: Bool
-    var lastCollidingBodies: [RigidBody: Collision]
-    var currCollidingBodies: [RigidBody: Collision]
+    private var lastCollidingBodies: [RigidBody: Collision]
+    private var currCollidingBodies: [RigidBody: Collision]
 
     var momentum: Vector2 {
         velocity * mass

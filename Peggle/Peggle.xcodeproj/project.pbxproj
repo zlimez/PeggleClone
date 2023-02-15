@@ -148,7 +148,6 @@
 			isa = PBXGroup;
 			children = (
 				6A7A8A8629851D99001C15A7 /* Peg.swift */,
-				6A83B35F299A03C000B893AE /* Board.swift */,
 				6A3B8209299B8225007A1AC6 /* DesignBoard.swift */,
 			);
 			path = "Design Components";
@@ -179,6 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				6AD927F529884277004E7963 /* Levels.swift */,
+				6A83B35F299A03C000B893AE /* Board.swift */,
 				6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */,
 				6A3B8206299B6A4C007A1AC6 /* Game Components */,
 				6A3B8205299B6A26007A1AC6 /* Design Components */,
