@@ -17,8 +17,8 @@ class RigidBodyVM: Identifiable {
         self.visibleBody = visibleBody
     }
 
-    var sprite: String? {
-        visibleBody.sprite
+    var sprite: String {
+        visibleBody.spriteContainer.sprite
     }
 
     var x: CGFloat {

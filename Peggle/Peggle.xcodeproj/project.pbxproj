@@ -14,6 +14,7 @@
 		6A3B820E299BA608007A1AC6 /* RenderAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B820D299BA608007A1AC6 /* RenderAdaptor.swift */; };
 		6A3B8210299BAA6E007A1AC6 /* VisibleRigidBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */; };
 		6A3B8212299C989D007A1AC6 /* PositionSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8211299C989D007A1AC6 /* PositionSolver.swift */; };
+		6A3B8216299CF07C007A1AC6 /* SpriteContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */; };
 		6A7A8A8729851D99001C15A7 /* Peg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8629851D99001C15A7 /* Peg.swift */; };
 		6A7A8A8A29857160001C15A7 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8929857160001C15A7 /* BoardView.swift */; };
 		6A7A8A8C2985721E001C15A7 /* ControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8B2985721E001C15A7 /* ControlPanelView.swift */; };
@@ -78,6 +79,7 @@
 		6A3B820D299BA608007A1AC6 /* RenderAdaptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderAdaptor.swift; sourceTree = "<group>"; };
 		6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleRigidBody.swift; sourceTree = "<group>"; };
 		6A3B8211299C989D007A1AC6 /* PositionSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSolver.swift; sourceTree = "<group>"; };
+		6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteContainer.swift; sourceTree = "<group>"; };
 		6A7A8A8629851D99001C15A7 /* Peg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Peg.swift; sourceTree = "<group>"; };
 		6A7A8A8929857160001C15A7 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		6A7A8A8B2985721E001C15A7 /* ControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanelView.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				6AD927F529884277004E7963 /* Levels.swift */,
 				6A3B8206299B6A4C007A1AC6 /* Game Components */,
 				6A3B8205299B6A26007A1AC6 /* Design Components */,
+				6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -496,6 +499,7 @@
 				6AD927FC29891E0D004E7963 /* DataManager.swift in Sources */,
 				6A7A8A922986A71A001C15A7 /* DesignBoardVM.swift in Sources */,
 				6A83B354299905E400B893AE /* ImpulseSolver.swift in Sources */,
+				6A3B8216299CF07C007A1AC6 /* SpriteContainer.swift in Sources */,
 				6A83B340299721DA00B893AE /* WorldObject.swift in Sources */,
 				6A83B34A29974C6700B893AE /* CircleCollider.swift in Sources */,
 				6A83B360299A03C000B893AE /* Board.swift in Sources */,

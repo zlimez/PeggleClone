@@ -55,16 +55,19 @@ class CannonBall: VisibleRigidBody {
         mass: CGFloat = CannonBall.defaultMass,
         material: Material = CannonBall.defaultMaterial
     ) {
+        let spriteContainer = SpriteContainer(
+            sprite: "ball",
+            unitWidth: radius * 2,
+            unitHeight: radius * 2
+        )
         super.init(
             isDynamic: true,
             material: material,
             collider: CircleCollider(radius),
             transform: launchTransform,
+            spriteContainer: spriteContainer,
             mass: mass,
             initVelocity: initVelocity
         )
-        self.sprite = "ball"
-        self.unitHeight = radius * 2
-        self.unitWidth = radius * 2
     }
 }

@@ -14,15 +14,18 @@ class PegRigidBody: VisibleRigidBody {
 
     init(_ peg: Peg) {
         self.peg = peg
+        let spriteContainer = SpriteContainer(
+            sprite: peg.pegColor,
+            unitWidth: peg.unitRadius * 2,
+            unitHeight: peg.unitRadius * 2
+        )
         super.init(
             isDynamic: false,
             material: Material.staticMaterial,
             collider: CircleCollider(peg.unitRadius),
-            transform: peg.transform
+            transform: peg.transform,
+            spriteContainer: spriteContainer
         )
-        self.sprite = peg.pegColor
-        self.unitWidth = peg.unitRadius * 2
-        self.unitHeight = peg.unitRadius * 2
     }
 
     override func onCollisionEnter(_ collision: Collision) {
@@ -31,7 +34,7 @@ class PegRigidBody: VisibleRigidBody {
             guard let startTime = GameWorld.activeGameBoard?.gameTime else {
                 fatalError("No active board")
             }
-            sprite = peg.pegLitColor
+            spriteContainer.sprite = peg.pegLitColor
             ballHitStartTime = startTime
 
             collisionCount += 1

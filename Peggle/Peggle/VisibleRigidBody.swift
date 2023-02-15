@@ -8,32 +8,45 @@
 import Foundation
 
 class VisibleRigidBody: RigidBody {
-    var sprite: String?
-    var unitWidth: CGFloat?
-    var unitHeight: CGFloat?
+    var spriteContainer: SpriteContainer
     
+    init(isDynamic: Bool,
+         material: Material,
+         collider: Collider,
+         transform: Transform = Transform.standard,
+         spriteContainer: SpriteContainer,
+         mass: CGFloat = 1,
+         initVelocity: Vector2 = Vector2.zero,
+         isTrigger: Bool = false
+    ) {
+        self.spriteContainer = spriteContainer
+        super.init(
+            isDynamic: isDynamic,
+            material: material,
+            collider: collider,
+            transform: transform,
+            mass: mass,
+            initVelocity: initVelocity,
+            isTrigger: isTrigger
+        )
+    }
+
     var x: CGFloat {
         transform.position.x
     }
-    
+
     var y: CGFloat {
         transform.position.y
     }
-    
+
     var spriteWidth: CGFloat {
-        guard let unitWidth = unitWidth else {
-            return 0
-        }
-        return transform.scale.x * unitWidth
+        transform.scale.x * spriteContainer.unitWidth
     }
-    
+
     var spriteHeight: CGFloat {
-        guard let unitHeight = unitHeight else {
-            return 0
-        }
-        return transform.scale.y * unitHeight
+        transform.scale.y * spriteContainer.unitHeight
     }
-    
+
     var rotation: CGFloat {
         transform.rotation
     }
