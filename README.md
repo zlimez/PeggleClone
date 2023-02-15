@@ -102,3 +102,31 @@ In addition to stepping the `physicsWorld` forward in a loop iteration, `GameWor
 The first design tradeoff I faced was whether to implement the collection of rigidbodies in `PhysivsWorld` as an array or a set. By implementing as an array, it is easy to prevent duplicate collisions. Every body only checks collision against bodies after it in the array. However, body removal will be O(n). If implemented as a set, an auxiliary variable must be used to store all the body pairs checked to prevent collision AB and collision BA from both being registered. The benefit is the constant time body removal. Given that the number of pegs that can be fitted on screen is limited. I do not expect the linear time peg removal to stress the CPU hence I opted for the simpler but concise array approach,
 
 The second design tradeoff I faced was for the implementation of lifecycle methods for `RigidBody`. The alternative I had in mind was to create an array of callbacks for each lifecycle stage, e.g. `collisionEnterResponse: [(Collision) -> Void]`. Such that in `onCollisionEnter` method, all callbacks in `collisionEnterResponse` array is invoked. Similarly for other lifecycle functions. In the case of `PegRigidBody`, instead of overriding `onCollisionEnter` and `onCollisionStay`, `GameWorld` will add a function say `tryRegisterPegForRemoval` to `collisionEnterResponse` array. This removes the need to override lifecycle functions in `RigidBody` subclasses and reduces the coupling between a subclass of `RigidBody` and the environment it exists in. The drawback is that it these callbacks "listemers" must be identifiable such that one can be removed when it is no longer required. That requires perhaps a wrapper. Whereas, with overriding, to alter the responses triggered in the function body, states of the party relevant to the response will simply be evaluated. 
+
+## Testing
+### Unit Test
+#### Physics Engine
+#### `Colliders`
+Define standard `Transform` as position (0, 0), scale (1, 1), rotation 0. If not specified in case to be transformed. This is the value taken.
+
+**`CircleCollider`, `BoxCollider`, `PolygonCollider`**
+
+- `testCollision` with another `CircleCollider`
+1. Case 1: Two circle do not intersect -> expect no contact
+2. Case 2: Two circle colliders intersect -> expect contact with correct normal, depth and points
+3. Case 3: One circle collider within another -> expect contact with correct normal, depth and points
+4. Case 4: Two circle colliders, both transformed such that they intersect -> expect contact with correct normal, depth and points
+5. Case 5: Two circle colliders, both transformed such that they no longer intersect -> expect no contact
+
+The same 5 test cases can be adapted to every concrete `testCollision` function for all collider pair combination.
+
+**`BoxCollider`**
+- `polygonizedCollider` computed property of `BoxCollider`: Provide a `halfWidth` and `halfHeight` check that the computed vertices are correct.
+
+**`PolygonCollider`**
+- `findCenter`
+1. Provide a regular polygon as input -> expect (0, 0)
+2. Provide an irregular polygon as input -> expect matching center
+- `projectVertices`
+3.  Provide a square of side length 2 and axis as (1, 0) -> expect (-1, 0) for min and (1, 0) for max
+4.  Provide an irregular polygon and non-x or y axis -> expect matching min and max projection
