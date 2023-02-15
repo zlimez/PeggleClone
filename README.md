@@ -87,12 +87,18 @@ In addition to stepping the `physicsWorld` forward in a loop iteration, `GameWor
 - `BallRecycler`: A `RigidBody` subclass serving as a trigger zone that destroys the `CannonBall` when it fall below the screen and asks the `GameWorld` to remove the pegs that were hit
 - `Coroutine`: Takes in a routine function to be executed and a completion callback to be executed when the routine function completes after repeated invocation in the event loop.
 
-### Peggle Game Display
+### Peggle Game View Model
 #### `RigidBodyVM`
 `RIgidBodyVM` adapts a `VisibleRigidBody` into a format compatible with `RigidBodyView`.
 
 #### `GameBoardVM`
-`GameBoardVM` lies between the view and the engine as stated above. It has a `@Published` property `bodyVMs` that is observed by `GameView`. `bodyVMs` is a collection of the `RigidBodyVM`.
+`GameBoardVM` lies between the view and the engine as stated above. It has a `@Published` property `bodyVMs` that is observed by `GameView`. `bodyVMs` is a collection of the `RigidBodyVM`. When player selects a new board to play, `GameBoardVM` asks `GameWorld` to reinitialize the world state with the new peg layout.
+
+### Peggle Game View
+#### `GameView`
+`GameView` can be entered from `BoardView` when the player clicks on the START button on `ControlPanelView`. `GameView` takes the board state from `BoardView` and delegates `GameBoardVM` to initialize the world state accordingly. `GameView` has a subview `CannonView` that is currently static. Players can launch the cannon ball by tapping on the screen and a cannon ball will fire towards the direction, subject to the effects of gravity.
 
 ## Design Tradeoffs
 The first design tradeoff I faced was whether to implement the collection of rigidbodies in `PhysivsWorld` as an array or a set. By implementing as an array, it is easy to prevent duplicate collisions. Every body only checks collision against bodies after it in the array. However, body removal will be O(n). If implemented as a set, an auxiliary variable must be used to store all the body pairs checked to prevent collision AB and collision BA from both being registered. The benefit is the constant time body removal. Given that the number of pegs that can be fitted on screen is limited. I do not expect the linear time peg removal to stress the CPU hence I opted for the simpler but concise array approach,
+
+The second design tradeoff I faced was for the implementation of lifecycle methods for `RigidBody`. The alternative I had in mind was to create an array of callbacks for each lifecycle stage, e.g. `collisionEnterResponse: [(Collision) -> Void]`. Such that in `onCollisionEnter` method, all callbacks in `collisionEnterResponse` array is invoked. Similarly for other lifecycle functions. In the case of `PegRigidBody`, instead of overriding `onCollisionEnter` and `onCollisionStay`, `GameWorld` will add a function say `tryRegisterPegForRemoval` to `collisionEnterResponse` array. This removes the need to override lifecycle functions in `RigidBody` subclasses and reduces the coupling between a subclass of `RigidBody` and the environment it exists in. The drawback is that it these callbacks "listemers" must be identifiable such that one can be removed when it is no longer required. That requires perhaps a wrapper. Whereas, with overriding, to alter the responses triggered in the function body, states of the party relevant to the response will simply be evaluated. 
