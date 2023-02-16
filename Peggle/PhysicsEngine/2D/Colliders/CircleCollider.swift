@@ -47,12 +47,10 @@ struct CircleCollider: Collider {
         let scaledRadius = standardRadius * transform.scale.x
         let normals = PolygonCollider.getEdgeNormals(vertices: transformedVertices, isBox: otherCollider.isBox)
 
-        var normal = Vector2.zero
-        var depth = CGFloat.infinity
+        var normal = Vector2.zero, depth = CGFloat.infinity
         var minA = CGFloat.infinity, minB = CGFloat.infinity, maxA = -CGFloat.infinity, maxB = -CGFloat.infinity
         // To aid contact point solving
-        var minFromCircle = false
-        var minFromPolygon = false
+        var minFromCircle = false, minFromPolygon = false
 
         for axis in normals {
             CircleCollider.projectCircle(
@@ -69,7 +67,6 @@ struct CircleCollider: Collider {
             }
 
             let axisDepth = min(maxB - minA, maxA - minB)
-
             if axisDepth < depth {
                 depth = axisDepth
                 normal = axis
@@ -92,9 +89,7 @@ struct CircleCollider: Collider {
             fatalError("There should only be one min")
         }
 
-        var pointA = Vector2.zero
-        var pointB = Vector2.zero
-
+        var pointA = Vector2.zero, pointB = Vector2.zero
         if minFromCircle {
             pointA = transform.position - normal * scaledRadius
             pointB = pointA + normal * depth
@@ -105,7 +100,6 @@ struct CircleCollider: Collider {
 
         let otherCenter = PolygonCollider.findCenter(transformedVertices)
         let direction = otherCenter - center
-
         if Vector2.dotProduct(a: direction, b: normal) < 0 {
             normal *= -1
         }

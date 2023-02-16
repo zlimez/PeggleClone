@@ -55,8 +55,7 @@ struct PolygonCollider: Collider {
                 isBox: otherCollider.isBox)
             )
 
-        var normal = Vector2.zero
-        var depth = CGFloat.infinity
+        var normal = Vector2.zero, depth = CGFloat.infinity
         var minA = CGFloat.infinity, minB = CGFloat.infinity, maxA = -CGFloat.infinity, maxB = -CGFloat.infinity
         var minVertices: [Vector2] = [], maxVertices: [Vector2] = []
         var minFromA = false, minFromB = false
@@ -80,7 +79,6 @@ struct PolygonCollider: Collider {
             }
 
             let axisDepth = min(maxB - minA, maxA - minB)
-
             if axisDepth < depth {
                 depth = axisDepth
                 normal = axis
