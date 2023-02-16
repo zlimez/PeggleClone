@@ -130,3 +130,57 @@ The same 5 test cases can be adapted to every concrete `testCollision` function 
 - `projectVertices`
 3.  Provide a square of side length 2 and axis as (1, 0) -> expect (-1, 0) for min and (1, 0) for max
 4.  Provide an irregular polygon and non-x or y axis -> expect matching min and max projection
+
+#### `PhysicsWorld`
+When not specifed assume a `RigidBody` to have the specs: `isDynamic = true`, `mass = 1`, `transform = standardTranform`, `isTrigger = false`, `velocity = (0, 0)`. Before each test, instantiate a new `PhysicsWorld`
+
+- `addBody` 
+1. Provide a `RigidBody` as input -> expect the `getBodies` to retrieve one body that is equal to the input
+
+- `removeBody`
+1. Add `RigidBody` A and B with `addBody`
+2. Remove B with `removeBody`
+3. Expect `getBodies` to retrieve one body that is not equal to B
+
+- `removeBodies`
+1. Add `RigidBody` A, B and C with `addBody`
+2. Create set removedBodies containing A and B and provide as input to `removeBodies`
+3. Expect `getBodies` to retrieve one body that is equal to C
+
+- `removeBodies`
+1. Add `RigidBody` A and B with `addBody`
+2. Invoke `removeBodies`
+3. Expect `getBodies` to return an empty array
+
+- `applyGravity`
+1. Add `RigidBody` A with `addBody`
+2. Invoke `applyGravity(deltaTime: 1)`
+3. Expect the velocity of A to be `(0, 9.81)` 
+4. 5. Repeat steps 1 - 4 with a `isDynamic = false` body -> expect no change in velocity
+
+- `applyDrag`
+1. Initialize a `PhysicsWorld` with `drag = 1` and `scaleFactor = 1`
+2. Add `RigidBody` A `velocity = (0, 9.81)` with `addBody`
+3. Invoke `applyDrag(deltaTime: 1)`
+4. Expect the velocity of A to be `(0, 0)`
+5. Repeat steps 1 - 4 with a `isDynamic = false` body -> expect no change in velocity
+
+### Integration Test
+1. Design a board in the level designer
+2. Press Start at the bottom right corner of the control panel
+3. Expect transition to a view that has the same background as the level designer interface, the same peg layout and a cannon on the upper center point of the screen
+4. Tap on any point of the screen, a cannon ball should fire in the direction of your tap position
+5. The trajectory of the cannon ball should be curved with increasing steepness due to gravity
+6. Upon hitting the bounds of the screen, the ball should bounce back in the x-direction
+7. Upon hitting a peg, the ball should bounce back in the direction of the normal of the contact point
+8. The collided peg should light up, orange peg glowing to be whitish, blue beg glowing to light bluish
+9. If the ball is stuck between multiple pegs for a second, these pegs should fade and disappear to free the ball
+10. Tapping again on the screen before the ball exits the screen should not fire another cannon ball
+11. If a peg is hit by the cannon ball for more than five times, the peg should fade and disappear (To prevent ball form being trapped bouncing with a concave shaped arrangement of pegs)
+12. When the cannon ball exits the screen, the lit pegs should be fade and disappear
+13. Tap the Back button on the top left corner of the screen, the pegs should remain in the same state you left off
+14. Save the level as _Mai_
+15. Alter the peg layout and save as _Dino_
+16. Alter the peg layout again and save as _Josun_
+17. Load _Dino_, and repeat steps 2 - 4
+18. Repeat steps 1 - 4, the first step via loading or designing to ensure that all scenarios from 6 - 12 is covered
