@@ -106,10 +106,8 @@ The second design tradeoff I faced was for the implementation of lifecycle metho
 ## Testing
 ### Unit Test
 #### Physics Engine
-#### `Colliders`
+#### `CircleCollider`, `BoxCollider`, `PolygonCollider`
 Define standard `Transform` as position (0, 0), scale (1, 1), rotation 0. If not specified in case to be transformed. This is the value taken.
-
-**`CircleCollider`, `BoxCollider`, `PolygonCollider`**
 
 - `testCollision` with another `CircleCollider`
 1. Case 1: Two circle do not intersect -> expect no contact
@@ -164,6 +162,33 @@ When not specifed assume a `RigidBody` to have the specs: `isDynamic = true`, `m
 3. Invoke `applyDrag(deltaTime: 1)`
 4. Expect the velocity of A to be `(0, 0)`
 5. Repeat steps 1 - 4 with a `isDynamic = false` body -> expect no change in velocity
+
+- `updateBodies`
+1. Add `RigidBody` A `velocity = (10, 0)` with `addBody`
+2. Invoke `updatePosition(deltaTime: 1)`
+3. Expect the `tranform.positon` of A to be equal to `(10, 0)`
+
+#### `PositionSolver`, `ImpulseSolver`
+**`PositionSolver`**
+
+- `solve`
+1. Initialize `RigidBody` A and B (`CircleCollider` of radius 10) and transform position `(5, 0)` and `(-5, 0)` respectively
+2. Run `testCollision` with these two colliders -> `ContactPoints` to be `(-5, 0)` and `(5, 0)`, normal `(-1, 0)`, depth `10`
+3. Initialize a `Collision` with A, B and the contact points from 2
+4. Provide the `Collision` as input to the function
+5. Expect new `transform.position` of A and B to be `(10, 0)` and `(-10, 0)` respectively
+6. Repeat 1 - 5, with B `isDynamic = false`, expect position of B to remain unchanged and A to be `(15, 0)`
+
+**`ImpulseSolver`**
+
+-`solve`
+1. Initialize `RigidBody` A and B (`CircleCollider` of radius 10) and transform position `(5, 0)` and `(-5, 0)` 
+2. During step 1, A set `velocity = (-10, 0)`, B set `isDynamic = false`
+3. Run `testCollision` with these two colliders -> `ContactPoints` to be `(-5, 0)` and `(5, 0)`, normal `(-1, 0)`, depth `10`
+4. Initialize a `Collision` with A, B and the contact points from 2
+5. Provide the `Collision` as input to the function
+6. Expect new `velocity` of A to be `(10, 0)` and that of B to be unchanged
+7. Case of both dynamic not tested as the resolution follows [Rigidbody dynamics paper](https://chrishecker.com/images/e/e7/Gdmphys3.pdf) by Chris Hecker
 
 ### Integration Test
 1. Design a board in the level designer
