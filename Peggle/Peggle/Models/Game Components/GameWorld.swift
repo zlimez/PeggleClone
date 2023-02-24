@@ -29,6 +29,7 @@ class GameWorld {
 
     // Game specific objects
     var cannon: Cannon?
+    var numOfBalls: Int = 0
     var worldDim: CGSize?
 
     static func getEmptyWorld() -> GameWorld {
@@ -47,18 +48,31 @@ class GameWorld {
     func setNewBoard(_ board: Board) {
         print("setting new board")
         physicsWorld.removeAllBodies()
+        graphicObjects.removeAll()
         for peg in board.allPegs {
             let pegRb = PegRigidBody(peg)
             addPeg(pegRb)
         }
-
+        
+        setNumOfBalls()
         worldBoundsInitialized = false
+    }
+    
+    func setNumOfBalls() {
+        // TODO: Make numOfBalls given a heuristic
+        numOfBalls = 10
     }
 
     func configWorldBounds(_ worldDim: CGSize) {
         self.worldDim = worldDim
         self.cannon = Cannon(cannonPosition: Vector2(x: worldDim.width / 2, y: 60), spawnOffset: 100)
-        cannon?.onCannonFired.append(addCannonBall)
+
+        guard let cannon = self.cannon else {
+            fatalError("Cannon not assigned")
+        }
+        cannon.onCannonFired.append(addCannonBall)
+        graphicObjects.insert(cannon)
+
         let bufferHeight: CGFloat = 100
 
         let wallThickness: CGFloat = 20
@@ -123,12 +137,17 @@ class GameWorld {
     }
 
     func fireCannonAt(_ aim: Vector2) {
+        if numOfBalls <= 0 {
+            return
+        }
+
         cannon?.fireCannonAt(aim)
     }
 
     private func addCannonBall(cannonBall: CannonBall) {
         physicsWorld.addBody(cannonBall)
         graphicObjects.insert(cannonBall)
+        numOfBalls -= 1
     }
 
     func removeCannonBall(_ cannonBall: RigidBody) {

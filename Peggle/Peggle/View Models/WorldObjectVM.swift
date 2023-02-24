@@ -1,5 +1,5 @@
 //
-//  RigidBodyVM.swift
+//  WorldObjectVM.swift
 //  Peggle
 //
 //  Created by James Chiu on 14/2/23.
@@ -42,6 +42,6 @@ class WorldObjectVM: Identifiable {
     }
 
     var rotation: CGFloat {
-        360 - visibleObject.rotation
+        visibleObject.rotation
     }
 }

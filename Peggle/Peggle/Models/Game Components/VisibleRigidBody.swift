@@ -31,27 +31,10 @@ class VisibleRigidBody: RigidBody, Renderable {
         )
     }
 
-    var x: CGFloat {
-        transform.position.x
-    }
-
-    var y: CGFloat {
-        transform.position.y
-    }
-
-    var spriteOpacity: CGFloat {
-        spriteContainer.opacity
-    }
-
-    var spriteWidth: CGFloat {
-        transform.scale.x * spriteContainer.unitWidth
-    }
-
-    var spriteHeight: CGFloat {
-        transform.scale.y * spriteContainer.unitHeight
-    }
-
-    var rotation: CGFloat {
-        transform.rotation
-    }
+    var x: CGFloat { transform.position.x }
+    var y: CGFloat { transform.position.y }
+    var spriteOpacity: CGFloat { spriteContainer.opacity }
+    var spriteWidth: CGFloat { transform.scale.x * spriteContainer.unitWidth }
+    var spriteHeight: CGFloat { transform.scale.y * spriteContainer.unitHeight }
+    var rotation: CGFloat { transform.rotation }
 }

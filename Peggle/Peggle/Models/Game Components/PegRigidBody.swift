@@ -52,7 +52,7 @@ class PegRigidBody: VisibleRigidBody {
             if collisionCount == activeGameBoard.pegRemovalHitCount {
                 activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
             }
-            GameWorld.activeGameBoard?.queuePegRemoval(self)
+            activeGameBoard.queuePegRemoval(self)
         }
     }
 

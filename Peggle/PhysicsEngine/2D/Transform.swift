@@ -12,6 +12,7 @@ struct Transform {
     static let standard = Transform(Vector2.zero)
     var position: Vector2
     var scale: Vector2
+    // Ranges from 0 to 2pi
     var rotation: CGFloat
 
     init(_ position: Vector2) {

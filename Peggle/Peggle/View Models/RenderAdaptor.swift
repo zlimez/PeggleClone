@@ -10,6 +10,7 @@ import Foundation
 class RenderAdaptor: GameSystem, ObservableObject {
     var gameWorld: GameWorld
     @Published var graphicObjects: [WorldObjectVM]
+    @Published var numOfBalls: Int = 0
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
@@ -30,6 +31,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
                 fatalError("World object without graphic object cannot be rendered")
             }
         }
+        numOfBalls = gameWorld.numOfBalls
     }
 
     func configScene(_ worldDim: CGSize) {

@@ -39,9 +39,9 @@ struct GameView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: geo.size.width)
-
-            CannonView()
-                .position(x: geo.size.width / 2, y: 60)
+            
+            BallCountView(ballCount: renderAdaptor.numOfBalls)
+                .position(x: geo.size.width - 100, y: 60)
         }
     }
 }
@@ -50,23 +50,21 @@ struct WorldObjectView: View {
     var woVM: WorldObjectVM
 
     var body: some View {
-        let sprite = woVM.sprite
-
-        return Image(sprite)
+        Image(woVM.sprite)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: woVM.spriteWidth, height: woVM.spriteHeight)
+            .rotationEffect(.radians(woVM.rotation))
             .position(x: woVM.x, y: woVM.y)
             .opacity(woVM.spriteOpacity)
     }
 }
 
-struct CannonView: View {
-    var width: CGFloat = 150
+struct BallCountView: View {
+    var ballCount: Int
+
     var body: some View {
-        Image("cannon-static")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: width)
+        Text("Balls left: " + String(ballCount))
+            .font(.title)
     }
 }

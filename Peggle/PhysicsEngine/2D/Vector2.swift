@@ -10,6 +10,10 @@ import Foundation
 struct Vector2: Hashable {
     static let zero = Vector2(x: 0, y: 0)
     static let one = Vector2(x: 1, y: 1)
+    static let up = Vector2(x: 0, y: 1)
+    static let down = Vector2(x: 0, y: -1)
+    static let left = Vector2(x: -1, y: 0)
+    static let right = Vector2(x: 1, y: 0)
     let x: CGFloat
     let y: CGFloat
 
@@ -19,6 +23,10 @@ struct Vector2: Hashable {
 
     static func crossProduct(a: Vector2, b: Vector2) -> CGFloat {
         a.x * b.y - a.y * b.x
+    }
+ 
+    static func angle(from: Vector2, to: Vector2) -> CGFloat {
+        acos(dotProduct(a: from, b: to) / from.length / to.length)
     }
 
     static func - (a: Vector2, b: Vector2) -> Vector2 {
