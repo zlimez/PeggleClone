@@ -10,11 +10,33 @@ import Foundation
 struct DesignBoard: Codable {
     static var viewDim: CGSize?
     static var maxDim: Int = 0
-    static var palette = [
-        PegVariant(pegColor: "peg-orange", pegLitColor: "peg-orange-glow", pegRadius: 30),
-        PegVariant(pegColor: "peg-blue", pegLitColor: "peg-blue-glow", pegRadius: 30),
-        PegVariant(pegColor: "peg-green", pegLitColor: "peg-green-glow", pegRadius: 30)
-    ]
+    static var palette: [PegVariant] = {
+        let orangePeg = PegVariant(
+            pegColor: "peg-orange",
+            pegLitColor: "peg-orange-glow",
+            pegRadius: 30
+        )
+        let bluePeg = PegVariant(
+            pegColor: "peg-blue",
+            pegLitColor: "peg-blue-glow",
+            pegRadius: 30
+        )
+        let greenPeg = PegVariant(
+            pegColor: "peg-green",
+            pegLitColor: "peg-green-glow",
+            pegRadius: 30
+        )
+        PegMapper.pegToPegRbTable[orangePeg] = { peg in
+            HostilePeg(peg)
+        }
+        PegMapper.pegToPegRbTable[bluePeg] = { peg in
+            HostilePeg(peg)
+        }
+        PegMapper.pegToPegRbTable[greenPeg] = { peg in
+            BoomPeg(peg: peg)
+        }
+        return [orangePeg, bluePeg, greenPeg]
+    }()
     static var dimInitialized = false
 
     var board: Board
@@ -143,14 +165,19 @@ struct DesignBoard: Codable {
     }
 }
 
-struct PegVariant: Equatable {
+struct PegVariant: Hashable {
     let pegColor: String
     let pegLitColor: String
     let pegRadius: CGFloat
-//    var pegMaker: () -> PegRB
 
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
         lhs.pegColor == rhs.pegColor && lhs.pegLitColor == rhs.pegLitColor && lhs.pegRadius == rhs.pegRadius
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(pegColor)
+        hasher.combine(pegLitColor)
+        hasher.combine(pegRadius)
     }
 }
 

@@ -54,20 +54,16 @@ class GameWorld {
         collidedPegBodies.removeAll()
 
         for peg in board.allPegs {
-            // TODO: Map peg variant to their corresponding type in game
-            var pegRb: PegRB
-            if peg.pegVariant.pegColor == "peg-orange" || peg.pegVariant.pegColor == "peg-blue" {
-                pegRb = HostilePeg(peg)
-            } else {
-                pegRb = BoomPeg(peg: peg)
+            guard let pegRbMaker = PegMapper.pegToPegRbTable[peg.pegVariant] else {
+                fatalError("Palette does not contain this saved peg")
             }
-            addObject(pegRb)
+            addObject(pegRbMaker(peg))
         }
 
         setNumOfBalls()
         worldBoundsInitialized = false
     }
-    
+
     func setNumOfBalls() {
         // TODO: Make numOfBalls given a heuristic
         numOfBalls = 10

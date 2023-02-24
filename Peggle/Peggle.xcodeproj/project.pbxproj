@@ -58,6 +58,7 @@
 		6AE1865129A92E5800B3CDE4 /* Bucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865029A92E5800B3CDE4 /* Bucket.swift */; };
 		6AE1865329A941F400B3CDE4 /* BoomPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865229A941F400B3CDE4 /* BoomPeg.swift */; };
 		6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865429A942DB00B3CDE4 /* PegRB.swift */; };
+		6AE1865729A9595F00B3CDE4 /* PegMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865629A9595F00B3CDE4 /* PegMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +134,7 @@
 		6AE1865029A92E5800B3CDE4 /* Bucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bucket.swift; sourceTree = "<group>"; };
 		6AE1865229A941F400B3CDE4 /* BoomPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoomPeg.swift; sourceTree = "<group>"; };
 		6AE1865429A942DB00B3CDE4 /* PegRB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegRB.swift; sourceTree = "<group>"; };
+		6AE1865629A9595F00B3CDE4 /* PegMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +184,7 @@
 				6AE1864029A89CA400B3CDE4 /* EventLoop.swift */,
 				6AE1865029A92E5800B3CDE4 /* Bucket.swift */,
 				6AE1865429A942DB00B3CDE4 /* PegRB.swift */,
+				6AE1865629A9595F00B3CDE4 /* PegMapper.swift */,
 			);
 			path = "Game Components";
 			sourceTree = "<group>";
@@ -508,6 +511,7 @@
 				6A83B34E29974D4F00B893AE /* PolygonCollider.swift in Sources */,
 				6AE1865129A92E5800B3CDE4 /* Bucket.swift in Sources */,
 				6A7A8A8729851D99001C15A7 /* Peg.swift in Sources */,
+				6AE1865729A9595F00B3CDE4 /* PegMapper.swift in Sources */,
 				6A3B8212299C989D007A1AC6 /* PositionSolver.swift in Sources */,
 				6A83B35A29994D6300B893AE /* GameWorld.swift in Sources */,
 				6A3B820C299B9F82007A1AC6 /* WorldObjectVM.swift in Sources */,
