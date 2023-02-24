@@ -18,7 +18,7 @@ class PegRB: VisibleRigidBody {
             unitHeight: peg.unitRadius * 2
         )
         super.init(
-            isDynamic: false,
+            bodyType: BodyType.stationary,
             material: Material.staticMaterial,
             collider: CircleCollider(peg.unitRadius),
             spriteContainer: spriteContainer,

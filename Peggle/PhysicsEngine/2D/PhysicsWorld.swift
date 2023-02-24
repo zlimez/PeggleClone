@@ -68,6 +68,10 @@ class PhysicsWorld {
             let rbA = bodies[i]
             for j in (i + 1)..<bodies.count {
                 let rbB = bodies[j]
+                
+                if rbA.bodyType == BodyType.stationary && rbB.bodyType == BodyType.stationary {
+                    continue
+                }
 
                 let cp = rbA.collider.testCollision(
                     transform: rbA.transform,

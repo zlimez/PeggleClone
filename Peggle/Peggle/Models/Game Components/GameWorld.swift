@@ -203,7 +203,7 @@ class GameWorld {
 class Wall: RigidBody {
     init(dim: CGSize, position: Vector2) {
         super.init(
-            isDynamic: false,
+            bodyType: BodyType.stationary,
             material: Material.staticMaterial,
             collider: BoxCollider(halfWidth: dim.width / 2, halfHeight: dim.height / 2),
             transform: Transform(position)

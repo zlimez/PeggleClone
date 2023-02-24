@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum bodyType {
+enum BodyType {
     case dynamic, kinematic, stationary
 }
 
@@ -16,12 +16,15 @@ enum bodyType {
 // dynamic rigidbodies for objects that moves based on force and velocity
 class RigidBody: WorldObject {
     private static let defaultStaticMass: CGFloat = 10
-    var isDynamic: Bool
+    var bodyType: BodyType
     let material: Material
     var velocity: Vector2
     let mass: CGFloat
     let collider: Collider
     var isTrigger: Bool
+    var isDynamic: Bool {
+        bodyType == BodyType.dynamic
+    }
     private var lastCollidingBodies: [RigidBody: Collision]
     private var currCollidingBodies: [RigidBody: Collision]
 
@@ -30,7 +33,7 @@ class RigidBody: WorldObject {
     }
 
     init(
-        isDynamic: Bool,
+        bodyType: BodyType,
         material: Material,
         collider: Collider,
         transform: Transform = Transform.standard,
@@ -38,14 +41,14 @@ class RigidBody: WorldObject {
         initVelocity: Vector2 = Vector2.zero,
         isTrigger: Bool = false
     ) {
-        self.isDynamic = isDynamic
+        self.bodyType = bodyType
         self.velocity = initVelocity
         self.collider = collider
         self.isTrigger = isTrigger
         self.lastCollidingBodies = [:]
         self.currCollidingBodies = [:]
 
-        if !isDynamic {
+        if bodyType != BodyType.dynamic {
             self.mass = 10
             self.material = Material.staticMaterial
         } else {
@@ -126,7 +129,7 @@ class RigidBody: WorldObject {
 
     func updatePosition(_ deltaTime: CGFloat) {
         if !isDynamic {
-            fatalError("Cannot move rigidbody by velocity")
+            fatalError("Cannot move non dynamic body by velocity")
         }
         transform.position += velocity * deltaTime
     }

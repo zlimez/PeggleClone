@@ -31,7 +31,7 @@ class Bucket: VisibleRigidBody {
             unitHeight: 114
         )
         super.init(
-            isDynamic: false,
+            bodyType: BodyType.kinematic,
             material: Material.triggerMaterial,
             collider: BoxCollider(halfWidth: 55.5, halfHeight: 57),
             spriteContainer: spriteContainer,

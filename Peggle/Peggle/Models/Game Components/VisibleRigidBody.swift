@@ -10,7 +10,7 @@ import Foundation
 class VisibleRigidBody: RigidBody, Renderable {
     var spriteContainer: SpriteContainer
 
-    init(isDynamic: Bool,
+    init(bodyType: BodyType,
          material: Material,
          collider: Collider,
          spriteContainer: SpriteContainer,
@@ -21,7 +21,7 @@ class VisibleRigidBody: RigidBody, Renderable {
     ) {
         self.spriteContainer = spriteContainer
         super.init(
-            isDynamic: isDynamic,
+            bodyType: bodyType,
             material: material,
             collider: collider,
             transform: transform,

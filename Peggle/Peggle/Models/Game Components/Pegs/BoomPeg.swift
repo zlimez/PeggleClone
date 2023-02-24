@@ -54,6 +54,7 @@ class BoomPeg: PegRB, Animated {
         }
         exploded = true
         isTrigger = true
+        bodyType = BodyType.kinematic
         // TODO: Nicer animation for explosion
         spriteContainer.sprite = peg.pegLitColor
         spriteContainer.opacity = 0.25

@@ -17,8 +17,8 @@ class LoidPeg: PegRB {
     }
 
     override func onCollisionEnter(_ collision: Collision) {
-        if !isDynamic && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
-            isDynamic = true
+        if bodyType == BodyType.stationary && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
+            bodyType = BodyType.dynamic
 
             let rSpd = Vector2.dotProduct(a: collision.rbB.velocity, b: collision.contact.normal)
 

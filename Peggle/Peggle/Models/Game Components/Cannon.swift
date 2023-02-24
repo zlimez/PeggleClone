@@ -137,7 +137,7 @@ class CannonBall: VisibleRigidBody {
             unitHeight: radius * 2
         )
         super.init(
-            isDynamic: true,
+            bodyType: BodyType.dynamic,
             material: material,
             collider: CircleCollider(radius),
             spriteContainer: spriteContainer,
