@@ -47,11 +47,15 @@ class GameWorld {
 
     func setNewBoard(_ board: Board) {
         print("setting new board")
+        // TODO: Move these recycling functions to when the game ends
         physicsWorld.removeAllBodies()
         graphicObjects.removeAll()
+        coroutines.removeAll()
+        collidedPegBodies.removeAll()
+
         for peg in board.allPegs {
             let pegRb = PegRigidBody(peg)
-            addPeg(pegRb)
+            addObject(pegRb)
         }
         
         setNumOfBalls()
@@ -95,10 +99,18 @@ class GameWorld {
             position: Vector2(x: worldDim.width / 2, y: worldDim.height + wallThickness / 2 + bufferHeight)
         )
 
-        physicsWorld.addBody(topWall)
-        physicsWorld.addBody(rightWall)
-        physicsWorld.addBody(leftWall)
-        physicsWorld.addBody(ballRecycler)
+        let bucket = Bucket(
+            transform: Transform(Vector2(x: worldDim.width / 2, y: worldDim.height)),
+            center: worldDim.width / 2,
+            leftEnd: 0,
+            rightEnd: worldDim.width - 60
+        )
+
+        addObject(bucket)
+        addObject(topWall)
+        addObject(rightWall)
+        addObject(leftWall)
+        addObject(ballRecycler)
 
         // After all the bounds are initialized then start simulation
         print("Starting physics simulation")
@@ -112,10 +124,15 @@ class GameWorld {
     func removeCoroutine(_ routine: Coroutine) {
         coroutines.remove(routine)
     }
-
-    func addPeg(_ pegRb: PegRigidBody) {
-        physicsWorld.addBody(pegRb)
-        graphicObjects.insert(pegRb)
+    
+    func addObject(_ addedObject: WorldObject) {
+        if addedObject is Renderable {
+            graphicObjects.insert(addedObject)
+        }
+        
+        if let addedBody = addedObject as? RigidBody {
+            physicsWorld.addBody(addedBody)
+        }
     }
 
     func removePeg(_ pegRb: PegRigidBody) {
@@ -145,8 +162,7 @@ class GameWorld {
     }
 
     private func addCannonBall(cannonBall: CannonBall) {
-        physicsWorld.addBody(cannonBall)
-        graphicObjects.insert(cannonBall)
+        addObject(cannonBall)
         numOfBalls -= 1
     }
 
