@@ -1,5 +1,5 @@
 //
-//  PegRigidBody.swift
+//  HostilePeg.swift
 //  Peggle
 //
 //  Created by James Chiu on 13/2/23.
@@ -7,26 +7,16 @@
 
 import Foundation
 
-class PegRigidBody: VisibleRigidBody {
-    let peg: Peg
+class HostilePeg: PegRB {
     private var collisionCount = 0
     private var ballHitStartTime: Double = 0
     private var pegFadeTime: Double = 1
-
-    init(_ peg: Peg) {
-        self.peg = peg
-        let spriteContainer = SpriteContainer(
-            sprite: peg.pegColor,
-            unitWidth: peg.unitRadius * 2,
-            unitHeight: peg.unitRadius * 2
-        )
-        super.init(
-            isDynamic: false,
-            material: Material.staticMaterial,
-            collider: CircleCollider(peg.unitRadius),
-            spriteContainer: spriteContainer,
-            transform: peg.transform
-        )
+    
+    func makeFade() {
+        guard let activeGameBoard = GameWorld.activeGameBoard else {
+            fatalError("No active board")
+        }
+        activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
     }
 
     func fade(deltaTime: Double) -> Bool {
@@ -50,7 +40,7 @@ class PegRigidBody: VisibleRigidBody {
 
             collisionCount += 1
             if collisionCount == activeGameBoard.pegRemovalHitCount {
-                activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
+                makeFade()
             }
             activeGameBoard.queuePegRemoval(self)
         }
@@ -63,7 +53,7 @@ class PegRigidBody: VisibleRigidBody {
             }
 
             if activeGameBoard.gameTime - ballHitStartTime >= activeGameBoard.pegRemovalTimeInterval {
-                activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
+                makeFade()
             }
         }
     }

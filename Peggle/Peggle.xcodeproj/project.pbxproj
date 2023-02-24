@@ -38,7 +38,7 @@
 		6A83B354299905E400B893AE /* ImpulseSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B353299905E400B893AE /* ImpulseSolver.swift */; };
 		6A83B356299905F000B893AE /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B355299905F000B893AE /* Solver.swift */; };
 		6A83B35A29994D6300B893AE /* GameWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B35929994D6300B893AE /* GameWorld.swift */; };
-		6A83B35C2999EF4100B893AE /* PegRigidBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B35B2999EF4100B893AE /* PegRigidBody.swift */; };
+		6A83B35C2999EF4100B893AE /* HostilePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B35B2999EF4100B893AE /* HostilePeg.swift */; };
 		6A83B360299A03C000B893AE /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B35F299A03C000B893AE /* Board.swift */; };
 		6A83B364299A907B00B893AE /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B363299A907B00B893AE /* GameView.swift */; };
 		6A83B366299A99C500B893AE /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A83B365299A99C500B893AE /* RootView.swift */; };
@@ -56,6 +56,8 @@
 		6AE1864D29A9059D00B3CDE4 /* Lerper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1864C29A9059D00B3CDE4 /* Lerper.swift */; };
 		6AE1864F29A9078E00B3CDE4 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1864E29A9078E00B3CDE4 /* Math.swift */; };
 		6AE1865129A92E5800B3CDE4 /* Bucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865029A92E5800B3CDE4 /* Bucket.swift */; };
+		6AE1865329A941F400B3CDE4 /* BoomPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865229A941F400B3CDE4 /* BoomPeg.swift */; };
+		6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865429A942DB00B3CDE4 /* PegRB.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,7 +109,7 @@
 		6A83B353299905E400B893AE /* ImpulseSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpulseSolver.swift; sourceTree = "<group>"; };
 		6A83B355299905F000B893AE /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
 		6A83B35929994D6300B893AE /* GameWorld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWorld.swift; sourceTree = "<group>"; };
-		6A83B35B2999EF4100B893AE /* PegRigidBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegRigidBody.swift; sourceTree = "<group>"; };
+		6A83B35B2999EF4100B893AE /* HostilePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostilePeg.swift; sourceTree = "<group>"; };
 		6A83B35F299A03C000B893AE /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 		6A83B363299A907B00B893AE /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		6A83B365299A99C500B893AE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -129,6 +131,8 @@
 		6AE1864C29A9059D00B3CDE4 /* Lerper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lerper.swift; sourceTree = "<group>"; };
 		6AE1864E29A9078E00B3CDE4 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		6AE1865029A92E5800B3CDE4 /* Bucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bucket.swift; sourceTree = "<group>"; };
+		6AE1865229A941F400B3CDE4 /* BoomPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoomPeg.swift; sourceTree = "<group>"; };
+		6AE1865429A942DB00B3CDE4 /* PegRB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegRB.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,11 +175,13 @@
 				6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */,
 				6A3B8217299CF9DE007A1AC6 /* Coroutine.swift */,
 				6A83B35929994D6300B893AE /* GameWorld.swift */,
-				6A83B35B2999EF4100B893AE /* PegRigidBody.swift */,
+				6AE1865229A941F400B3CDE4 /* BoomPeg.swift */,
+				6A83B35B2999EF4100B893AE /* HostilePeg.swift */,
 				6A83B367299B3DFC00B893AE /* Cannon.swift */,
 				6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */,
 				6AE1864029A89CA400B3CDE4 /* EventLoop.swift */,
 				6AE1865029A92E5800B3CDE4 /* Bucket.swift */,
+				6AE1865429A942DB00B3CDE4 /* PegRB.swift */,
 			);
 			path = "Game Components";
 			sourceTree = "<group>";
@@ -496,7 +502,7 @@
 				6AE1864D29A9059D00B3CDE4 /* Lerper.swift in Sources */,
 				6A83B3462997296300B893AE /* ContactPoints.swift in Sources */,
 				6A83B366299A99C500B893AE /* RootView.swift in Sources */,
-				6A83B35C2999EF4100B893AE /* PegRigidBody.swift in Sources */,
+				6A83B35C2999EF4100B893AE /* HostilePeg.swift in Sources */,
 				6A3B8218299CF9DE007A1AC6 /* Coroutine.swift in Sources */,
 				6A83B33B29971FD000B893AE /* Vector2.swift in Sources */,
 				6A83B34E29974D4F00B893AE /* PolygonCollider.swift in Sources */,
@@ -520,8 +526,10 @@
 				6A7A8A8C2985721E001C15A7 /* ControlPanelView.swift in Sources */,
 				6AA2286F29811C2000823F43 /* PeggleApp.swift in Sources */,
 				6AD927F629884277004E7963 /* Levels.swift in Sources */,
+				6AE1865329A941F400B3CDE4 /* BoomPeg.swift in Sources */,
 				6A83B34C29974D4600B893AE /* BoxCollider.swift in Sources */,
 				6AE1864129A89CA400B3CDE4 /* EventLoop.swift in Sources */,
+				6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */,
 				6AD927FC29891E0D004E7963 /* DataManager.swift in Sources */,
 				6AE1864B29A8FA4100B3CDE4 /* Animated.swift in Sources */,
 				6A7A8A922986A71A001C15A7 /* DesignBoardVM.swift in Sources */,

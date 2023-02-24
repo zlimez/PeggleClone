@@ -17,7 +17,7 @@ class RigidBody: WorldObject {
     var velocity: Vector2
     let mass: CGFloat
     let collider: Collider
-    let isTrigger: Bool
+    var isTrigger: Bool
     private var lastCollidingBodies: [RigidBody: Collision]
     private var currCollidingBodies: [RigidBody: Collision]
 

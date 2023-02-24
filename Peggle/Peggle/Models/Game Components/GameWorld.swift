@@ -17,7 +17,7 @@ class GameWorld {
     // All game systems
     let physicsWorld: PhysicsWorld
     // Pegs that have been hit during this launch
-    var collidedPegBodies: Set<PegRigidBody> = []
+    var collidedPegBodies: Set<HostilePeg> = []
 
     var renderAdaptor: RenderAdaptor?
     var graphicObjects: Set<WorldObject> = []
@@ -54,10 +54,16 @@ class GameWorld {
         collidedPegBodies.removeAll()
 
         for peg in board.allPegs {
-            let pegRb = PegRigidBody(peg)
+            // TODO: Map peg variant to their corresponding type in game
+            var pegRb: PegRB
+            if peg.pegVariant.pegColor == "peg-orange" || peg.pegVariant.pegColor == "peg-blue" {
+                pegRb = HostilePeg(peg)
+            } else {
+                pegRb = BoomPeg(peg: peg)
+            }
             addObject(pegRb)
         }
-        
+
         setNumOfBalls()
         worldBoundsInitialized = false
     }
@@ -124,31 +130,33 @@ class GameWorld {
     func removeCoroutine(_ routine: Coroutine) {
         coroutines.remove(routine)
     }
-    
+
     func addObject(_ addedObject: WorldObject) {
         if addedObject is Renderable {
             graphicObjects.insert(addedObject)
         }
-        
+
         if let addedBody = addedObject as? RigidBody {
             physicsWorld.addBody(addedBody)
         }
     }
 
-    func removePeg(_ pegRb: PegRigidBody) {
+    func removePeg(_ pegRb: PegRB) {
         physicsWorld.removeBody(pegRb)
         graphicObjects.remove(pegRb)
         // To prevent duplicate removal when cannon exits screen
-        collidedPegBodies.remove(pegRb)
+        if let hostilePeg = pegRb as? HostilePeg {
+            collidedPegBodies.remove(hostilePeg)
+        }
     }
 
-    func queuePegRemoval(_ hitPegRb: PegRigidBody) {
+    func queuePegRemoval(_ hitPegRb: HostilePeg) {
         collidedPegBodies.insert(hitPegRb)
     }
 
     func fadeCollidedPegs() {
         for hitPeg in collidedPegBodies {
-            self.addCoroutine(Coroutine(routine: hitPeg.fade, onCompleted: removeCoroutine))
+            hitPeg.makeFade()
         }
         collidedPegBodies.removeAll()
     }

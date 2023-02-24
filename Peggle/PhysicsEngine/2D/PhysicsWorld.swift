@@ -71,9 +71,9 @@ class PhysicsWorld {
             let rbA = bodies[i]
             for j in (i + 1)..<bodies.count {
                 let rbB = bodies[j]
-                if !rbA.isDynamic && !rbB.isDynamic {
-                    continue
-                }
+//                if !rbA.isDynamic && !rbB.isDynamic {
+//                    continue
+//                }
 
                 let cp = rbA.collider.testCollision(
                     transform: rbA.transform,

@@ -12,7 +12,8 @@ struct DesignBoard: Codable {
     static var maxDim: Int = 0
     static var palette = [
         PegVariant(pegColor: "peg-orange", pegLitColor: "peg-orange-glow", pegRadius: 30),
-        PegVariant(pegColor: "peg-blue", pegLitColor: "peg-blue-glow", pegRadius: 30)
+        PegVariant(pegColor: "peg-blue", pegLitColor: "peg-blue-glow", pegRadius: 30),
+        PegVariant(pegColor: "peg-green", pegLitColor: "peg-green-glow", pegRadius: 30)
     ]
     static var dimInitialized = false
 
@@ -146,6 +147,7 @@ struct PegVariant: Equatable {
     let pegColor: String
     let pegLitColor: String
     let pegRadius: CGFloat
+//    var pegMaker: () -> PegRB
 
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
         lhs.pegColor == rhs.pegColor && lhs.pegLitColor == rhs.pegLitColor && lhs.pegRadius == rhs.pegRadius
