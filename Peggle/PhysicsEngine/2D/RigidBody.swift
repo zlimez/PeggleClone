@@ -10,10 +10,8 @@ import Foundation
 // All rigidbodies have a collider
 // static rigidbodies for objects that require collider but does not move or can only be moved by
 // dynamic rigidbodies for objects that moves based on force and velocity
-class RigidBody: WorldObject, Hashable, Identifiable {
-    private static var bodyCounter = 0
+class RigidBody: WorldObject {
     private static let defaultStaticMass: CGFloat = 10
-    let id: Int
     let isDynamic: Bool
     let material: Material
     var velocity: Vector2
@@ -27,10 +25,6 @@ class RigidBody: WorldObject, Hashable, Identifiable {
         velocity * mass
     }
 
-    static func resetCounter() {
-        bodyCounter = 0
-    }
-
     init(
         isDynamic: Bool,
         material: Material,
@@ -40,7 +34,6 @@ class RigidBody: WorldObject, Hashable, Identifiable {
         initVelocity: Vector2 = Vector2.zero,
         isTrigger: Bool = false
     ) {
-        self.id = RigidBody.bodyCounter
         self.isDynamic = isDynamic
         self.velocity = initVelocity
         self.collider = collider
@@ -56,7 +49,6 @@ class RigidBody: WorldObject, Hashable, Identifiable {
             self.material = material
         }
 
-        RigidBody.bodyCounter += 1
         super.init(transform)
     }
 
@@ -137,13 +129,5 @@ class RigidBody: WorldObject, Hashable, Identifiable {
 
     func move(_ displacement: Vector2) {
         transform.position += displacement
-    }
-
-    static func == (lhs: RigidBody, rhs: RigidBody) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }

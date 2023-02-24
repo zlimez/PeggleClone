@@ -7,13 +7,13 @@
 
 import Foundation
 
-class GameBoardVM: RenderAdaptor, ObservableObject {
+class RenderAdaptor: GameSystem, ObservableObject {
     var gameWorld: GameWorld
-    @Published var bodyVMs: [RigidBodyVM]
+    @Published var graphicObjects: [WorldObjectVM]
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
-        self.bodyVMs = []
+        self.graphicObjects = []
         gameWorld.renderAdaptor = self
     }
 
@@ -21,11 +21,13 @@ class GameBoardVM: RenderAdaptor, ObservableObject {
         gameWorld.setNewBoard(board)
     }
 
-    func adaptScene(_ bodies: [RigidBody]) {
-        bodyVMs.removeAll()
-        for body in bodies {
-            if let visibleBody = body as? VisibleRigidBody {
-                bodyVMs.append(RigidBodyVM(visibleBody))
+    func adaptScene(_ worldObjects: any Collection<WorldObject>) {
+        graphicObjects.removeAll()
+        for worldObject in worldObjects {
+            if let graphicObject = worldObject as? Renderable {
+                graphicObjects.append(WorldObjectVM(graphicObject))
+            } else {
+                fatalError("World object without graphic object cannot be rendered")
             }
         }
     }

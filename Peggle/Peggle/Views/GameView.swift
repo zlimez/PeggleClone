@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GameView: View {
-    @EnvironmentObject var gameBoardVM: GameBoardVM
+    @EnvironmentObject var renderAdaptor: RenderAdaptor
 
     var body: some View {
         ZStack {
@@ -16,12 +16,12 @@ struct GameView: View {
                 generateGameArea(geo)
             }
 
-            ForEach(gameBoardVM.bodyVMs) { bodyVM in
-                RigidBodyView(rbVM: bodyVM)
+            ForEach(renderAdaptor.graphicObjects) { woVM in
+                WorldObjectView(woVM: woVM)
             }
         }
         .onTapGesture { location in
-            gameBoardVM.fireCannonAt(location)
+            renderAdaptor.fireCannonAt(location)
         }
         .ignoresSafeArea()
     }
@@ -30,7 +30,7 @@ struct GameView: View {
         if let activeGameBoard = GameWorld.activeGameBoard {
             if !activeGameBoard.worldBoundsInitialized {
                 activeGameBoard.worldBoundsInitialized = true
-                DispatchQueue.main.async { gameBoardVM.configScene(geo.size) }
+                DispatchQueue.main.async { renderAdaptor.configScene(geo.size) }
             }
         }
 
@@ -46,18 +46,18 @@ struct GameView: View {
     }
 }
 
-struct RigidBodyView: View {
-    var rbVM: RigidBodyVM
+struct WorldObjectView: View {
+    var woVM: WorldObjectVM
 
     var body: some View {
-        let sprite = rbVM.sprite
+        let sprite = woVM.sprite
 
         return Image(sprite)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: rbVM.spriteWidth, height: rbVM.spriteHeight)
-            .position(x: rbVM.x, y: rbVM.y)
-            .opacity(rbVM.spriteOpacity)
+            .frame(width: woVM.spriteWidth, height: woVM.spriteHeight)
+            .position(x: woVM.x, y: woVM.y)
+            .opacity(woVM.spriteOpacity)
     }
 }
 

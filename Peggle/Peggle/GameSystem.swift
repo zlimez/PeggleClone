@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol RenderAdaptor {
-    mutating func adaptScene(_ bodies: [RigidBody])
+protocol GameSystem {
+    mutating func adaptScene(_ worldObjects: any Collection<WorldObject>)
 }

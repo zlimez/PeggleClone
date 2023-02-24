@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @StateObject private var levels = Levels()
-    @StateObject private var gameBoardVM = GameBoardVM()
+    @StateObject private var renderAdaptor = RenderAdaptor()
     @State private var path: [Mode] = []
 
     var body: some View {
@@ -27,7 +27,7 @@ struct RootView: View {
             }
             .foregroundColor(Color.blue)
         }
-        .environmentObject(gameBoardVM)
+        .environmentObject(renderAdaptor)
         .environmentObject(levels)
     }
 }

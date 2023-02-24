@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ControlPanelView: View {
     @EnvironmentObject var levels: Levels
-    @EnvironmentObject var gameBoardVM: GameBoardVM
+    @EnvironmentObject var renderAdaptor: RenderAdaptor
     @State private var levelName = ""
     @Binding var designBoardVM: DesignBoardVM
     @Binding var path: [Mode]
@@ -55,7 +55,7 @@ struct ControlPanelView: View {
         NavigationLink(value: Mode.playMode) {
             Button("START") {
                 path.append(Mode.playMode)
-                gameBoardVM.setBackBoard(designBoardVM.designedBoard)
+                renderAdaptor.setBackBoard(designBoardVM.designedBoard)
             }
             .foregroundColor(Color.blue)
         }

@@ -7,41 +7,41 @@
 
 import Foundation
 
-// For rigidbodies that are visible
-class RigidBodyVM: Identifiable {
+// For world objects that are visible
+class WorldObjectVM: Identifiable {
     let id: Int
-    let visibleBody: VisibleRigidBody
+    let visibleObject: Renderable
 
-    init(_ visibleBody: VisibleRigidBody) {
-        self.id = visibleBody.id
-        self.visibleBody = visibleBody
+    init(_ visibleObject: Renderable) {
+        self.id = visibleObject.id
+        self.visibleObject = visibleObject
     }
 
     var sprite: String {
-        visibleBody.spriteContainer.sprite
+        visibleObject.spriteContainer.sprite
     }
 
     var x: CGFloat {
-        visibleBody.x
+        visibleObject.x
     }
 
     var y: CGFloat {
-        visibleBody.y
+        visibleObject.y
     }
 
     var spriteOpacity: CGFloat {
-        visibleBody.spriteOpacity
+        visibleObject.spriteOpacity
     }
 
     var spriteWidth: CGFloat {
-        visibleBody.spriteWidth
+        visibleObject.spriteWidth
     }
 
     var spriteHeight: CGFloat {
-        visibleBody.spriteHeight
+        visibleObject.spriteHeight
     }
 
     var rotation: CGFloat {
-        360 - visibleBody.rotation
+        360 - visibleObject.rotation
     }
 }

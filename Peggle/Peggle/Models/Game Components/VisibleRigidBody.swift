@@ -7,7 +7,7 @@
 
 import Foundation
 
-class VisibleRigidBody: RigidBody {
+class VisibleRigidBody: RigidBody, Renderable {
     var spriteContainer: SpriteContainer
 
     init(isDynamic: Bool,

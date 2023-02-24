@@ -13,17 +13,23 @@ class GameWorld {
     var worldBoundsInitialized = false
     let pegRemovalHitCount: Int
     let pegRemovalTimeInterval: Double
+
+    // All game systems
     let physicsWorld: PhysicsWorld
-    let eventLoop: EventLoop
-    var cannon: Cannon?
-    var worldDim: CGSize?
+    // Pegs that have been hit during this launch
+    var collidedPegBodies: Set<PegRigidBody> = []
+
     var renderAdaptor: RenderAdaptor?
+    var graphicObjects: Set<WorldObject> = []
+    let eventLoop: EventLoop
+    var coroutines: Set<Coroutine> = []
     var gameTime: Double {
         eventLoop.gameTime
     }
-    // Pegs that have been hit during this launch
-    var collidedPegBodies: Set<PegRigidBody> = []
-    var coroutines: Set<Coroutine> = []
+
+    // Game specific objects
+    var cannon: Cannon?
+    var worldDim: CGSize?
 
     static func getEmptyWorld() -> GameWorld {
         GameWorld()
@@ -43,7 +49,7 @@ class GameWorld {
         physicsWorld.removeAllBodies()
         for peg in board.allPegs {
             let pegRb = PegRigidBody(peg)
-            physicsWorld.addBody(pegRb)
+            addPeg(pegRb)
         }
 
         worldBoundsInitialized = false
@@ -85,10 +91,6 @@ class GameWorld {
         startSimulation()
     }
 
-    func fireCannonAt(_ aim: Vector2) {
-        cannon?.fireCannonAt(aim)
-    }
-
     func addCoroutine(_ routine: Coroutine) {
         coroutines.insert(routine)
     }
@@ -97,10 +99,20 @@ class GameWorld {
         coroutines.remove(routine)
     }
 
+    func addPeg(_ pegRb: PegRigidBody) {
+        physicsWorld.addBody(pegRb)
+        graphicObjects.insert(pegRb)
+    }
+
     func removePeg(_ pegRb: PegRigidBody) {
         physicsWorld.removeBody(pegRb)
+        graphicObjects.remove(pegRb)
         // To prevent duplicate removal when cannon exits screen
         collidedPegBodies.remove(pegRb)
+    }
+
+    func queuePegRemoval(_ hitPegRb: PegRigidBody) {
+        collidedPegBodies.insert(hitPegRb)
     }
 
     func fadeCollidedPegs() {
@@ -110,6 +122,15 @@ class GameWorld {
         collidedPegBodies.removeAll()
     }
 
+    func fireCannonAt(_ aim: Vector2) {
+        cannon?.fireCannonAt(aim)
+    }
+
+    private func addCannonBall(cannonBall: CannonBall) {
+        physicsWorld.addBody(cannonBall)
+        graphicObjects.insert(cannonBall)
+    }
+
     func removeCannonBall(_ cannonBall: RigidBody) {
         if !(cannonBall is CannonBall) {
             fatalError("Removing non-cannon ball body in removeCannonBall function")
@@ -117,14 +138,7 @@ class GameWorld {
 
         cannon?.cannonReady = true
         physicsWorld.removeBody(cannonBall)
-    }
-
-    func queuePegRemoval(_ hitPegRb: PegRigidBody) {
-        collidedPegBodies.insert(hitPegRb)
-    }
-
-    private func addCannonBall(cannonBall: CannonBall) {
-        physicsWorld.addBody(cannonBall)
+        graphicObjects.remove(cannonBall)
     }
 
     private func startSimulation() {
@@ -139,11 +153,11 @@ class GameWorld {
             coroutine.execute(deltaTime)
         }
         // Ask renderer to render scene
-        guard var renderAdaptor = renderAdaptor else {
+        guard let renderAdaptor = renderAdaptor else {
             return
         }
 
-        renderAdaptor.adaptScene(physicsWorld.getBodies())
+        renderAdaptor.adaptScene(graphicObjects)
     }
 }
 
