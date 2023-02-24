@@ -8,5 +8,5 @@
 import Foundation
 
 protocol Solver {
-    func solve(_ collision: Collision)
+    static func solve(_ collision: Collision)
 }

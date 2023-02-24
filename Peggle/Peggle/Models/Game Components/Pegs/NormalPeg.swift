@@ -11,7 +11,7 @@ class NormalPeg: PegRB {
     private var collisionCount = 0
     private var ballHitStartTime: Double = 0
     private var pegFadeTime: Double = 1
-    
+
     func makeFade() {
         guard let activeGameBoard = GameWorld.activeGameBoard else {
             fatalError("No active board")
@@ -31,7 +31,7 @@ class NormalPeg: PegRB {
 
     override func onCollisionEnter(_ collision: Collision) {
         super.onCollisionEnter(collision)
-        if collision.rbB is CannonBall {
+        if collision.rbB is CannonBall || collision.rbB is LoidPeg {
             guard let activeGameBoard = GameWorld.activeGameBoard else {
                 fatalError("No active board")
             }
@@ -47,7 +47,7 @@ class NormalPeg: PegRB {
     }
 
     override func onCollisionStay(_ collision: Collision) {
-        if collision.rbB is CannonBall {
+        if collision.rbB is CannonBall || collision.rbB is LoidPeg {
             guard let activeGameBoard = GameWorld.activeGameBoard else {
                 fatalError("No active board")
             }

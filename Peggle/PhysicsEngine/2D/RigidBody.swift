@@ -7,12 +7,16 @@
 
 import Foundation
 
+enum bodyType {
+    case dynamic, kinematic, stationary
+}
+
 // All rigidbodies have a collider
 // static rigidbodies for objects that require collider but does not move or can only be moved by
 // dynamic rigidbodies for objects that moves based on force and velocity
 class RigidBody: WorldObject {
     private static let defaultStaticMass: CGFloat = 10
-    let isDynamic: Bool
+    var isDynamic: Bool
     let material: Material
     var velocity: Vector2
     let mass: CGFloat

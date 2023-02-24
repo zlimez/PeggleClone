@@ -60,6 +60,7 @@
 		6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865429A942DB00B3CDE4 /* PegRB.swift */; };
 		6AE1865729A9595F00B3CDE4 /* PegMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865629A9595F00B3CDE4 /* PegMapper.swift */; };
 		6AE1865A29A95F1000B3CDE4 /* BondPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865929A95F1000B3CDE4 /* BondPeg.swift */; };
+		6AE1865C29A966A200B3CDE4 /* LoidPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865B29A966A200B3CDE4 /* LoidPeg.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		6AE1865429A942DB00B3CDE4 /* PegRB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegRB.swift; sourceTree = "<group>"; };
 		6AE1865629A9595F00B3CDE4 /* PegMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PegMapper.swift; sourceTree = "<group>"; };
 		6AE1865929A95F1000B3CDE4 /* BondPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondPeg.swift; sourceTree = "<group>"; };
+		6AE1865B29A966A200B3CDE4 /* LoidPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoidPeg.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,6 +353,7 @@
 				6AE1865229A941F400B3CDE4 /* BoomPeg.swift */,
 				6AE1865429A942DB00B3CDE4 /* PegRB.swift */,
 				6AE1865929A95F1000B3CDE4 /* BondPeg.swift */,
+				6AE1865B29A966A200B3CDE4 /* LoidPeg.swift */,
 			);
 			path = Pegs;
 			sourceTree = "<group>";
@@ -532,6 +535,7 @@
 				6A3B820E299BA608007A1AC6 /* GameSystem.swift in Sources */,
 				6A83B3502998C9AE00B893AE /* LineUtils.swift in Sources */,
 				6A3B820A299B8225007A1AC6 /* DesignBoard.swift in Sources */,
+				6AE1865C29A966A200B3CDE4 /* LoidPeg.swift in Sources */,
 				6A3B8208299B6A8D007A1AC6 /* RenderAdaptor.swift in Sources */,
 				6A83B3442997255900B893AE /* Collider.swift in Sources */,
 				6A83B364299A907B00B893AE /* GameView.swift in Sources */,

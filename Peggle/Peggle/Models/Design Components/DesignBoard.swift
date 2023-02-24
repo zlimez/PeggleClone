@@ -31,6 +31,11 @@ struct DesignBoard: Codable {
             pegLitColor: "peg-green-glow",
             pegRadius: 30
         )
+        let yellowPeg = PegVariant(
+            pegColor: "peg-yellow",
+            pegLitColor: "peg-yellow-glow",
+            pegRadius: 30
+        )
         PegMapper.pegToPegRbTable[orangePeg] = { peg in
             NormalPeg(peg)
         }
@@ -43,7 +48,10 @@ struct DesignBoard: Codable {
         PegMapper.pegToPegRbTable[greenPeg] = { peg in
             BondPeg(peg)
         }
-        return [orangePeg, bluePeg, purplePeg, greenPeg]
+        PegMapper.pegToPegRbTable[yellowPeg] = { peg in
+            LoidPeg(peg: peg)
+        }
+        return [orangePeg, bluePeg, purplePeg, greenPeg, yellowPeg]
     }()
     static var dimInitialized = false
 

@@ -7,8 +7,8 @@
 
 import Foundation
 
-class ImpulseSolver: Solver {
-    func solve(_ collision: Collision) {
+final class ImpulseSolver: Solver {
+    static func solve(_ collision: Collision) {
         let rbA = collision.rbA
         let rbB = collision.rbB
         let contact = collision.contact
@@ -43,7 +43,7 @@ class ImpulseSolver: Solver {
         }
     }
 
-    private func dynamicStaticSolve(rbA: RigidBody, rbB: RigidBody, contact: ContactPoints) {
+    private static func dynamicStaticSolve(rbA: RigidBody, rbB: RigidBody, contact: ContactPoints) {
         let rSpd = Vector2.dotProduct(a: Vector2.zero - rbA.velocity, b: contact.normal)
 
         if rSpd >= 0 {

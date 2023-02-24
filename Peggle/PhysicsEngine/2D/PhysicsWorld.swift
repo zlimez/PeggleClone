@@ -22,9 +22,6 @@ class PhysicsWorld {
     private var lastCollidingBodies: Set<RigidBody> = []
     private var currCollidingBodies: Set<RigidBody> = []
 
-    private let impulseSolver = ImpulseSolver()
-    private let positionSolver = PositionSolver()
-
     init(
         gravity: Vector2 = PhysicsWorld.defaultGravity,
         drag: CGFloat = PhysicsWorld.defaultDrag,
@@ -71,9 +68,6 @@ class PhysicsWorld {
             let rbA = bodies[i]
             for j in (i + 1)..<bodies.count {
                 let rbB = bodies[j]
-//                if !rbA.isDynamic && !rbB.isDynamic {
-//                    continue
-//                }
 
                 let cp = rbA.collider.testCollision(
                     transform: rbA.transform,
@@ -97,8 +91,8 @@ class PhysicsWorld {
         }
 
         for collision in collisions {
-            positionSolver.solve(collision)
-            impulseSolver.solve(collision)
+            PositionSolver.solve(collision)
+            ImpulseSolver.solve(collision)
         }
 
         // Invoke all listener responses for collision event

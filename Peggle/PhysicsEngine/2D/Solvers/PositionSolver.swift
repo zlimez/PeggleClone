@@ -7,8 +7,8 @@
 
 import Foundation
 
-class PositionSolver: Solver {
-    func solve(_ collision: Collision) {
+final class PositionSolver: Solver {
+    static func solve(_ collision: Collision) {
         let rbA = collision.rbA
         let rbB = collision.rbB
         if rbA.isDynamic && rbB.isDynamic {
