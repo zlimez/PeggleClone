@@ -11,20 +11,15 @@ import QuartzCore
 class GameWorld {
     static var activeGameBoard: GameWorld?
     var worldBoundsInitialized = false
-    let preferredFrameRate: Int
     let pegRemovalHitCount: Int
     let pegRemovalTimeInterval: Double
     let physicsWorld: PhysicsWorld
+    let eventLoop: EventLoop
     var cannon: Cannon?
     var worldDim: CGSize?
-    var activeDisplayLink: CADisplayLink?
     var renderAdaptor: RenderAdaptor?
     var gameTime: Double {
-        guard let displayLink = activeDisplayLink else {
-            return 0
-        }
-
-        return displayLink.timestamp
+        eventLoop.gameTime
     }
     // Pegs that have been hit during this launch
     var collidedPegBodies: Set<PegRigidBody> = []
@@ -34,9 +29,9 @@ class GameWorld {
         GameWorld()
     }
 
-    init(preferredFrameRate: Int = 30, pegRemovalHitCount: Int = 5, pegRemovalTimeInterval: Double = 2) {
-        self.preferredFrameRate = preferredFrameRate
+    init(preferredFrameRate: Float = 90, pegRemovalHitCount: Int = 5, pegRemovalTimeInterval: Double = 2) {
         self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
+        self.eventLoop = EventLoop(preferredFrameRate: preferredFrameRate)
         self.pegRemovalHitCount = pegRemovalHitCount
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
 
@@ -133,18 +128,10 @@ class GameWorld {
     }
 
     private func startSimulation() {
-        activeDisplayLink?.invalidate()
-        activeDisplayLink = CADisplayLink(target: self, selector: #selector(stepAdapter))
-        activeDisplayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 60, maximum: 120, __preferred: 90)
-
-        activeDisplayLink?.add(to: .current, forMode: .default)
+        eventLoop.startLoop(step)
     }
 
-    @objc func stepAdapter() {
-        guard let displayLink = activeDisplayLink else {
-            fatalError("Physics step invoked before display link is created")
-        }
-        let deltaTime = displayLink.targetTimestamp - displayLink.timestamp
+    private func step(deltaTime: Double) {
         physicsWorld.step(deltaTime)
 
         // Exexute all coroutine
@@ -152,11 +139,11 @@ class GameWorld {
             coroutine.execute(deltaTime)
         }
         // Ask renderer to render scene
-        if renderAdaptor == nil {
+        guard var renderAdaptor = renderAdaptor else {
             return
         }
 
-        renderAdaptor!.adaptScene(physicsWorld.getBodies())
+        renderAdaptor.adaptScene(physicsWorld.getBodies())
     }
 }
 

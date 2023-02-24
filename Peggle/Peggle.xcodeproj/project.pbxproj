@@ -50,6 +50,7 @@
 		6AA2288D29811C2100823F43 /* PeggleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA2288C29811C2100823F43 /* PeggleUITestsLaunchTests.swift */; };
 		6AD927F629884277004E7963 /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD927F529884277004E7963 /* Levels.swift */; };
 		6AD927FC29891E0D004E7963 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD927FB29891E0D004E7963 /* DataManager.swift */; };
+		6AE1864129A89CA400B3CDE4 /* EventLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1864029A89CA400B3CDE4 /* EventLoop.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		6AA2288C29811C2100823F43 /* PeggleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeggleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6AD927F529884277004E7963 /* Levels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
 		6AD927FB29891E0D004E7963 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		6AE1864029A89CA400B3CDE4 /* EventLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoop.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +164,7 @@
 				6A83B35B2999EF4100B893AE /* PegRigidBody.swift */,
 				6A83B367299B3DFC00B893AE /* Cannon.swift */,
 				6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */,
+				6AE1864029A89CA400B3CDE4 /* EventLoop.swift */,
 			);
 			path = "Game Components";
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 				6AA2286F29811C2000823F43 /* PeggleApp.swift in Sources */,
 				6AD927F629884277004E7963 /* Levels.swift in Sources */,
 				6A83B34C29974D4600B893AE /* BoxCollider.swift in Sources */,
+				6AE1864129A89CA400B3CDE4 /* EventLoop.swift in Sources */,
 				6AD927FC29891E0D004E7963 /* DataManager.swift in Sources */,
 				6A7A8A922986A71A001C15A7 /* DesignBoardVM.swift in Sources */,
 				6A83B354299905E400B893AE /* ImpulseSolver.swift in Sources */,
