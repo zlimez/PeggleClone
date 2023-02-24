@@ -1,5 +1,5 @@
 //
-//  HostilePeg.swift
+//  NormalPeg.swift
 //  Peggle
 //
 //  Created by James Chiu on 13/2/23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class HostilePeg: PegRB {
+class NormalPeg: PegRB {
     private var collisionCount = 0
     private var ballHitStartTime: Double = 0
     private var pegFadeTime: Double = 1

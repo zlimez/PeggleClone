@@ -20,8 +20,13 @@ class BallRecycler: RigidBody {
 
     override func onTriggerEnter(_ collision: Collision) {
         super.onTriggerEnter(collision)
-        if collision.rbB is CannonBall {
-            GameWorld.activeGameBoard?.removeCannonBall(collision.rbB)
+        if let cannonBall = collision.rbB as? CannonBall {
+            if cannonBall.spookCharge > 0 {
+                cannonBall.transform.position = Vector2(x: cannonBall.transform.position.x, y: -50)
+                cannonBall.spookCharge -= 1
+                return
+            }
+            GameWorld.activeGameBoard?.removeCannonBall(cannonBall)
             GameWorld.activeGameBoard?.fadeCollidedPegs()
         }
     }

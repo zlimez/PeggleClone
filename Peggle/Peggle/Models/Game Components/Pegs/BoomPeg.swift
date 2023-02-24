@@ -80,8 +80,8 @@ class BoomPeg: PegRB, Animated {
             return
         }
 
-        if let hostilePeg = collision.rbB as? HostilePeg {
-            hostilePeg.makeFade()
+        if let normalPeg = collision.rbB as? NormalPeg {
+            normalPeg.makeFade()
             return
         }
     }

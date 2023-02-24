@@ -21,21 +21,29 @@ struct DesignBoard: Codable {
             pegLitColor: "peg-blue-glow",
             pegRadius: 30
         )
+        let purplePeg = PegVariant(
+            pegColor: "peg-purple",
+            pegLitColor: "peg-purple-glow",
+            pegRadius: 30
+        )
         let greenPeg = PegVariant(
             pegColor: "peg-green",
             pegLitColor: "peg-green-glow",
             pegRadius: 30
         )
         PegMapper.pegToPegRbTable[orangePeg] = { peg in
-            HostilePeg(peg)
+            NormalPeg(peg)
         }
         PegMapper.pegToPegRbTable[bluePeg] = { peg in
-            HostilePeg(peg)
+            NormalPeg(peg)
         }
-        PegMapper.pegToPegRbTable[greenPeg] = { peg in
+        PegMapper.pegToPegRbTable[purplePeg] = { peg in
             BoomPeg(peg: peg)
         }
-        return [orangePeg, bluePeg, greenPeg]
+        PegMapper.pegToPegRbTable[greenPeg] = { peg in
+            BondPeg(peg)
+        }
+        return [orangePeg, bluePeg, purplePeg, greenPeg]
     }()
     static var dimInitialized = false
 
@@ -173,7 +181,7 @@ struct PegVariant: Hashable {
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
         lhs.pegColor == rhs.pegColor && lhs.pegLitColor == rhs.pegLitColor && lhs.pegRadius == rhs.pegRadius
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(pegColor)
         hasher.combine(pegLitColor)

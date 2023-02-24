@@ -8,5 +8,5 @@
 import Foundation
 
 final class PegMapper {
-    static var pegToPegRbTable: Dictionary<PegVariant, (Peg) -> PegRB>  = [:]
+    static var pegToPegRbTable: [PegVariant: (Peg) -> PegRB] = [:]
 }

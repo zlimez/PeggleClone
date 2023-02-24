@@ -111,7 +111,10 @@ class Cannon: WorldObject, Animated {
             fatalError("No active board")
         }
 
-        activeGameBoard.addCoroutine(Coroutine(routine: makeFireAnimation(), onCompleted: activeGameBoard.removeCoroutine))
+        activeGameBoard.addCoroutine(Coroutine(
+            routine: makeFireAnimation(),
+            onCompleted: activeGameBoard.removeCoroutine
+        ))
     }
 }
 
@@ -119,6 +122,7 @@ class CannonBall: VisibleRigidBody {
     static let defaultRadius: CGFloat = 30
     static let defaultMass: CGFloat = 1
     static let defaultMaterial = Material(restitution: 0.75)
+    var spookCharge = 0
 
     init(
         launchTransform: Transform,

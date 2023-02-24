@@ -17,7 +17,7 @@ class GameWorld {
     // All game systems
     let physicsWorld: PhysicsWorld
     // Pegs that have been hit during this launch
-    var collidedPegBodies: Set<HostilePeg> = []
+    var collidedPegBodies: Set<NormalPeg> = []
 
     var renderAdaptor: RenderAdaptor?
     var graphicObjects: Set<WorldObject> = []
@@ -85,15 +85,15 @@ class GameWorld {
         // Set colliders along the top, left and right borders of the screen
         let topWall = Wall(
             dim: CGSize(width: worldDim.width, height: wallThickness),
-            position: Vector2(x: worldDim.width / 2, y: -wallThickness / 2)
+            position: Vector2(x: worldDim.width / 2, y: -wallThickness / 2 - bufferHeight)
         )
         let rightWall = Wall(
-            dim: CGSize(width: wallThickness, height: worldDim.height + bufferHeight),
-            position: Vector2(x: worldDim.width + wallThickness / 2, y: (worldDim.height + bufferHeight) / 2)
+            dim: CGSize(width: wallThickness, height: worldDim.height + 2 * bufferHeight),
+            position: Vector2(x: worldDim.width + wallThickness / 2, y: worldDim.height / 2)
         )
         let leftWall = Wall(
-            dim: CGSize(width: wallThickness, height: worldDim.height + bufferHeight),
-            position: Vector2(x: -wallThickness / 2, y: (worldDim.height + bufferHeight) / 2)
+            dim: CGSize(width: wallThickness, height: worldDim.height + 2 * bufferHeight),
+            position: Vector2(x: -wallThickness / 2, y: worldDim.height / 2)
         )
 
         let ballRecycler = BallRecycler(
@@ -141,12 +141,12 @@ class GameWorld {
         physicsWorld.removeBody(pegRb)
         graphicObjects.remove(pegRb)
         // To prevent duplicate removal when cannon exits screen
-        if let hostilePeg = pegRb as? HostilePeg {
-            collidedPegBodies.remove(hostilePeg)
+        if let normalPeg = pegRb as? NormalPeg {
+            collidedPegBodies.remove(normalPeg)
         }
     }
 
-    func queuePegRemoval(_ hitPegRb: HostilePeg) {
+    func queuePegRemoval(_ hitPegRb: NormalPeg) {
         collidedPegBodies.insert(hitPegRb)
     }
 
