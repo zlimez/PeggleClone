@@ -39,9 +39,12 @@ struct GameView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: geo.size.width)
-            
+
             BallCountView(ballCount: renderAdaptor.numOfBalls)
                 .position(x: geo.size.width - 100, y: 60)
+
+            ScoreView(score: renderAdaptor.score)
+                .position(x: 150, y: 100)
         }
     }
 }
@@ -65,6 +68,15 @@ struct BallCountView: View {
 
     var body: some View {
         Text("Balls left: " + String(ballCount))
-            .font(.title)
+            .font(.largeTitle)
+    }
+}
+
+struct ScoreView: View {
+    var score: Int
+    
+    var body: some View {
+        Text("Score: " + String(score))
+            .font(.largeTitle)
     }
 }

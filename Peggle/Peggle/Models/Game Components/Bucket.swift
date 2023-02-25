@@ -42,6 +42,14 @@ class Bucket: VisibleRigidBody {
         // Removal would not be invoked here
         activeGameBoard.addCoroutine(Coroutine(routine: oscillate, onCompleted: activeGameBoard.removeCoroutine))
     }
+    
+    func shut() {
+        isTrigger = false
+    }
+    
+    func open() {
+        isTrigger = true
+    }
 
     func oscillate(deltaTime: Double) -> Bool {
         guard let activeGameBoard = GameWorld.activeGameBoard else {
@@ -64,9 +72,9 @@ class Bucket: VisibleRigidBody {
 
     override func onTriggerEnter(_ collision: Collision) {
         super.onTriggerEnter(collision)
-        if collision.rbB is CannonBall {
+        if let cannonBall = collision.rbB as? CannonBall {
             GameWorld.activeGameBoard?.numOfBalls += 1
-            GameWorld.activeGameBoard?.removeCannonBall(collision.rbB)
+            GameWorld.activeGameBoard?.removeCannonBall(cannonBall)
             GameWorld.activeGameBoard?.fadeCollidedPegs()
 
         }

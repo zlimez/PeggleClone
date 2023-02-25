@@ -24,6 +24,9 @@ class BallRecycler: RigidBody {
             if cannonBall.spookCharge > 0 {
                 cannonBall.transform.position = Vector2(x: cannonBall.transform.position.x, y: -50)
                 cannonBall.spookCharge -= 1
+                if cannonBall.spookCharge == 0 {
+                    GameWorld.activeGameBoard?.openBucket()
+                }
                 return
             }
             GameWorld.activeGameBoard?.removeCannonBall(cannonBall)

@@ -37,10 +37,10 @@ struct DesignBoard: Codable {
             pegRadius: 30
         )
         PegMapper.pegToPegRbTable[orangePeg] = { peg in
-            NormalPeg(peg)
+            HostilePeg(peg: peg, threatLevel: ThreatLevel.low)
         }
         PegMapper.pegToPegRbTable[bluePeg] = { peg in
-            NormalPeg(peg)
+            CivilianPeg(peg: peg)
         }
         PegMapper.pegToPegRbTable[purplePeg] = { peg in
             BoomPeg(peg: peg)

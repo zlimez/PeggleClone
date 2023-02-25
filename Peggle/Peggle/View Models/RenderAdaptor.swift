@@ -11,6 +11,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
     var gameWorld: GameWorld
     @Published var graphicObjects: [WorldObjectVM]
     @Published var numOfBalls: Int = 0
+    @Published var score: Int = 0
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
@@ -32,6 +33,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
             }
         }
         numOfBalls = gameWorld.numOfBalls
+        score = gameWorld.getScore()
     }
 
     func configScene(_ worldDim: CGSize) {

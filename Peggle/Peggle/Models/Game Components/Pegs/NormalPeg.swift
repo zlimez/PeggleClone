@@ -8,9 +8,8 @@
 import Foundation
 
 class NormalPeg: PegRB {
-    private var collisionCount = 0
-    private var ballHitStartTime: Double = 0
-    private var pegFadeTime: Double = 1
+    var ballHitStartTime: Double = 0
+    var pegFadeTime: Double = 1
 
     func makeFade() {
         guard let activeGameBoard = GameWorld.activeGameBoard else {
@@ -37,11 +36,6 @@ class NormalPeg: PegRB {
             }
             spriteContainer.sprite = peg.pegLitColor
             ballHitStartTime = activeGameBoard.gameTime
-
-            collisionCount += 1
-            if collisionCount == activeGameBoard.pegRemovalHitCount {
-                makeFade()
-            }
             activeGameBoard.queuePegRemoval(self)
         }
     }

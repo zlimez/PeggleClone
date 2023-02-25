@@ -11,7 +11,7 @@ class BoomPeg: PegRB, Animated {
     // TODO: Animate explosion
     var idleSprite: String = ""
     var spriteSheet: [String] = []
-    var animateSequences: [String : [Int]] = [:]
+    var animateSequences: [String: [Int]] = [:]
     var frameRate: Float = 0
 
     var explosionScale: CGFloat
@@ -24,8 +24,8 @@ class BoomPeg: PegRB, Animated {
     init(
         peg: Peg,
         explosionRatio: CGFloat = 5,
-        explosionSpeed: Vector2 = Vector2.one * 2.5,
-        explosionImpulse: CGFloat = 10000
+        explosionSpeed: Vector2 = Vector2.one * 5,
+        explosionImpulse: CGFloat = 10_000
     ) {
         // Bigger the peg, bigger the explosion radius
         self.initScale = peg.transform.scale.x
@@ -82,6 +82,10 @@ class BoomPeg: PegRB, Animated {
         }
 
         if let normalPeg = collision.rbB as? NormalPeg {
+            guard let activeGameBoard = GameWorld.activeGameBoard else {
+                fatalError("No active board")
+            }
+            activeGameBoard.queuePegRemoval(normalPeg)
             normalPeg.makeFade()
             return
         }

@@ -15,6 +15,7 @@ class BondPeg: NormalPeg {
         if !chargeGiven, let cannonBall = collision.rbB as? CannonBall {
             cannonBall.spookCharge += 1
             chargeGiven = true
+            GameWorld.activeGameBoard?.shutBucket()
         }
     }
 }
