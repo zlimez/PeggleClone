@@ -21,7 +21,7 @@ struct PegPanelView: View {
             }
             PegButtonView(pegVariant: "delete", action: {
                 designBoardVM.switchToDeletePeg()
-            }, diameter: 60)
+            }, unitSize: Vector2.one * 60)
             .opacity(designBoardVM.selectedAction == Action.delete ? 1 : 0.5)
         }
         .padding(.all, 20)
@@ -135,47 +135,52 @@ struct PaletteView: View {
     let columns = [GridItem(.flexible())]
 
     var body: some View {
+        layoutPalette(DesignBoard.palette)
+        layoutPalette(DesignBoard.blockPalette)
+            .offset(CGSize(width: -80, height: 0))
+    }
+    
+    func layoutPalette(_ palette: [PegVariant]) -> some View {
         LazyVGrid(columns: columns) {
-            ForEach(adaptPalette(DesignBoard.palette), id: \.self) { variantGroup in
+            ForEach(adaptPalette(palette: palette, groupSize: 3), id: \.self) { variantGroup in
                 HStack {
                     ForEach(variantGroup, id: \.self) { variant in
                         PegButtonView(
                             pegVariant: variant.pegSprite,
                             action: { designBoardVM.switchToAddPeg(variant) },
-                            diameter: 60)
+                            unitSize: variant.size)
                         .opacity(designBoardVM.isVariantActive(variant) ? 1 : 0.5)
                     }
                 }
             }
-            .offset(x: -80)
         }
     }
 
-    func adaptPalette(_ palette: [PegVariant]) -> [[PegVariant]] {
-        var groupsOfThree: [[PegVariant]] = []
+    func adaptPalette(palette: [PegVariant], groupSize: Int) -> [[PegVariant]] {
+        var groups: [[PegVariant]] = []
         var i = 0
         var currGroup: [PegVariant] = []
         while i < palette.count {
             currGroup.append(palette[i])
             i += 1
-            if i.isMultiple(of: 3) || i == palette.count {
-                groupsOfThree.append(currGroup)
+            if i.isMultiple(of: groupSize) || i == palette.count {
+                groups.append(currGroup)
                 currGroup = []
             }
         }
-        return groupsOfThree
+        return groups
     }
 }
 
 struct PegButtonView: View {
     let pegVariant: String
     let action: () -> Void
-    let diameter: CGFloat
+    let unitSize: Vector2
     var body: some View {
         Button(action: action) {
             Image(pegVariant)
                 .resizable()
-                .frame(width: diameter, height: diameter)
+                .frame(width: unitSize.x, height: unitSize.y)
         }
     }
 }

@@ -52,11 +52,11 @@ class DesignPeg: Identifiable, Hashable {
             otherTransform: otherBoardPeg.peg.transform
         ).hasCollision
     }
-    
+
     static func == (lhs: DesignPeg, rhs: DesignPeg) -> Bool {
         lhs.peg == rhs.peg
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(peg)
     }

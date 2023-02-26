@@ -11,31 +11,45 @@ struct DesignBoard {
     static let dummyBoard = DesignBoard(board: Board(allPegs: []))
     static var viewDim: CGSize?
     static var maxDim: Int = 0
+    static var blockPalette: [PegVariant] = {
+        let brickBlock = PegVariant(
+            pegSprite: "brick-block",
+            pegLitSprite: "brick-block",
+            size: Vector2(x: 96.5, y: 56)
+        )
+        PegMapper.pegVariantToPegRbTable[brickBlock] = { block in
+            Block(block)
+        }
+        PegMapper.pegVariantToPegTable[brickBlock] = { block in
+            BoxPeg(block)
+        }
+        return [brickBlock]
+    }()
     static var palette: [PegVariant] = {
         let orangePeg = PegVariant(
             pegSprite: "peg-orange",
             pegLitSprite: "peg-orange-glow",
-            size: Vector2.one * 40
+            size: Vector2.one * 50
         )
         let bluePeg = PegVariant(
             pegSprite: "peg-blue",
             pegLitSprite: "peg-blue-glow",
-            size: Vector2.one * 40
+            size: Vector2.one * 50
         )
         let purplePeg = PegVariant(
             pegSprite: "peg-purple",
             pegLitSprite: "peg-purple-glow",
-            size: Vector2.one * 40
+            size: Vector2.one * 50
         )
         let greenPeg = PegVariant(
             pegSprite: "peg-green",
             pegLitSprite: "peg-green-glow",
-            size: Vector2.one * 40
+            size: Vector2.one * 50
         )
         let yellowPeg = PegVariant(
             pegSprite: "peg-yellow",
             pegLitSprite: "peg-yellow-glow",
-            size: Vector2.one * 40
+            size: Vector2.one * 50
         )
         PegMapper.pegVariantToPegRbTable[orangePeg] = { peg in
             HostilePeg(peg: peg, threatLevel: ThreatLevel.low)

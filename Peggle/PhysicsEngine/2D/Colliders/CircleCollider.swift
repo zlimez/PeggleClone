@@ -122,7 +122,7 @@ struct CircleCollider: Collider {
     }
 
     func testCollision(transform: Transform, otherCollider: Collider, otherTransform: Transform) -> ContactPoints {
-        if transform.scale.x != transform.scale.y || otherTransform.scale.x != otherTransform.scale.y {
+        if transform.scale.x != transform.scale.y {
             fatalError("Circle's x and y transform should have identical scales")
         }
 

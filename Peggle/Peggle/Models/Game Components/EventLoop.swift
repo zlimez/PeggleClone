@@ -20,7 +20,7 @@ final class EventLoop {
         return displayLink.timestamp
     }
 
-    init(preferredFrameRate: Float = 90) {
+    init(preferredFrameRate: Float = 120) {
         self.preferredFrameRate = preferredFrameRate
     }
 
@@ -29,7 +29,7 @@ final class EventLoop {
         activeDisplayLink?.invalidate()
         activeDisplayLink = CADisplayLink(target: self, selector: #selector(iterate))
         activeDisplayLink?.preferredFrameRateRange = CAFrameRateRange(
-            minimum: 60, maximum: 120, __preferred: preferredFrameRate)
+            minimum: 75, maximum: 150, __preferred: preferredFrameRate)
 
         activeDisplayLink?.add(to: .current, forMode: .default)
     }
@@ -40,7 +40,7 @@ final class EventLoop {
         }
         let deltaTime = displayLink.targetTimestamp - displayLink.timestamp
 
-        guard var step = step else {
+        guard let step = step else {
             return
         }
         step(deltaTime)

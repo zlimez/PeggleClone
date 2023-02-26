@@ -119,7 +119,7 @@ class Cannon: WorldObject, Animated {
 }
 
 class CannonBall: VisibleRigidBody {
-    static let defaultRadius: CGFloat = 30
+    static let defaultRadius: CGFloat = 25
     static let defaultMass: CGFloat = 1
     static let defaultMaterial = Material(restitution: 0.75)
     var spookCharge = 0

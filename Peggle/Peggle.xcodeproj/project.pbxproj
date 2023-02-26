@@ -69,6 +69,7 @@
 		6AE1866E29AB49B500B3CDE4 /* DesignPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1866D29AB49B500B3CDE4 /* DesignPeg.swift */; };
 		6AE1867329AB603B00B3CDE4 /* BoxPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */; };
 		6AE1867529AB60AE00B3CDE4 /* TrianglePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */; };
+		6AE1867829ABAC3600B3CDE4 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867729ABAC3600B3CDE4 /* Block.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -155,6 +156,7 @@
 		6AE1866D29AB49B500B3CDE4 /* DesignPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignPeg.swift; sourceTree = "<group>"; };
 		6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxPeg.swift; sourceTree = "<group>"; };
 		6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrianglePeg.swift; sourceTree = "<group>"; };
+		6AE1867729ABAC3600B3CDE4 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,14 +200,11 @@
 		6A3B8206299B6A4C007A1AC6 /* Game Components */ = {
 			isa = PBXGroup;
 			children = (
-				6AE1865829A95EF000B3CDE4 /* Pegs */,
+				6AE1867629ABAC0100B3CDE4 /* Objects */,
 				6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */,
 				6A3B8217299CF9DE007A1AC6 /* Coroutine.swift */,
 				6A83B35929994D6300B893AE /* GameWorld.swift */,
-				6A83B367299B3DFC00B893AE /* Cannon.swift */,
-				6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */,
 				6AE1864029A89CA400B3CDE4 /* EventLoop.swift */,
-				6AE1865029A92E5800B3CDE4 /* Bucket.swift */,
 				6AE1865629A9595F00B3CDE4 /* PegMapper.swift */,
 				6AE1865D29A9C34D00B3CDE4 /* ScoreSystem.swift */,
 				6AE1865F29AA1FF800B3CDE4 /* BaseScoreSystem.swift */,
@@ -380,6 +379,18 @@
 				6AE1865B29A966A200B3CDE4 /* LoidPeg.swift */,
 			);
 			path = Pegs;
+			sourceTree = "<group>";
+		};
+		6AE1867629ABAC0100B3CDE4 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */,
+				6AE1865029A92E5800B3CDE4 /* Bucket.swift */,
+				6A83B367299B3DFC00B893AE /* Cannon.swift */,
+				6AE1867729ABAC3600B3CDE4 /* Block.swift */,
+				6AE1865829A95EF000B3CDE4 /* Pegs */,
+			);
+			path = Objects;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -581,6 +592,7 @@
 				6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */,
 				6AD927FC29891E0D004E7963 /* DataManager.swift in Sources */,
 				6AE1864B29A8FA4100B3CDE4 /* Animated.swift in Sources */,
+				6AE1867829ABAC3600B3CDE4 /* Block.swift in Sources */,
 				6A7A8A922986A71A001C15A7 /* DesignBoardVM.swift in Sources */,
 				6A83B354299905E400B893AE /* ImpulseSolver.swift in Sources */,
 				6A3B8216299CF07C007A1AC6 /* SpriteContainer.swift in Sources */,

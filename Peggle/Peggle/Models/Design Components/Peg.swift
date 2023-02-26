@@ -60,15 +60,15 @@ class Peg: Codable, Hashable {
         self.pegVariant = PegVariant(pegSprite: "", pegLitSprite: "", size: Vector2.zero)
         self.transform = Transform.standard
     }
-    
+
     func getCopy() -> Peg {
         Peg(pegVariant: self.pegVariant, transform: self.transform)
     }
-    
+
     static func == (lhs: Peg, rhs: Peg) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
