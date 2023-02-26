@@ -8,10 +8,10 @@
 import Foundation
 
 class PegVM: Identifiable, Equatable {
+    static let dummyPegVM = PegVM(designPeg: DesignPeg.dummyDesignPeg, parentBoard: DesignBoard.dummyBoard)
     let id: Int
-    // TODO: Generalize peg definition
-    let isCircle = true
-    var peg: Peg
+    var parentBoard: DesignBoard
+    var designPeg: DesignPeg
     var sliderXScale: CGFloat = 1 {
         willSet {
             print(newValue)
@@ -30,42 +30,36 @@ class PegVM: Identifiable, Equatable {
             fwdSliderRotation()
         }
     }
-
-    init(peg: Peg) {
-        self.id = peg.id
-        self.peg = peg
+    var isCircle: Bool {
+        designPeg.isCircle
     }
 
-    var x: CGFloat {
-        peg.transform.position.x
+    init(designPeg: DesignPeg, parentBoard: DesignBoard) {
+        self.id = designPeg.id
+        self.designPeg = designPeg
+        self.parentBoard = parentBoard
     }
 
-    var y: CGFloat {
-        peg.transform.position.y
-    }
-
-    var diameter: CGFloat {
-        peg.unitRadius * 2 * peg.transform.scale.x
-    }
-
-    var color: String {
-        peg.pegColor
-    }
+    var x: CGFloat { designPeg.x }
+    var y: CGFloat { designPeg.y }
+    var width: CGFloat { designPeg.width }
+    var height: CGFloat { designPeg.height }
+    var pegSprite: String { designPeg.pegSprite }
+    var rotation: CGFloat { Math.rad2Deg(designPeg.rotation) }
 
     func fwdSliderScale() {
-        // TODO: Move actual scaling and rotation to model
-        if isCircle {
-            peg.transform.scale = Vector2(x: sliderXScale, y: sliderXScale)
-        } else {
-            peg.transform.scale = Vector2(x: sliderXScale, y: sliderYScale)
-        }
+        parentBoard.tryScalePeg(
+            targetPeg: designPeg,
+            newScale: Vector2(x: sliderXScale, y: sliderYScale)
+        )
     }
 
     func fwdSliderRotation() {
-        peg.transform.rotation = Math.deg2Rad(sliderRotation)
+        let unsignedRotation = sliderRotation >= 0 ? 360 + sliderRotation : sliderRotation
+        parentBoard.tryRotatePeg(targetPeg: designPeg, newRotation: Math.deg2Rad(unsignedRotation))
     }
 
     static func == (lhs: PegVM, rhs: PegVM) -> Bool {
-        lhs.peg == rhs.peg
+        lhs.designPeg == rhs.designPeg
     }
 }

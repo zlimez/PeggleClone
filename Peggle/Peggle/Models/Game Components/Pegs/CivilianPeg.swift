@@ -29,7 +29,7 @@ class CivilianPeg: NormalPeg {
 
             collisionCount += 1
             if collisionCount < deathThreshold {
-                spriteContainer.sprite = peg.pegLitColor
+                spriteContainer.sprite = peg.pegLitSprite
             } else if collisionCount == deathThreshold {
                 spriteContainer.sprite = deathSprite
                 isDead = true

@@ -11,6 +11,10 @@ class NormalPeg: PegRB {
     var ballHitStartTime: Double = 0
     var pegFadeTime: Double = 1
 
+    init(_ peg: Peg) {
+        super.init(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
+    }
+
     func makeFade() {
         guard let activeGameBoard = GameWorld.activeGameBoard else {
             fatalError("No active board")
@@ -34,7 +38,7 @@ class NormalPeg: PegRB {
             guard let activeGameBoard = GameWorld.activeGameBoard else {
                 fatalError("No active board")
             }
-            spriteContainer.sprite = peg.pegLitColor
+            spriteContainer.sprite = peg.pegLitSprite
             ballHitStartTime = activeGameBoard.gameTime
             activeGameBoard.queuePegRemoval(self)
         }

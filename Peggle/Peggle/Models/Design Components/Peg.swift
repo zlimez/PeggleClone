@@ -8,7 +8,7 @@
 import Foundation
 
 // TODO: Account for Peg scaling
-class Peg: Identifiable, Hashable, Codable {
+class Peg: Codable, Hashable {
     private static var counter = 0
     static let dummyPeg = Peg()
     let id: Int
@@ -16,22 +16,15 @@ class Peg: Identifiable, Hashable, Codable {
     /// Relative to center, x value increases to the right, y value increases downwards
     var transform: Transform
 
-    /// Relevant only during level design phase
-    var row: Int
-    var col: Int
-
-    var pegColor: String { pegVariant.pegColor }
-    var pegLitColor: String { pegVariant.pegLitColor }
-    var unitRadius: CGFloat { pegVariant.pegRadius }
+    var pegSprite: String { pegVariant.pegSprite }
+    var pegLitSprite: String { pegVariant.pegLitSprite }
+    var unitWidth: CGFloat { pegVariant.size.x }
+    var unitHeight: CGFloat { pegVariant.size.y }
 
     enum CodingKeys: String, CodingKey {
         case id
         case pegVariant
         case transform
-    }
-
-    static func getCounter() -> Int {
-        Peg.counter
     }
 
     func encode(to encoder: Encoder) throws {
@@ -46,58 +39,36 @@ class Peg: Identifiable, Hashable, Codable {
         self.id = try values.decode(Int.self, forKey: .id)
         self.pegVariant = try values.decode(PegVariant.self, forKey: .pegVariant)
         self.transform = try values.decode(Transform.self, forKey: .transform)
-        self.row = -1
-        self.col = -1
         Peg.counter = max(Peg.counter, self.id + 1)
     }
 
-    convenience init(pegVariant: PegVariant, x: CGFloat, y: CGFloat, row: Int, col: Int) {
+    convenience init(pegVariant: PegVariant, x: CGFloat, y: CGFloat) {
         let transform = Transform(Vector2(x: x, y: y))
-        self.init(pegVariant: pegVariant, transform: transform, row: row, col: col)
+        self.init(pegVariant: pegVariant, transform: transform)
     }
 
-    init(pegVariant: PegVariant, transform: Transform, row: Int = -1, col: Int = -1) {
+    init(pegVariant: PegVariant, transform: Transform) {
         self.id = Peg.counter
         self.pegVariant = pegVariant
         self.transform = transform
-        self.row = row
-        self.col = col
 
         Peg.counter += 1
     }
-    
+
     private init() {
         self.id = -1
-        self.pegVariant = PegVariant(pegColor: "", pegLitColor: "", pegRadius: 0)
+        self.pegVariant = PegVariant(pegSprite: "", pegLitSprite: "", size: Vector2.zero)
         self.transform = Transform.standard
-        self.row = -1
-        self.col = -1
     }
-
+    
     func getCopy() -> Peg {
-        Peg(pegVariant: self.pegVariant, transform: self.transform, row: self.row, col: self.col)
+        Peg(pegVariant: self.pegVariant, transform: self.transform)
     }
-
-    func updatePositionTo(newPosition: Vector2, newRow: Int, newCol: Int) {
-        transform.position = newPosition
-        row = newRow
-        col = newCol
-    }
-
-    func isCollidingWith(otherPegRadius: CGFloat, otherPegX: CGFloat, otherPegY: CGFloat, otherPegId: Int) -> Bool {
-        if id == otherPegId {
-            return false
-        }
-
-        let otherPosition = Vector2(x: otherPegX, y: otherPegY)
-        let sqrDistance = (transform.position - otherPosition).sqrMagnitude
-        return sqrDistance < pow(unitRadius + otherPegRadius, 2)
-    }
-
+    
     static func == (lhs: Peg, rhs: Peg) -> Bool {
         lhs.id == rhs.id
     }
-
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

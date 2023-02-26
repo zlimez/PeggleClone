@@ -11,7 +11,7 @@ struct PegPanelView: View {
     @ObservedObject var designBoardVM: DesignBoardVM
 
     var body: some View {
-        HStack {
+        HStack(spacing: 20) {
             /// Assumes palette is static upon loaded
             if designBoardVM.hasSelectedPeg {
                 TransformView(designBoardVM: designBoardVM)
@@ -74,19 +74,19 @@ struct TransformView: View {
     @ObservedObject var designBoardVM: DesignBoardVM
 
     var body: some View {
-        HStack {
+        HStack(spacing: 40) {
             getScalableAxis()
-            Slider(
-                value: $designBoardVM.selectedPeg.sliderRotation,
-                in: 0...360,
-                step: 0.01
-            ) {
+            VStack {
                 Text("Rotation")
-                    .font(.subheadline)
-            } minimumValueLabel: {
-                Text("0")
-            } maximumValueLabel: {
-                Text("360")
+                    .font(.headline)
+                Slider(
+                    value: $designBoardVM.selectedPeg.sliderRotation,
+                    in: -180...180,
+                    step: 0.01,
+                    label: { Text("Rotation") },
+                    minimumValueLabel: { Text("-180") },
+                    maximumValueLabel: { Text("180") }
+                )
             }
         }
     }
@@ -94,43 +94,37 @@ struct TransformView: View {
     func getScalableAxis() -> some View {
         return VStack {
             if designBoardVM.selectedPeg.isCircle {
+                Text("Radius")
+                    .font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
-                    step: 0.01
-                ) {
-                    Text("Radius")
-                        .font(.subheadline)
-                } minimumValueLabel: {
-                    Text("1")
-                } maximumValueLabel: {
-                    Text("3")
-                }
+                    step: 0.01,
+                    label: { Text("Radius") },
+                    minimumValueLabel: { Text("1") },
+                    maximumValueLabel: { Text("3") }
+                )
             } else {
+                Text("Width")
+                    .font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
-                    step: 0.01
-                ) {
-                    Text("Width")
-                        .font(.subheadline)
-                } minimumValueLabel: {
-                    Text("1")
-                } maximumValueLabel: {
-                    Text("3")
-                }
+                    step: 0.01,
+                    label: { Text("Width") },
+                    minimumValueLabel: { Text("1") },
+                    maximumValueLabel: { Text("3") }
+                )
+                Text("Height")
+                    .font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderYScale,
                     in: 1...3,
-                    step: 0.01
-                ) {
-                    Text("Height")
-                        .font(.subheadline)
-                } minimumValueLabel: {
-                    Text("1")
-                } maximumValueLabel: {
-                    Text("3")
-                }
+                    step: 0.01,
+                    label: { Text("Height") },
+                    minimumValueLabel: { Text("1") },
+                    maximumValueLabel: { Text("3") }
+                )
             }
         }
     }
@@ -146,7 +140,7 @@ struct PaletteView: View {
                 HStack {
                     ForEach(variantGroup, id: \.self) { variant in
                         PegButtonView(
-                            pegVariant: variant.pegColor,
+                            pegVariant: variant.pegSprite,
                             action: { designBoardVM.switchToAddPeg(variant) },
                             diameter: 60)
                         .opacity(designBoardVM.isVariantActive(variant) ? 1 : 0.5)

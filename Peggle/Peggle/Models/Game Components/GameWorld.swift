@@ -64,7 +64,7 @@ class GameWorld {
         scoreSystem.reset()
 
         for peg in board.allPegs {
-            guard let pegRbMaker = PegMapper.pegToPegRbTable[peg.pegVariant] else {
+            guard let pegRbMaker = PegMapper.pegVariantToPegRbTable[peg.pegVariant] else {
                 fatalError("Palette does not contain this saved peg")
             }
             addObject(pegRbMaker(peg))

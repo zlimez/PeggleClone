@@ -65,6 +65,10 @@
 		6AE1866029AA1FF800B3CDE4 /* BaseScoreSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1865F29AA1FF800B3CDE4 /* BaseScoreSystem.swift */; };
 		6AE1866429AA240800B3CDE4 /* CivilianPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1866329AA240800B3CDE4 /* CivilianPeg.swift */; };
 		6AE1866629AA288300B3CDE4 /* HostilePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1866529AA288300B3CDE4 /* HostilePeg.swift */; };
+		6AE1866C29AB42DD00B3CDE4 /* CirclePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1866B29AB42DD00B3CDE4 /* CirclePeg.swift */; };
+		6AE1866E29AB49B500B3CDE4 /* DesignPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1866D29AB49B500B3CDE4 /* DesignPeg.swift */; };
+		6AE1867329AB603B00B3CDE4 /* BoxPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */; };
+		6AE1867529AB60AE00B3CDE4 /* TrianglePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,6 +151,10 @@
 		6AE1865F29AA1FF800B3CDE4 /* BaseScoreSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseScoreSystem.swift; sourceTree = "<group>"; };
 		6AE1866329AA240800B3CDE4 /* CivilianPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CivilianPeg.swift; sourceTree = "<group>"; };
 		6AE1866529AA288300B3CDE4 /* HostilePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostilePeg.swift; sourceTree = "<group>"; };
+		6AE1866B29AB42DD00B3CDE4 /* CirclePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CirclePeg.swift; sourceTree = "<group>"; };
+		6AE1866D29AB49B500B3CDE4 /* DesignPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignPeg.swift; sourceTree = "<group>"; };
+		6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxPeg.swift; sourceTree = "<group>"; };
+		6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrianglePeg.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,7 +186,11 @@
 			isa = PBXGroup;
 			children = (
 				6A7A8A8629851D99001C15A7 /* Peg.swift */,
+				6AE1866D29AB49B500B3CDE4 /* DesignPeg.swift */,
+				6AE1866B29AB42DD00B3CDE4 /* CirclePeg.swift */,
 				6A3B8209299B8225007A1AC6 /* DesignBoard.swift */,
+				6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */,
+				6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */,
 			);
 			path = "Design Components";
 			sourceTree = "<group>";
@@ -530,13 +542,16 @@
 				6A3B8210299BAA6E007A1AC6 /* VisibleRigidBody.swift in Sources */,
 				6AE1864D29A9059D00B3CDE4 /* Lerper.swift in Sources */,
 				6AE1865A29A95F1000B3CDE4 /* BondPeg.swift in Sources */,
+				6AE1866C29AB42DD00B3CDE4 /* CirclePeg.swift in Sources */,
 				6A83B3462997296300B893AE /* ContactPoints.swift in Sources */,
 				6A83B366299A99C500B893AE /* RootView.swift in Sources */,
 				6A83B35C2999EF4100B893AE /* NormalPeg.swift in Sources */,
+				6AE1867329AB603B00B3CDE4 /* BoxPeg.swift in Sources */,
 				6A3B8218299CF9DE007A1AC6 /* Coroutine.swift in Sources */,
 				6A83B33B29971FD000B893AE /* Vector2.swift in Sources */,
 				6A83B34E29974D4F00B893AE /* PolygonCollider.swift in Sources */,
 				6AE1865129A92E5800B3CDE4 /* Bucket.swift in Sources */,
+				6AE1866E29AB49B500B3CDE4 /* DesignPeg.swift in Sources */,
 				6A7A8A8729851D99001C15A7 /* Peg.swift in Sources */,
 				6AE1865729A9595F00B3CDE4 /* PegMapper.swift in Sources */,
 				6A3B8212299C989D007A1AC6 /* PositionSolver.swift in Sources */,
@@ -574,6 +589,7 @@
 				6A83B360299A03C000B893AE /* Board.swift in Sources */,
 				6A83B368299B3DFC00B893AE /* Cannon.swift in Sources */,
 				6AE1866629AA288300B3CDE4 /* HostilePeg.swift in Sources */,
+				6AE1867529AB60AE00B3CDE4 /* TrianglePeg.swift in Sources */,
 				6AE1865E29A9C34D00B3CDE4 /* ScoreSystem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

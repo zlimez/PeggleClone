@@ -10,17 +10,17 @@ import Foundation
 class PegRB: VisibleRigidBody {
     let peg: Peg
 
-    init(_ peg: Peg) {
+    init(peg: Peg, collider: Collider) {
         self.peg = peg
         let spriteContainer = SpriteContainer(
-            sprite: peg.pegColor,
-            unitWidth: peg.unitRadius * 2,
-            unitHeight: peg.unitRadius * 2
+            sprite: peg.pegSprite,
+            unitWidth: peg.unitWidth,
+            unitHeight: peg.unitHeight
         )
         super.init(
             bodyType: BodyType.stationary,
             material: Material.staticMaterial,
-            collider: CircleCollider(peg.unitRadius),
+            collider: collider,
             spriteContainer: spriteContainer,
             transform: peg.transform
         )

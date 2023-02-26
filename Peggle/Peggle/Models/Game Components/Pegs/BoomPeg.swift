@@ -32,7 +32,7 @@ class BoomPeg: PegRB, Animated {
         self.explosionScale = initScale * explosionRatio
         self.explosionSpeed = explosionSpeed
         self.explosionImpulse = explosionImpulse
-        super.init(peg)
+        super.init(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
     }
 
     func explode(deltaTime: Double) -> Bool {
@@ -56,7 +56,7 @@ class BoomPeg: PegRB, Animated {
         isTrigger = true
         bodyType = BodyType.kinematic
         // TODO: Nicer animation for explosion
-        spriteContainer.sprite = peg.pegLitColor
+        spriteContainer.sprite = peg.pegLitSprite
         spriteContainer.opacity = 0.25
         activeGameBoard.addCoroutine(Coroutine(routine: explode, onCompleted: activeGameBoard.removeCoroutine))
     }

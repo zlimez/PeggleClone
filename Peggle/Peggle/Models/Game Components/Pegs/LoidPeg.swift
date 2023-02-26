@@ -13,7 +13,7 @@ class LoidPeg: PegRB {
 
     init(peg: Peg, baseImpulse: CGFloat = 15) {
         self.baseImpulse = baseImpulse
-        super.init(peg)
+        super.init(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
     }
 
     override func onCollisionEnter(_ collision: Collision) {

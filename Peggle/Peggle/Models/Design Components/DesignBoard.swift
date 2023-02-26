@@ -8,192 +8,216 @@
 import Foundation
 
 struct DesignBoard {
+    static let dummyBoard = DesignBoard(board: Board(allPegs: []))
     static var viewDim: CGSize?
     static var maxDim: Int = 0
     static var palette: [PegVariant] = {
         let orangePeg = PegVariant(
-            pegColor: "peg-orange",
-            pegLitColor: "peg-orange-glow",
-            pegRadius: 30
+            pegSprite: "peg-orange",
+            pegLitSprite: "peg-orange-glow",
+            size: Vector2.one * 40
         )
         let bluePeg = PegVariant(
-            pegColor: "peg-blue",
-            pegLitColor: "peg-blue-glow",
-            pegRadius: 30
+            pegSprite: "peg-blue",
+            pegLitSprite: "peg-blue-glow",
+            size: Vector2.one * 40
         )
         let purplePeg = PegVariant(
-            pegColor: "peg-purple",
-            pegLitColor: "peg-purple-glow",
-            pegRadius: 30
+            pegSprite: "peg-purple",
+            pegLitSprite: "peg-purple-glow",
+            size: Vector2.one * 40
         )
         let greenPeg = PegVariant(
-            pegColor: "peg-green",
-            pegLitColor: "peg-green-glow",
-            pegRadius: 30
+            pegSprite: "peg-green",
+            pegLitSprite: "peg-green-glow",
+            size: Vector2.one * 40
         )
         let yellowPeg = PegVariant(
-            pegColor: "peg-yellow",
-            pegLitColor: "peg-yellow-glow",
-            pegRadius: 30
+            pegSprite: "peg-yellow",
+            pegLitSprite: "peg-yellow-glow",
+            size: Vector2.one * 40
         )
-        PegMapper.pegToPegRbTable[orangePeg] = { peg in
+        PegMapper.pegVariantToPegRbTable[orangePeg] = { peg in
             HostilePeg(peg: peg, threatLevel: ThreatLevel.low)
         }
-        PegMapper.pegToPegRbTable[bluePeg] = { peg in
+        PegMapper.pegVariantToPegTable[orangePeg] = { peg in
+            CirclePeg(peg)
+        }
+        PegMapper.pegVariantToPegRbTable[bluePeg] = { peg in
             CivilianPeg(peg: peg)
         }
-        PegMapper.pegToPegRbTable[purplePeg] = { peg in
+        PegMapper.pegVariantToPegTable[bluePeg] = { peg in
+            CirclePeg(peg)
+        }
+        PegMapper.pegVariantToPegRbTable[purplePeg] = { peg in
             BoomPeg(peg: peg)
         }
-        PegMapper.pegToPegRbTable[greenPeg] = { peg in
+        PegMapper.pegVariantToPegTable[purplePeg] = { peg in
+            CirclePeg(peg)
+        }
+        PegMapper.pegVariantToPegRbTable[greenPeg] = { peg in
             BondPeg(peg)
         }
-        PegMapper.pegToPegRbTable[yellowPeg] = { peg in
+        PegMapper.pegVariantToPegTable[greenPeg] = { peg in
+            CirclePeg(peg)
+        }
+        PegMapper.pegVariantToPegRbTable[yellowPeg] = { peg in
             LoidPeg(peg: peg)
+        }
+        PegMapper.pegVariantToPegTable[yellowPeg] = { peg in
+            CirclePeg(peg)
         }
         return [orangePeg, bluePeg, purplePeg, greenPeg, yellowPeg]
     }()
     static var dimInitialized = false
 
     var board: Board
-    var allPegs: [Peg] {
-        board.allPegs
-    }
-    /// assume all pegs have the same radius, thus each cell in grid can hold at most one peg  reference
-    var pegRadius: CGFloat
-    var grid: [[Peg?]]
+    var designPegs: Set<DesignPeg>
+    var boundaries: [Boundary]
 
     static func getEmptyBoard() -> DesignBoard {
         DesignBoard(board: Board(allPegs: []))
     }
 
-    init(board: Board, pegRadius: CGFloat = 30) {
+    init(board: Board) {
         self.board = board
-        self.pegRadius = pegRadius
-        if DesignBoard.dimInitialized {
-            self.grid = Array(repeating: Array(repeating: nil, count: DesignBoard.maxDim), count: DesignBoard.maxDim)
-            board.allPegs.forEach { peg in placePegInGrid(peg) }
-        } else {
-            self.grid = [[]]
-            board.allPegs.forEach { peg in initPeg(peg) }
+        designPegs = []
+        for peg in board.allPegs {
+            guard let pegMaker = PegMapper.pegVariantToPegTable[peg.pegVariant] else {
+                fatalError("Peg variant does not exist in mapper")
+            }
+            designPegs.insert(pegMaker(peg))
         }
+        boundaries = []
     }
 
-    mutating func tryAddPegAt(pegVariant: PegVariant, x: CGFloat, y: CGFloat) -> Peg? {
-        if willCollide(pegRadius: pegVariant.pegRadius, pegX: x, pegY: y) {
+    mutating func tryAddPegAt(pegVariant: PegVariant, x: CGFloat, y: CGFloat) -> DesignPeg? {
+        guard let pegMaker = PegMapper.pegVariantToPegTable[pegVariant] else {
+            fatalError("No peg maker matches the peg variant")
+        }
+        let candidatePeg = pegMaker(Peg(pegVariant: pegVariant, transform: Transform(Vector2(x: x, y: y))))
+        if willCollide(candidatePeg) {
             return nil
         }
 
-        let addedCol = pointToGrid(x)
-        let addedRow = pointToGrid(y)
-
-        let addedPeg = Peg(pegVariant: pegVariant, x: x, y: y, row: addedRow, col: addedCol)
-        addPeg(addedPeg)
-        return addedPeg
+        addPeg(candidatePeg)
+        return candidatePeg
+    }
+    
+    mutating func tryRotatePeg(targetPeg: DesignPeg, newRotation: CGFloat) {
+        let originalRotation = targetPeg.peg.transform.rotation
+        targetPeg.rotateTo(newRotation)
+        if willCollide(targetPeg) {
+            targetPeg.rotateTo(originalRotation)
+        }
+    }
+    
+    mutating func tryScalePeg(targetPeg: DesignPeg, newScale: Vector2) {
+        var calibratedScale = newScale
+        if targetPeg is CirclePeg {
+            calibratedScale = Vector2.one * newScale.x
+        }
+        let originalScale = targetPeg.peg.transform.scale
+        targetPeg.scaleTo(calibratedScale)
+        if willCollide(targetPeg) {
+            targetPeg.scaleTo(originalScale)
+        }
     }
 
-    mutating func tryMovePeg(targetPeg: Peg, destination: Vector2) {
-        if willCollide(pegRadius: targetPeg.unitRadius, pegX: destination.x, pegY: destination.y, pegId: targetPeg.id) {
-            return
+    mutating func tryMovePeg(targetPeg: DesignPeg, destination: Vector2) {
+        let originalPosition = targetPeg.peg.transform.position
+        targetPeg.updatePositionTo(destination)
+        if willCollide(targetPeg) {
+            targetPeg.updatePositionTo(originalPosition)
         }
-
-        let newRow = pointToGrid(destination.y)
-        let newCol = pointToGrid(destination.x)
-
-        grid[targetPeg.row][targetPeg.col] = nil
-        grid[newRow][newCol] = targetPeg
-        targetPeg.updatePositionTo(newPosition: destination, newRow: newRow, newCol: newCol)
     }
 
     mutating func removeAllPegs() {
+        designPegs.removeAll()
         board.removeAllPegs()
-        self.grid = Array(repeating: Array(repeating: nil, count: grid.count), count: grid.count)
     }
 
-    mutating func initGrid(_ viewDim: CGSize) {
+    mutating func initDim(_ viewDim: CGSize) {
         DesignBoard.viewDim = viewDim
-        DesignBoard.maxDim = Int(round(max(viewDim.width / self.pegRadius, viewDim.height / self.pegRadius)))
-        print("Max dim \(DesignBoard.maxDim)")
-        self.grid = Array(repeating: Array(repeating: nil, count: DesignBoard.maxDim), count: DesignBoard.maxDim)
-        for initPeg in board.allPegs {
-            self.grid[initPeg.row][initPeg.col] = initPeg
-        }
         DesignBoard.dimInitialized = true
+        
+        let topBound = Boundary(
+            boxCollider: BoxCollider(halfWidth: viewDim.width / 2, halfHeight: Boundary.boundHalfThickness),
+            transform: Transform(Vector2(x: viewDim.width / 2, y: -Boundary.boundHalfThickness))
+        )
+        let downBound = Boundary(
+            boxCollider: BoxCollider(halfWidth: viewDim.width / 2, halfHeight: Boundary.boundHalfThickness),
+            transform: Transform(Vector2(x: viewDim.width / 2, y: viewDim.height + Boundary.boundHalfThickness))
+        )
+        let leftBound = Boundary(
+            boxCollider: BoxCollider(halfWidth: Boundary.boundHalfThickness, halfHeight: viewDim.height / 2),
+            transform: Transform(Vector2(x: -Boundary.boundHalfThickness, y: viewDim.height / 2))
+        )
+        let rightBound = Boundary(
+            boxCollider: BoxCollider(halfWidth: Boundary.boundHalfThickness, halfHeight: viewDim.height / 2),
+            transform: Transform(Vector2(x: viewDim.width + Boundary.boundHalfThickness, y: viewDim.height / 2))
+        )
+        boundaries.append(topBound)
+        boundaries.append(downBound)
+        boundaries.append(leftBound)
+        boundaries.append(rightBound)
     }
 
-    private mutating func initPeg(_ savedPeg: Peg) {
-        savedPeg.row = pointToGrid(savedPeg.transform.position.y)
-        savedPeg.col = pointToGrid(savedPeg.transform.position.x)
-        board.addPeg(savedPeg)
+    private mutating func addPeg(_ addedPeg: DesignPeg) {
+        designPegs.insert(addedPeg)
+        board.addPeg(addedPeg.peg)
     }
 
-    private mutating func addPeg(_ addedPeg: Peg) {
-        board.addPeg(addedPeg)
-        grid[addedPeg.row][addedPeg.col] = addedPeg
-    }
-
-    private mutating func placePegInGrid(_ pegPlaced: Peg) {
-        let placedRow = pointToGrid(pegPlaced.transform.position.x)
-        let placedCol = pointToGrid(pegPlaced.transform.position.y)
-        grid[placedRow][placedCol] = pegPlaced
-    }
-
-    mutating func removePeg(_ removedPeg: Peg) {
-        board.removePeg(removedPeg)
-        grid[removedPeg.row][removedPeg.col] = nil
+    mutating func removePeg(_ removedPeg: DesignPeg) {
+        designPegs.remove(removedPeg)
+        board.removePeg(removedPeg.peg)
     }
 
     // Pegs yet to be created will have the special id -1
-    private func willCollide(pegRadius: CGFloat, pegX: CGFloat, pegY: CGFloat, pegId: Int = -1) -> Bool {
+    private func willCollide(_ targetPeg: DesignPeg) -> Bool {
         // Collides with play area border
-        if pegX < pegRadius || pegX > DesignBoard.viewDim!.width - pegRadius
-            || pegY < pegRadius || pegY > DesignBoard.viewDim!.height - pegRadius {
-            return true
-        }
-
-        let thisPegRow = pointToGrid(pegY)
-        let thisPegCol = pointToGrid(pegX)
-        let offsets: [Int] = [-2, -1, 0, 1, 2]
-        for offsetX in offsets {
-            for offsetY in offsets {
-                let adjacentRow = max(min(thisPegRow + offsetY, grid.count - 1), 0)
-                let adjacentCol = max(min(thisPegCol + offsetX, grid.count - 1), 0)
-                guard let pegInCell = grid[adjacentRow][adjacentCol] else {
-                    continue
-                }
-
-                if pegInCell.isCollidingWith(
-                    otherPegRadius: pegRadius,
-                    otherPegX: pegX,
-                    otherPegY: pegY,
-                    otherPegId: pegId
-                ) {
-                    return true
-                }
+        for boundary in boundaries {
+            if boundary.isCollidingWith(targetPeg) {
+                return true
             }
         }
-
+        
+        for designPeg in designPegs {
+            if designPeg != targetPeg && designPeg.isCollidingWith(targetPeg) {
+                return true
+            }
+        }
+        
         return false
     }
-
-    private func pointToGrid(_ point: CGFloat) -> Int {
-        Int(point / pegRadius)
+}
+    
+struct Boundary {
+    static let boundHalfThickness: CGFloat = 10
+    var boxCollider: BoxCollider
+    var transform: Transform
+    
+    func isCollidingWith(_ designPeg: DesignPeg) -> Bool {
+        guard let pegCollider = designPeg.collider else {
+            fatalError("Peg on design board does not have a collider attached")
+        }
+        return boxCollider.testCollision(transform: transform, otherCollider: pegCollider, otherTransform: designPeg.peg.transform).hasCollision
     }
 }
 
 struct PegVariant: Hashable {
-    let pegColor: String
-    let pegLitColor: String
-    let pegRadius: CGFloat
+    let pegSprite: String
+    let pegLitSprite: String
+    let size: Vector2
 
     static func == (lhs: PegVariant, rhs: PegVariant) -> Bool {
-        lhs.pegColor == rhs.pegColor && lhs.pegLitColor == rhs.pegLitColor && lhs.pegRadius == rhs.pegRadius
+        lhs.pegSprite == rhs.pegSprite && lhs.pegLitSprite == rhs.pegLitSprite && lhs.size == rhs.size
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(pegColor)
-        hasher.combine(pegLitColor)
-        hasher.combine(pegRadius)
+        hasher.combine(pegSprite)
+        hasher.combine(pegLitSprite)
+        hasher.combine(size)
     }
 }
 

@@ -18,7 +18,6 @@ class DesignBoardVM: ObservableObject {
     @Published var selectedPeg: PegVM
     // Used to forced swiftUI to rerender when peg is moved
     @Published var pegPositionUpdate = 1
-    private var dummyPegVM = PegVM(peg: Peg.dummyPeg)
     var designBoard: DesignBoard
 
     var hasSelectedPeg: Bool {
@@ -31,15 +30,15 @@ class DesignBoardVM: ObservableObject {
 
     init() {
         self.designBoard = DesignBoard.getEmptyBoard()
-        self.selectedPeg = dummyPegVM
+        self.selectedPeg = PegVM.dummyPegVM
     }
 
     func setNewBoard(_ designBoard: DesignBoard) {
         pegVMs.removeAll()
 
         self.designBoard = designBoard
-        self.selectedPeg = dummyPegVM
-        pegVMs = designBoard.allPegs.map { peg in PegVM(peg: peg) }
+        self.selectedPeg = PegVM.dummyPegVM
+        pegVMs = designBoard.designPegs.map { designPeg in PegVM(designPeg: designPeg, parentBoard: designBoard) }
     }
 
     func isVariantActive(_ pegVariant: PegVariant) -> Bool {
@@ -48,7 +47,7 @@ class DesignBoardVM: ObservableObject {
 
     func deselectPeg() {
         if hasSelectedPeg {
-            selectedPeg = dummyPegVM
+            selectedPeg = PegVM.dummyPegVM
         }
     }
 
@@ -78,13 +77,13 @@ class DesignBoardVM: ObservableObject {
             return false
         }
 
-        pegVMs.append(PegVM(peg: addedPeg))
+        pegVMs.append(PegVM(designPeg: addedPeg, parentBoard: designBoard))
         return true
     }
 
     func selectOrRemovePeg(isLongPress: Bool, targetPegVM: PegVM) {
         if isLongPress || selectedAction == Action.delete {
-            designBoard.removePeg(targetPegVM.peg)
+            designBoard.removePeg(targetPegVM.designPeg)
             pegVMs = pegVMs.filter { $0.id != targetPegVM.id }
         } else {
             selectedPeg = targetPegVM
@@ -93,7 +92,7 @@ class DesignBoardVM: ObservableObject {
 
     func tryMovePeg(targetPegVM: PegVM, destination: CGPoint) {
         pegPositionUpdate *= -1
-        designBoard.tryMovePeg(targetPeg: targetPegVM.peg, destination: Vector2(x: destination.x, y: destination.y))
+        designBoard.tryMovePeg(targetPeg: targetPegVM.designPeg, destination: Vector2(x: destination.x, y: destination.y))
     }
 
     func removeAllPegs() {
@@ -101,7 +100,7 @@ class DesignBoardVM: ObservableObject {
         designBoard.removeAllPegs()
     }
 
-    func initGrid(_ viewDim: CGSize) {
-        designBoard.initGrid(viewDim)
+    func initDim(_ viewDim: CGSize) {
+        designBoard.initDim(viewDim)
     }
 }

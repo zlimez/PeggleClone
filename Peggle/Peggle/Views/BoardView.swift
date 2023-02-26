@@ -37,7 +37,7 @@ struct BoardView: View {
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
         if !DesignBoard.dimInitialized {
-            DispatchQueue.main.async { designBoardVM.initGrid(geo.size) }
+            DispatchQueue.main.async { designBoardVM.initDim(geo.size) }
         }
 
         return Image("BG")
@@ -55,9 +55,10 @@ struct PegView: View {
     let dragPressDistanceThreshold: CGFloat = 5
 
     var body: some View {
-        Image(pegVM.color)
+        Image(pegVM.pegSprite)
             .resizable()
-            .frame(width: pegVM.diameter, height: pegVM.diameter)
+            .frame(width: pegVM.width, height: pegVM.height)
+            .rotationEffect(.degrees(pegVM.rotation))
             .position(x: pegVM.x, y: pegVM.y)
             .gesture(drag)
             .simultaneousGesture(tap)
