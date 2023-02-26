@@ -10,6 +10,7 @@ import Foundation
 // TODO: Account for Peg scaling
 class Peg: Identifiable, Hashable, Codable {
     private static var counter = 0
+    static let dummyPeg = Peg()
     let id: Int
     let pegVariant: PegVariant
     /// Relative to center, x value increases to the right, y value increases downwards
@@ -63,6 +64,14 @@ class Peg: Identifiable, Hashable, Codable {
         self.col = col
 
         Peg.counter += 1
+    }
+    
+    private init() {
+        self.id = -1
+        self.pegVariant = PegVariant(pegColor: "", pegLitColor: "", pegRadius: 0)
+        self.transform = Transform.standard
+        self.row = -1
+        self.col = -1
     }
 
     func getCopy() -> Peg {

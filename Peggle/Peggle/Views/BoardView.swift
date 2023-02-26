@@ -9,25 +9,30 @@ import SwiftUI
 import Foundation
 
 struct BoardView: View {
-    @State private var designBoardVM = DesignBoardVM.getEmptyBoard()
+    @StateObject var designBoardVM = DesignBoardVM()
     @Binding var path: [Mode]
 
     var body: some View {
         VStack(spacing: 0) {
+            ControlPanelView(designBoardVM: designBoardVM, path: $path)
+
             ZStack {
                 GeometryReader { geo in fillPlayArea(geo) }
 
-                ForEach($designBoardVM.pegVMs) { pegVM in
-                    PegView(pegVM: pegVM, parentBoardVM: $designBoardVM)
+                ForEach(designBoardVM.pegVMs) { pegVM in
+                    PegView(pegVM: pegVM, parentBoardVM: designBoardVM)
                 }
             }
             .onTapGesture { location in
-                designBoardVM.tryAddPegAt(x: location.x, y: location.y)
+                if !designBoardVM.tryAddPegAt(x: location.x, y: location.y) {
+                    designBoardVM.deselectPeg()
+                }
             }
-            .ignoresSafeArea()
 
-            ControlPanelView(designBoardVM: $designBoardVM, path: $path)
+            PegPanelView(designBoardVM: designBoardVM)
         }
+        .ignoresSafeArea()
+        .navigationBarHidden(true)
     }
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
@@ -35,7 +40,7 @@ struct BoardView: View {
             DispatchQueue.main.async { designBoardVM.initGrid(geo.size) }
         }
 
-        return Image("background")
+        return Image("BG")
             .resizable()
             .scaledToFill()
             .frame(width: geo.size.width)
@@ -44,8 +49,8 @@ struct BoardView: View {
 
 /// Each peg should detect a drag to move the peg around or a long tap to signal its deletion
 struct PegView: View {
-    @Binding var pegVM: PegVM
-    @Binding var parentBoardVM: DesignBoardVM
+    var pegVM: PegVM
+    @ObservedObject var parentBoardVM: DesignBoardVM
     @GestureState private var startLocation: CGPoint?
     let dragPressDistanceThreshold: CGFloat = 5
 
@@ -61,14 +66,14 @@ struct PegView: View {
 
     var tap: some Gesture {
         TapGesture()
-            .onEnded { _ in parentBoardVM.tryRemovePeg(isLongPress: false, targetPeg: pegVM.peg)
+            .onEnded { _ in parentBoardVM.selectOrRemovePeg(isLongPress: false, targetPegVM: pegVM)
             }
     }
 
     var longPress: some Gesture {
         LongPressGesture(minimumDuration: 0.4, maximumDistance: dragPressDistanceThreshold)
             .onEnded { _ in
-                parentBoardVM.tryRemovePeg(isLongPress: true, targetPeg: pegVM.peg)
+                parentBoardVM.selectOrRemovePeg(isLongPress: true, targetPegVM: pegVM)
             }
     }
 
@@ -79,7 +84,7 @@ struct PegView: View {
                     var destination = startLocation ?? CGPoint(x: pegVM.x, y: pegVM.y)
                     destination.x += value.translation.width
                     destination.y += value.translation.height
-                    parentBoardVM.tryMovePeg(targetPeg: pegVM.peg, destination: destination)
+                    parentBoardVM.tryMovePeg(targetPegVM: pegVM, destination: destination)
                 }
             }
             .updating($startLocation) { _, startLocation, _ in

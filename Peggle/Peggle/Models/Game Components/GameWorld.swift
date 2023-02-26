@@ -202,11 +202,11 @@ class GameWorld {
         scoreSystem.updateScore()
         cannon?.cannonReady = true
     }
-    
+
     func shutBucket() {
         bucket?.shut()
     }
-    
+
     func openBucket() {
         bucket?.open()
     }

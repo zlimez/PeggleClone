@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DesignBoard: Codable {
+struct DesignBoard {
     static var viewDim: CGSize?
     static var maxDim: Int = 0
     static var palette: [PegVariant] = {
