@@ -7,8 +7,13 @@
 
 import Foundation
 
+// Considers block as a peg, during design there is no behaviour difference
+// hence I do not see the need to intentionally consider it separately other
+// than having a different set of a behaviour as with peg variants
 class PegRB: VisibleRigidBody {
     let peg: Peg
+    var unitWidth: CGFloat { peg.unitWidth }
+    var unitHeight: CGFloat { peg.unitHeight }
 
     init(peg: Peg, collider: Collider) {
         self.peg = peg

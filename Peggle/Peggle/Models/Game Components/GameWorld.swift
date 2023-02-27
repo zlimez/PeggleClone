@@ -17,12 +17,38 @@ class GameWorld {
     let physicsWorld: PhysicsWorld
     // Pegs that have been hit during this launch
     private var collidedPegBodies: Set<NormalPeg> = []
-    var ballExit = false
+    // For external gamesystems to register their responses
+    var onCollision: [(PegRB) -> Void] = []
+    var onPegRemoved: [(PegRB) -> Void] = []
 
-    var renderAdaptor: RenderAdaptor?
-    var graphicObjects: Set<WorldObject> = []
+    var onStepCompleted: [(any Collection<WorldObject>) -> Void] = []
+    private var graphicObjects: Set<WorldObject> = []
 
-    private var scoreSystem: ScoreSystem
+    // Contains information such as score, civilians killed etc. determined by game mode configurer
+    var ballCounter = BallCounter()
+    var timer = Timer()
+    var score = Score()
+    var targetScore = TargetScore()
+    var civTally = CivTally()
+
+    var ballCount: Int? {
+        ballCounter.getBallCount()
+    }
+    var timeLeft: Double? {
+        timer.getTime()
+    }
+    var currScore: Int? {
+        score.getScore(gameModeAttachment)
+    }
+    var scoreToBeat: Int? {
+        targetScore.getTargetScore(gameModeAttachment)
+    }
+    var civDeath: (Int, Int)? {
+        civTally.getCivDeathTally(gameModeAttachment)
+    }
+
+    var playState: PlayState = PlayState.none
+    private var gameModeAttachment = GameModeAttachment.defaultMode
 
     let eventLoop: EventLoop
     private var coroutines: Set<Coroutine> = []
@@ -32,8 +58,8 @@ class GameWorld {
 
     // Game specific objects
     private var cannon: Cannon?
+    private var ballExit = false
     private var bucket: Bucket?
-    var numOfBalls: Int = 0
     var worldDim: CGSize?
 
     static func getEmptyWorld() -> GameWorld {
@@ -44,39 +70,41 @@ class GameWorld {
         self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
         self.eventLoop = EventLoop(preferredFrameRate: preferredFrameRate)
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
-        // TODO: Change the stub
-        self.scoreSystem = BaseScoreSystem()
 
         GameWorld.activeGameBoard = self
     }
 
-    func getScore() -> Int {
-        scoreSystem.score
-    }
-
-    func setNewBoard(_ board: Board) {
-        print("setting new board")
-        // TODO: Move these recycling functions to when the game ends
+    func exitGame() {
+        eventLoop.stop()
         physicsWorld.removeAllBodies()
         graphicObjects.removeAll()
         coroutines.removeAll()
         collidedPegBodies.removeAll()
-        scoreSystem.reset()
+        onCollision.removeAll()
+        onPegRemoved.removeAll()
+        gameModeAttachment.reset()
+    }
+
+    func setNewBoard(board: Board, gameMode: String) {
+        if let modeAttachment = ModeMapper.modeToGameAttachmentTable[gameMode] {
+            gameModeAttachment = modeAttachment
+        } else {
+            gameModeAttachment = GameModeAttachment.defaultMode
+        }
+
+        var pegBodies: [PegRB] = []
 
         for peg in board.allPegs {
             guard let pegRbMaker = PegMapper.pegVariantToPegRbTable[peg.pegVariant] else {
                 fatalError("Palette does not contain this saved peg")
             }
-            addObject(pegRbMaker(peg))
+            let pegMade = pegRbMaker(peg)
+            pegBodies.append(pegMade)
+            addObject(pegMade)
         }
-
-        setNumOfBalls()
+        
+        gameModeAttachment.setUpWorld(gameWorld: self, pegBodies: pegBodies)
         worldBoundsInitialized = false
-    }
-
-    func setNumOfBalls() {
-        // TODO: Make numOfBalls given a heuristic
-        numOfBalls = 10
     }
 
     func configWorldBounds(_ worldDim: CGSize) {
@@ -151,7 +179,6 @@ class GameWorld {
     func removePeg(_ pegRb: PegRB) {
         physicsWorld.removeBody(pegRb)
         graphicObjects.remove(pegRb)
-        scoreSystem.updateBaseScore(pegRb)
         // To prevent duplicate removal when cannon exits screen
         if let normalPeg = pegRb as? NormalPeg {
             collidedPegBodies.remove(normalPeg)
@@ -170,7 +197,7 @@ class GameWorld {
     }
 
     func fireCannonAt(_ aim: Vector2) {
-        if numOfBalls <= 0 {
+        if !ballCounter.hasBallLeft {
             return
         }
 
@@ -179,7 +206,7 @@ class GameWorld {
 
     private func addCannonBall(cannonBall: CannonBall) {
         addObject(cannonBall)
-        numOfBalls -= 1
+        ballCounter.onBallFired(1)
     }
 
     func removeCannonBall(_ cannonBall: CannonBall) {
@@ -192,6 +219,10 @@ class GameWorld {
             tryFinalizeShot()
         }
     }
+    
+    func recycleBall() {
+        ballCounter.onBallRecycled(1)
+    }
 
     func tryFinalizeShot() {
         /// All pegs must be removed and the ball must exit the screen before cannon is ready again
@@ -199,7 +230,6 @@ class GameWorld {
             return
         }
 
-        scoreSystem.updateScore()
         cannon?.cannonReady = true
     }
 
@@ -212,7 +242,7 @@ class GameWorld {
     }
 
     private func startSimulation() {
-        eventLoop.startLoop(step)
+        eventLoop.start(step)
     }
 
     private func step(deltaTime: Double) {
@@ -222,12 +252,13 @@ class GameWorld {
         for coroutine in coroutines {
             coroutine.execute(deltaTime)
         }
-        // Ask renderer to render scene
-        guard let renderAdaptor = renderAdaptor else {
-            return
-        }
 
-        renderAdaptor.adaptScene(graphicObjects)
+        timer.countDown(deltaTime)
+        gameModeAttachment.evaluate(gameWorld: self, playState: &playState)
+
+        for sceneAdaption in onStepCompleted {
+            sceneAdaption(graphicObjects)
+        }
     }
 }
 

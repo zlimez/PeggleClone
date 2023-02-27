@@ -10,17 +10,21 @@ import Foundation
 class RenderAdaptor: GameSystem, ObservableObject {
     var gameWorld: GameWorld
     @Published var graphicObjects: [WorldObjectVM]
-    @Published var numOfBalls: Int = 0
-    @Published var score: Int = 0
+    // UI elements
+    @Published var numOfBalls: Int?
+    @Published var score: Int?
+    @Published var targetScore: Int?
+    @Published var prettyTimeLeft: Int?
+    @Published var civTally: (Int, Int)?
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
         self.graphicObjects = []
-        gameWorld.renderAdaptor = self
+        gameWorld.onStepCompleted.append(adaptScene)
     }
 
-    func setBackBoard(_ board: Board) {
-        gameWorld.setNewBoard(board)
+    func setBoardAndMode(board: Board, gameMode: String) {
+        gameWorld.setNewBoard(board: board, gameMode: gameMode)
     }
 
     func adaptScene(_ worldObjects: any Collection<WorldObject>) {
@@ -32,8 +36,13 @@ class RenderAdaptor: GameSystem, ObservableObject {
                 fatalError("World object without graphic object cannot be rendered")
             }
         }
-        numOfBalls = gameWorld.numOfBalls
-        score = gameWorld.getScore()
+        numOfBalls = gameWorld.ballCount
+        score = gameWorld.currScore
+        targetScore = gameWorld.scoreToBeat
+        if let timeLeft = gameWorld.timeLeft {
+            prettyTimeLeft = Int(ceil(timeLeft))
+        }
+        civTally = gameWorld.civDeath
     }
 
     func configScene(_ worldDim: CGSize) {

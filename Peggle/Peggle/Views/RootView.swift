@@ -22,7 +22,7 @@ struct RootView: View {
                 if mode == Mode.designMode {
                     BoardView(path: $path)
                 } else {
-                    GameView()
+                    GameView(path: $path)
                 }
             }
             .foregroundColor(Color.blue)

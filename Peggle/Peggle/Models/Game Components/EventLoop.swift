@@ -24,7 +24,7 @@ final class EventLoop {
         self.preferredFrameRate = preferredFrameRate
     }
 
-    func startLoop(_ step: @escaping (Double) -> Void) {
+    func start(_ step: @escaping (Double) -> Void) {
         self.step = step
         activeDisplayLink?.invalidate()
         activeDisplayLink = CADisplayLink(target: self, selector: #selector(iterate))
@@ -32,6 +32,10 @@ final class EventLoop {
             minimum: 75, maximum: 150, __preferred: preferredFrameRate)
 
         activeDisplayLink?.add(to: .current, forMode: .default)
+    }
+    
+    func stop() {
+        activeDisplayLink?.invalidate()
     }
 
     @objc func iterate() {

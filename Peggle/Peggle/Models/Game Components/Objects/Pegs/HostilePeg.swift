@@ -7,15 +7,11 @@
 
 import Foundation
 
-enum ThreatLevel {
-    case low, high
-}
-
 class HostilePeg: NormalPeg {
-    var threatLevel: ThreatLevel
+    var captureReward: Int
     
-    init(peg: Peg, threatLevel: ThreatLevel) {
-        self.threatLevel = threatLevel
+    init(peg: Peg, captureReward: Int = 150) {
+        self.captureReward = captureReward
         super.init(peg)
     }
 }

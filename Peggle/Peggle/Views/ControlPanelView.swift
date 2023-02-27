@@ -33,25 +33,39 @@ struct ControlPanelView: View {
     @EnvironmentObject var levels: Levels
     @EnvironmentObject var renderAdaptor: RenderAdaptor
     @State private var levelName = ""
+    @State private var selectedMode = ModeMapper.codeNames[0]
     @ObservedObject var designBoardVM: DesignBoardVM
     @Binding var path: [Mode]
 
     var body: some View {
         HStack {
-            Button("LOAD") {
-                if let loadedBoard = levels.loadLevel(levelName) {
-                    designBoardVM.setNewBoard(DesignBoard(board: loadedBoard))
-                } else {
-                    designBoardVM.setNewBoard(DesignBoard.getEmptyBoard())
+            Grid {
+                GridRow {
+                    Button("LOAD") {
+                        if let loadedBoard = levels.loadLevel(levelName) {
+                            designBoardVM.setNewBoard(DesignBoard(board: loadedBoard))
+                        } else {
+                            designBoardVM.setNewBoard(DesignBoard.getEmptyBoard())
+                        }
+                    }
+                    Button("SAVE") { levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard) }
+                }
+                GridRow {
+                    Button("RESET") { designBoardVM.removeAllPegs() }
+                    Button("DONE") { _ = path.popLast() }
                 }
             }
-            Button("SAVE") { levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard) }
-            Button("RESET") { designBoardVM.removeAllPegs() }
-            Button("DONE") { _ = path.popLast() }
-            TextField("Level Name", text: $levelName)
-                .textFieldStyle(.roundedBorder)
-                .border(.gray)
-            createGameWorld()
+            VStack {
+                TextField("Level Name", text: $levelName)
+                    .textFieldStyle(.roundedBorder)
+                    .border(.gray)
+                Picker("Game Mode", selection: $selectedMode) {
+                    ForEach(ModeMapper.codeNames, id: \.self) { mode in
+                        Text(mode)
+                    }
+                }
+            }
+            createGameWorld(gameMode: selectedMode)
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 20)
@@ -59,11 +73,11 @@ struct ControlPanelView: View {
         .background(.white)
     }
 
-    func createGameWorld() -> some View {
+    func createGameWorld(gameMode: String) -> some View {
         NavigationLink(value: Mode.playMode) {
             Button("START") {
                 path.append(Mode.playMode)
-                renderAdaptor.setBackBoard(designBoardVM.designedBoard)
+                renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
             }
             .foregroundColor(Color.blue)
         }

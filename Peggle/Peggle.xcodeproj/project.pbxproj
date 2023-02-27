@@ -70,6 +70,11 @@
 		6AE1867329AB603B00B3CDE4 /* BoxPeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */; };
 		6AE1867529AB60AE00B3CDE4 /* TrianglePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */; };
 		6AE1867829ABAC3600B3CDE4 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867729ABAC3600B3CDE4 /* Block.swift */; };
+		6AE1867A29ABC7CB00B3CDE4 /* WinLoseEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867929ABC7CB00B3CDE4 /* WinLoseEvaluator.swift */; };
+		6AE1867C29ABCDA400B3CDE4 /* GameModeAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867B29ABCDA400B3CDE4 /* GameModeAttachment.swift */; };
+		6AE1867F29ABD03600B3CDE4 /* StandardEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1867E29ABD03600B3CDE4 /* StandardEvaluator.swift */; };
+		6AE1868129ACA95400B3CDE4 /* WorldConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868029ACA95400B3CDE4 /* WorldConfig.swift */; };
+		6AE1868329ACC0CB00B3CDE4 /* BallCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868229ACC0CB00B3CDE4 /* BallCounter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,6 +162,11 @@
 		6AE1867229AB603B00B3CDE4 /* BoxPeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxPeg.swift; sourceTree = "<group>"; };
 		6AE1867429AB60AE00B3CDE4 /* TrianglePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrianglePeg.swift; sourceTree = "<group>"; };
 		6AE1867729ABAC3600B3CDE4 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
+		6AE1867929ABC7CB00B3CDE4 /* WinLoseEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinLoseEvaluator.swift; sourceTree = "<group>"; };
+		6AE1867B29ABCDA400B3CDE4 /* GameModeAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeAttachment.swift; sourceTree = "<group>"; };
+		6AE1867E29ABD03600B3CDE4 /* StandardEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardEvaluator.swift; sourceTree = "<group>"; };
+		6AE1868029ACA95400B3CDE4 /* WorldConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldConfig.swift; sourceTree = "<group>"; };
+		6AE1868229ACC0CB00B3CDE4 /* BallCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallCounter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,14 +210,12 @@
 		6A3B8206299B6A4C007A1AC6 /* Game Components */ = {
 			isa = PBXGroup;
 			children = (
+				6AE1867D29ABD02300B3CDE4 /* Modes */,
 				6AE1867629ABAC0100B3CDE4 /* Objects */,
-				6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */,
 				6A3B8217299CF9DE007A1AC6 /* Coroutine.swift */,
 				6A83B35929994D6300B893AE /* GameWorld.swift */,
 				6AE1864029A89CA400B3CDE4 /* EventLoop.swift */,
 				6AE1865629A9595F00B3CDE4 /* PegMapper.swift */,
-				6AE1865D29A9C34D00B3CDE4 /* ScoreSystem.swift */,
-				6AE1865F29AA1FF800B3CDE4 /* BaseScoreSystem.swift */,
 			);
 			path = "Game Components";
 			sourceTree = "<group>";
@@ -228,6 +236,7 @@
 				6AE1864829A8EDDE00B3CDE4 /* Renderable.swift */,
 				6AE1864A29A8FA4100B3CDE4 /* Animated.swift */,
 				6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */,
+				6AE1864C29A9059D00B3CDE4 /* Lerper.swift */,
 				6A3B8206299B6A4C007A1AC6 /* Game Components */,
 				6A3B8205299B6A26007A1AC6 /* Design Components */,
 			);
@@ -337,7 +346,6 @@
 				6AA2287229811C2100823F43 /* Assets.xcassets */,
 				6AA2287429811C2100823F43 /* Peggle.entitlements */,
 				6AA2287529811C2100823F43 /* Preview Content */,
-				6AE1864C29A9059D00B3CDE4 /* Lerper.swift */,
 			);
 			path = Peggle;
 			sourceTree = "<group>";
@@ -384,6 +392,8 @@
 		6AE1867629ABAC0100B3CDE4 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				6AE1868229ACC0CB00B3CDE4 /* BallCounter.swift */,
+				6A3B820F299BAA6E007A1AC6 /* VisibleRigidBody.swift */,
 				6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */,
 				6AE1865029A92E5800B3CDE4 /* Bucket.swift */,
 				6A83B367299B3DFC00B893AE /* Cannon.swift */,
@@ -391,6 +401,19 @@
 				6AE1865829A95EF000B3CDE4 /* Pegs */,
 			);
 			path = Objects;
+			sourceTree = "<group>";
+		};
+		6AE1867D29ABD02300B3CDE4 /* Modes */ = {
+			isa = PBXGroup;
+			children = (
+				6AE1865D29A9C34D00B3CDE4 /* ScoreSystem.swift */,
+				6AE1867B29ABCDA400B3CDE4 /* GameModeAttachment.swift */,
+				6AE1867929ABC7CB00B3CDE4 /* WinLoseEvaluator.swift */,
+				6AE1865F29AA1FF800B3CDE4 /* BaseScoreSystem.swift */,
+				6AE1867E29ABD03600B3CDE4 /* StandardEvaluator.swift */,
+				6AE1868029ACA95400B3CDE4 /* WorldConfig.swift */,
+			);
+			path = Modes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -562,6 +585,7 @@
 				6A83B33B29971FD000B893AE /* Vector2.swift in Sources */,
 				6A83B34E29974D4F00B893AE /* PolygonCollider.swift in Sources */,
 				6AE1865129A92E5800B3CDE4 /* Bucket.swift in Sources */,
+				6AE1867A29ABC7CB00B3CDE4 /* WinLoseEvaluator.swift in Sources */,
 				6AE1866E29AB49B500B3CDE4 /* DesignPeg.swift in Sources */,
 				6A7A8A8729851D99001C15A7 /* Peg.swift in Sources */,
 				6AE1865729A9595F00B3CDE4 /* PegMapper.swift in Sources */,
@@ -571,14 +595,18 @@
 				6A7A8A8A29857160001C15A7 /* BoardView.swift in Sources */,
 				6A83B33729971EA100B893AE /* PhysicsWorld.swift in Sources */,
 				6A3B820E299BA608007A1AC6 /* GameSystem.swift in Sources */,
+				6AE1867C29ABCDA400B3CDE4 /* GameModeAttachment.swift in Sources */,
 				6AE1866429AA240800B3CDE4 /* CivilianPeg.swift in Sources */,
 				6A83B3502998C9AE00B893AE /* LineUtils.swift in Sources */,
 				6A3B820A299B8225007A1AC6 /* DesignBoard.swift in Sources */,
 				6AE1865C29A966A200B3CDE4 /* LoidPeg.swift in Sources */,
 				6A3B8208299B6A8D007A1AC6 /* RenderAdaptor.swift in Sources */,
+				6AE1868129ACA95400B3CDE4 /* WorldConfig.swift in Sources */,
+				6AE1868329ACC0CB00B3CDE4 /* BallCounter.swift in Sources */,
 				6A83B3442997255900B893AE /* Collider.swift in Sources */,
 				6A83B364299A907B00B893AE /* GameView.swift in Sources */,
 				6AE1864929A8EDDE00B3CDE4 /* Renderable.swift in Sources */,
+				6AE1867F29ABD03600B3CDE4 /* StandardEvaluator.swift in Sources */,
 				6A7A8A942986E5E5001C15A7 /* PegVM.swift in Sources */,
 				6A83B3482997296E00B893AE /* Collision.swift in Sources */,
 				6A83B3422997220300B893AE /* RigidBody.swift in Sources */,

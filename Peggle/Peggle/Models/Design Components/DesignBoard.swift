@@ -52,7 +52,7 @@ struct DesignBoard {
             size: Vector2.one * 50
         )
         PegMapper.pegVariantToPegRbTable[orangePeg] = { peg in
-            HostilePeg(peg: peg, threatLevel: ThreatLevel.low)
+            HostilePeg(peg: peg, captureReward: 150)
         }
         PegMapper.pegVariantToPegTable[orangePeg] = { peg in
             CirclePeg(peg)

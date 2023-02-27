@@ -11,10 +11,12 @@ class CivilianPeg: NormalPeg {
     // TODO: Substitute with animated
     var deathSprite: String
     var deathThreshold: Int
+    var deathPenalty: Int
     private var isDead = false
     private var collisionCount = 0
 
-    init(peg: Peg, deathThreshold: Int = 2, deathSprite: String = "peg-grey") {
+    init(peg: Peg, deathThreshold: Int = 2, deathSprite: String = "peg-grey", deathPenalty: Int = 150) {
+        self.deathPenalty = deathPenalty
         self.deathSprite = deathSprite
         self.deathThreshold = deathThreshold
         super.init(peg)

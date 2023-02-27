@@ -73,7 +73,7 @@ class Bucket: VisibleRigidBody {
     override func onTriggerEnter(_ collision: Collision) {
         super.onTriggerEnter(collision)
         if let cannonBall = collision.rbB as? CannonBall {
-            GameWorld.activeGameBoard?.numOfBalls += 1
+            GameWorld.activeGameBoard?.recycleBall()
             GameWorld.activeGameBoard?.removeCannonBall(cannonBall)
             GameWorld.activeGameBoard?.fadeCollidedPegs()
 
