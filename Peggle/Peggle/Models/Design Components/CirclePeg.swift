@@ -12,4 +12,8 @@ class CirclePeg: DesignPeg {
         let circleCollider = CircleCollider(peg.unitWidth / 2)
         super.init(peg: peg, collider: circleCollider)
     }
+    
+    override func isCircle() -> Bool {
+        true
+    }
 }

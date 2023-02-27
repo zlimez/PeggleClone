@@ -18,9 +18,6 @@ class DesignPeg: Identifiable, Hashable {
     var width: CGFloat { peg.unitWidth * peg.transform.scale.x }
     var height: CGFloat { peg.unitHeight * peg.transform.scale.y }
     var rotation: CGFloat { peg.transform.rotation }
-    var isCircle: Bool {
-        self is CirclePeg
-    }
     var pegSprite: String { peg.pegSprite }
     var pegLitSprite: String { peg.pegLitSprite }
 
@@ -28,6 +25,10 @@ class DesignPeg: Identifiable, Hashable {
         self.id = peg.id
         self.peg = peg
         self.collider = collider
+    }
+    
+    func isCircle() -> Bool {
+        false
     }
 
     func updatePositionTo(_ newPosition: Vector2) {
