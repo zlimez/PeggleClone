@@ -128,7 +128,7 @@ struct DesignBoard {
     
     mutating func tryScalePeg(targetPeg: DesignPeg, newScale: Vector2) {
         var calibratedScale = newScale
-        if targetPeg is CirclePeg {
+        if targetPeg.isCircle() {
             calibratedScale = Vector2.one * newScale.x
         }
         let originalScale = targetPeg.peg.transform.scale
@@ -190,32 +190,34 @@ struct DesignBoard {
     // Pegs yet to be created will have the special id -1
     private func willCollide(_ targetPeg: DesignPeg) -> Bool {
         // Collides with play area border
-        for boundary in boundaries {
-            if boundary.isCollidingWith(targetPeg) {
-                return true
-            }
+        if boundaries.contains(where: { boundary in boundary.isCollidingWith(targetPeg)} ) {
+            return true
         }
-        
+
         for designPeg in designPegs {
             if designPeg != targetPeg && designPeg.isCollidingWith(targetPeg) {
                 return true
             }
         }
-        
+
         return false
     }
 }
-    
+
 struct Boundary {
     static let boundHalfThickness: CGFloat = 10
     var boxCollider: BoxCollider
     var transform: Transform
-    
+
     func isCollidingWith(_ designPeg: DesignPeg) -> Bool {
         guard let pegCollider = designPeg.collider else {
             fatalError("Peg on design board does not have a collider attached")
         }
-        return boxCollider.testCollision(transform: transform, otherCollider: pegCollider, otherTransform: designPeg.peg.transform).hasCollision
+        return boxCollider.testCollision(
+            transform: transform,
+            otherCollider: pegCollider,
+            otherTransform: designPeg.peg.transform
+        ).hasCollision
     }
 }
 

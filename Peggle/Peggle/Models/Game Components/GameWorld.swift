@@ -18,10 +18,12 @@ class GameWorld {
     // Pegs that have been hit during this launch
     private var collidedPegBodies: Set<NormalPeg> = []
     // For external gamesystems to register their responses
-    var onCollision: [(PegRB) -> Void] = []
+    var onBallHitPeg: [(PegRB) -> Void] = []
     var onPegRemoved: [(PegRB) -> Void] = []
+    var onShotFinalized: [() -> Void] = []
 
-    var onStepCompleted: [(any Collection<WorldObject>) -> Void] = []
+    var onStepComplete: [(any Collection<WorldObject>) -> Void] = []
+    var onEvaluationComplete: [() -> Void] = []
     private var graphicObjects: Set<WorldObject> = []
 
     // Contains information such as score, civilians killed etc. determined by game mode configurer
@@ -47,7 +49,7 @@ class GameWorld {
         civTally.getCivDeathTally(gameModeAttachment)
     }
 
-    var playState: PlayState = PlayState.none
+    var playState = PlayState.none
     private var gameModeAttachment = GameModeAttachment.defaultMode
 
     let eventLoop: EventLoop
@@ -58,7 +60,7 @@ class GameWorld {
 
     // Game specific objects
     private var cannon: Cannon?
-    private var ballExit = false
+    var ballExit = false
     private var bucket: Bucket?
     var worldDim: CGSize?
 
@@ -80,16 +82,21 @@ class GameWorld {
         graphicObjects.removeAll()
         coroutines.removeAll()
         collidedPegBodies.removeAll()
-        onCollision.removeAll()
+        onBallHitPeg.removeAll()
         onPegRemoved.removeAll()
         gameModeAttachment.reset()
     }
 
-    func setNewBoard(board: Board, gameMode: String) {
+    func setNewBoard(board: Board, gameMode: String, startBallCount: Int?) {
         if let modeAttachment = ModeMapper.modeToGameAttachmentTable[gameMode] {
             gameModeAttachment = modeAttachment
         } else {
             gameModeAttachment = GameModeAttachment.defaultMode
+        }
+        
+        if let startBallCount = startBallCount {
+            ballCounter.isActive = true
+            ballCounter.ballCount = startBallCount
         }
 
         var pegBodies: [PegRB] = []
@@ -102,7 +109,7 @@ class GameWorld {
             pegBodies.append(pegMade)
             addObject(pegMade)
         }
-        
+
         gameModeAttachment.setUpWorld(gameWorld: self, pegBodies: pegBodies)
         worldBoundsInitialized = false
     }
@@ -179,11 +186,14 @@ class GameWorld {
     func removePeg(_ pegRb: PegRB) {
         physicsWorld.removeBody(pegRb)
         graphicObjects.remove(pegRb)
-        // To prevent duplicate removal when cannon exits screen
-        if let normalPeg = pegRb as? NormalPeg {
-            collidedPegBodies.remove(normalPeg)
-            tryFinalizeShot()
-        }
+        onPegRemoved.forEach { response in response(pegRb) }
+    }
+
+    func removePeg(_ normalPeg: NormalPeg) {
+        let pegRb: PegRB = normalPeg
+        removePeg(pegRb)
+        collidedPegBodies.remove(normalPeg)
+        tryFinalizeShot()
     }
 
     func queuePegRemoval(_ hitPegRb: NormalPeg) {
@@ -204,8 +214,9 @@ class GameWorld {
         cannon?.fireCannonAt(aim)
     }
 
-    private func addCannonBall(cannonBall: CannonBall) {
+    private lazy var addCannonBall: (CannonBall) -> Void = { [unowned self] (cannonBall: CannonBall) in
         addObject(cannonBall)
+        ballExit = false
         ballCounter.onBallFired(1)
     }
 
@@ -219,7 +230,7 @@ class GameWorld {
             tryFinalizeShot()
         }
     }
-    
+
     func recycleBall() {
         ballCounter.onBallRecycled(1)
     }
@@ -229,7 +240,7 @@ class GameWorld {
         if !ballExit || !collidedPegBodies.isEmpty {
             return
         }
-
+        onShotFinalized.forEach { response in response() }
         cannon?.cannonReady = true
     }
 
@@ -254,10 +265,17 @@ class GameWorld {
         }
 
         timer.countDown(deltaTime)
-        gameModeAttachment.evaluate(gameWorld: self, playState: &playState)
 
-        for sceneAdaption in onStepCompleted {
+        for sceneAdaption in onStepComplete {
             sceneAdaption(graphicObjects)
+        }
+        gameModeAttachment.evaluate(gameWorld: self, playState: &playState)
+        
+        for stateAdaption in onEvaluationComplete {
+            stateAdaption()
+        }
+        if playState == PlayState.won || playState == PlayState.lost {
+            exitGame()
         }
     }
 }

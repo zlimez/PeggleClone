@@ -45,7 +45,8 @@ class Cannon: WorldObject, Animated {
         super.init(Transform(cannonPosition))
     }
 
-    func makeFireAnimation() -> (Double) -> Bool {
+    lazy var makeFireAnimation: () -> (Double) -> Bool = {
+        [unowned self] in
         guard let activeAnimSequence = animateSequences["fire"] else {
             fatalError("No anim sequence found for cannon")
         }
@@ -145,5 +146,11 @@ class CannonBall: VisibleRigidBody {
             mass: mass,
             initVelocity: initVelocity
         )
+    }
+    
+    override func onCollisionEnter(_ collision: Collision) {
+        if let pegRb = collision.rbB as? PegRB {
+            GameWorld.activeGameBoard?.onBallHitPeg.forEach { response in response(pegRb) }
+        }
     }
 }

@@ -22,13 +22,12 @@ class NormalPeg: PegRB {
         activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
     }
 
-    func fade(deltaTime: Double) -> Bool {
-        spriteContainer.opacity -= deltaTime / pegFadeTime
-        if spriteContainer.opacity <= 0 {
+    lazy var fade: (Double) -> Bool = { [unowned self] (deltaTime: Double) -> Bool in
+        self.spriteContainer.opacity -= deltaTime / self.pegFadeTime
+        if self.spriteContainer.opacity <= 0 {
             GameWorld.activeGameBoard?.removePeg(self)
             return true
         }
-
         return false
     }
 

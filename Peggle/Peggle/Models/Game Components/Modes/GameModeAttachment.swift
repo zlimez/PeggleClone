@@ -27,7 +27,8 @@ final class GameModeAttachment {
         ModeMapper.modeToGameAttachmentTable[siamMode] = GameModeAttachment(
             configurer: siamConfig(),
             scoreSystem: NoScoreSystem(),
-            winLoseEvaluator: NoHitEvaluator()
+            winLoseEvaluator: NoHitEvaluator(),
+            canEditBallCount: true
         )
         ModeMapper.codeNames.append(standardMode)
         ModeMapper.codeNames.append(beatScoreMode)
@@ -38,15 +39,18 @@ final class GameModeAttachment {
     let configurer: WorldConfig
     let scoreSystem: ScoreSystem
     let winLoseEvaluator: WinLoseEvaluator
+    let canEditBallCount: Bool
 
     init(
         configurer: any WorldConfig = StandardConfig(),
         scoreSystem: any ScoreSystem = CivilianScoreSystem(),
-        winLoseEvaluator: any WinLoseEvaluator = StandardEvaluator()
+        winLoseEvaluator: any WinLoseEvaluator = StandardEvaluator(),
+        canEditBallCount: Bool = false
     ) {
         self.configurer = configurer
         self.scoreSystem = scoreSystem
         self.winLoseEvaluator = winLoseEvaluator
+        self.canEditBallCount = canEditBallCount
     }
 
     func setUpWorld(gameWorld: GameWorld, pegBodies: [PegRB]) {

@@ -17,6 +17,7 @@ class LoidPeg: PegRB {
     }
 
     override func onCollisionEnter(_ collision: Collision) {
+        super.onCollisionEnter(collision)
         if bodyType == BodyType.stationary && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
             bodyType = BodyType.dynamic
 

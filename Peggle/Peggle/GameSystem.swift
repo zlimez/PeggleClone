@@ -8,5 +8,5 @@
 import Foundation
 
 protocol GameSystem {
-    mutating func adaptScene(_ worldObjects: any Collection<WorldObject>)
+    var adaptScene: (any Collection<WorldObject>) -> Void { get }
 }

@@ -11,16 +11,17 @@ class BaseScoreSystem: ScoreSystem {
     var score: Int = 0
 
     static let streakMultipliers = [1, 2, 3, 5, 10]
-    
+
     private var currTally = 0
     private var arrestStreak = 0
     private var collateralStreak = 0
-    
+
     func registerListeners(_ gameWorld: GameWorld) {
-        gameWorld.onPegRemoved.append(updateBaseScore)
+        gameWorld.onPegRemoved.append(baseScoreUpdater)
+        gameWorld.onShotFinalized.append(scoreUpdater)
     }
 
-    func updateBaseScore(_ pegRemoved: PegRB) {
+    lazy var baseScoreUpdater: (PegRB) -> Void = { [unowned self] (pegRemoved: PegRB) in
         if let enemyPeg = pegRemoved as? HostilePeg {
             updateBaseScore(enemyPeg)
             return
@@ -43,7 +44,7 @@ class BaseScoreSystem: ScoreSystem {
     }
 
     // Apply streak based multiplier
-    func updateScore() {
+    lazy var scoreUpdater: () -> Void = { [unowned self] in
         let absNetStreak = abs(arrestStreak - collateralStreak)
         var multiplier = 1
         if absNetStreak <= 2 {
@@ -74,12 +75,12 @@ class BaseScoreSystem: ScoreSystem {
 class CivilianScoreSystem: BaseScoreSystem {
     var civilianKilled: Int = 0
     var hostileKilled: Int = 0
-    
+
     override func updateBaseScore(_ civilianPeg: CivilianPeg) {
         super.updateBaseScore(civilianPeg)
         civilianKilled += 1
     }
-    
+
     override func updateBaseScore(_ hostilePeg: HostilePeg) {
         super.updateBaseScore(hostilePeg)
         hostileKilled += 1
@@ -89,19 +90,18 @@ class CivilianScoreSystem: BaseScoreSystem {
 class NoScoreSystem: ScoreSystem {
     var score: Int = 0
     var hasHit = false
-    
-    func updateScore() {
-        // Do nothing
-    }
+    var scoreUpdater: () -> Void = {}
     
     func registerListeners(_ gameWorld: GameWorld) {
-        gameWorld.onCollision.append(loseOnCollision)
+        gameWorld.onBallHitPeg.append(loseOnCollision)
     }
-    
-    private func loseOnCollision(_ pegRb: PegRB) {
+
+    private lazy var loseOnCollision: (PegRB) -> Void = {
+        [unowned self]
+        _ in
         hasHit = true
     }
-    
+
     func reset() {
         hasHit = false
     }

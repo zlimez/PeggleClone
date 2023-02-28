@@ -12,7 +12,6 @@ class DesignPeg: Identifiable, Hashable {
     let id: Int
     var peg: Peg
     var collider: Collider?
-    
     var x: CGFloat { peg.transform.position.x }
     var y: CGFloat { peg.transform.position.y }
     var width: CGFloat { peg.unitWidth * peg.transform.scale.x }
@@ -26,7 +25,7 @@ class DesignPeg: Identifiable, Hashable {
         self.peg = peg
         self.collider = collider
     }
-    
+
     func isCircle() -> Bool {
         false
     }

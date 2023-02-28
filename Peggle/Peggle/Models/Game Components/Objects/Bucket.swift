@@ -42,16 +42,18 @@ class Bucket: VisibleRigidBody {
         // Removal would not be invoked here
         activeGameBoard.addCoroutine(Coroutine(routine: oscillate, onCompleted: activeGameBoard.removeCoroutine))
     }
-    
+
     func shut() {
         isTrigger = false
     }
-    
+
     func open() {
         isTrigger = true
     }
 
-    func oscillate(deltaTime: Double) -> Bool {
+    lazy var oscillate: (Double) -> Bool = {
+        [unowned self]
+        (deltaTime: Double) -> Bool in
         guard let activeGameBoard = GameWorld.activeGameBoard else {
             return true
         }

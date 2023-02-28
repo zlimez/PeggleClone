@@ -11,6 +11,6 @@ protocol ScoreSystem {
     var score: Int { get }
     func registerListeners(_ gameWorld: GameWorld)
     // Called to apply compound or side effects
-    func updateScore()
+    var scoreUpdater: () -> Void { get set }
     func reset()
 }

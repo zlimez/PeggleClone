@@ -16,19 +16,19 @@ class StandardEvaluator: WinLoseEvaluator {
         guard let civScoreSystem = scoreSystem as? CivilianScoreSystem else {
             fatalError("Standard evaluator should be associated with civilian score system")
         }
-        
+
         if civScoreSystem.civilianKilled > allowedKills {
             return PlayState.lost
         }
-        
+
         if civScoreSystem.hostileKilled == hostileCount {
             return PlayState.won
         }
-        
-        if !gameWorld.ballCounter.hasBallLeft {
+
+        if !gameWorld.ballCounter.hasBallLeft && gameWorld.ballExit {
             return PlayState.lost
         }
-        
+
         return PlayState.inProgress
     }
 }
@@ -53,7 +53,7 @@ class NoHitEvaluator: WinLoseEvaluator {
 
         if noScoreSystem.hasHit {
             return PlayState.lost
-        } else if !gameWorld.ballCounter.hasBallLeft {
+        } else if !gameWorld.ballCounter.hasBallLeft && gameWorld.ballExit {
             return PlayState.won
         }
         return PlayState.inProgress

@@ -76,6 +76,8 @@
 		6AE1868129ACA95400B3CDE4 /* WorldConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868029ACA95400B3CDE4 /* WorldConfig.swift */; };
 		6AE1868329ACC0CB00B3CDE4 /* BallCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868229ACC0CB00B3CDE4 /* BallCounter.swift */; };
 		6AE1868929AD459C00B3CDE4 /* PhysicsBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868829AD459C00B3CDE4 /* PhysicsBody.swift */; };
+		6AE1868D29AE152000B3CDE4 /* FrameGetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868C29AE152000B3CDE4 /* FrameGetter.swift */; };
+		6AE1868F29AE155700B3CDE4 /* Popup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1868E29AE155700B3CDE4 /* Popup.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +171,8 @@
 		6AE1868029ACA95400B3CDE4 /* WorldConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldConfig.swift; sourceTree = "<group>"; };
 		6AE1868229ACC0CB00B3CDE4 /* BallCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallCounter.swift; sourceTree = "<group>"; };
 		6AE1868829AD459C00B3CDE4 /* PhysicsBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsBody.swift; sourceTree = "<group>"; };
+		6AE1868C29AE152000B3CDE4 /* FrameGetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameGetter.swift; sourceTree = "<group>"; };
+		6AE1868E29AE155700B3CDE4 /* Popup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Popup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +256,8 @@
 				6A7A8A8929857160001C15A7 /* BoardView.swift */,
 				6A83B363299A907B00B893AE /* GameView.swift */,
 				6A83B365299A99C500B893AE /* RootView.swift */,
+				6AE1868C29AE152000B3CDE4 /* FrameGetter.swift */,
+				6AE1868E29AE155700B3CDE4 /* Popup.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -605,6 +611,7 @@
 				6A3B820A299B8225007A1AC6 /* DesignBoard.swift in Sources */,
 				6AE1865C29A966A200B3CDE4 /* LoidPeg.swift in Sources */,
 				6A3B8208299B6A8D007A1AC6 /* RenderAdaptor.swift in Sources */,
+				6AE1868D29AE152000B3CDE4 /* FrameGetter.swift in Sources */,
 				6AE1868129ACA95400B3CDE4 /* WorldConfig.swift in Sources */,
 				6AE1868329ACC0CB00B3CDE4 /* BallCounter.swift in Sources */,
 				6A83B3442997255900B893AE /* Collider.swift in Sources */,
@@ -612,6 +619,7 @@
 				6AE1864929A8EDDE00B3CDE4 /* Renderable.swift in Sources */,
 				6AE1867F29ABD03600B3CDE4 /* StandardEvaluator.swift in Sources */,
 				6A7A8A942986E5E5001C15A7 /* PegVM.swift in Sources */,
+				6AE1868F29AE155700B3CDE4 /* Popup.swift in Sources */,
 				6A83B3482997296E00B893AE /* Collision.swift in Sources */,
 				6A83B3422997220300B893AE /* RigidBody.swift in Sources */,
 				6A7A8A8C2985721E001C15A7 /* ControlPanelView.swift in Sources */,

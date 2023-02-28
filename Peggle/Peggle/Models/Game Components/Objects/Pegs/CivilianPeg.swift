@@ -37,7 +37,6 @@ class CivilianPeg: NormalPeg {
                 isDead = true
                 activeGameBoard.queuePegRemoval(self)
             }
-
         }
     }
 }

@@ -34,6 +34,7 @@ struct ControlPanelView: View {
     @EnvironmentObject var renderAdaptor: RenderAdaptor
     @State private var levelName = ""
     @State private var selectedMode = ModeMapper.codeNames[0]
+    @State private var ballGiven = 0
     @ObservedObject var designBoardVM: DesignBoardVM
     @Binding var path: [Mode]
 
@@ -55,17 +56,29 @@ struct ControlPanelView: View {
                     Button("DONE") { _ = path.popLast() }
                 }
             }
-            VStack {
+            Spacer()
+            VStack(alignment: .leading) {
                 TextField("Level Name", text: $levelName)
-                    .textFieldStyle(.roundedBorder)
-                    .border(.gray)
-                Picker("Game Mode", selection: $selectedMode) {
-                    ForEach(ModeMapper.codeNames, id: \.self) { mode in
-                        Text(mode)
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.gray, lineWidth: 2)
+                    )
+                HStack {
+                    Picker("Game Mode", selection: $selectedMode) {
+                        ForEach(ModeMapper.codeNames, id: \.self) { mode in
+                            Text(mode)
+                        }
+                    }
+                    
+                    if let gameMode = ModeMapper.modeToGameAttachmentTable[selectedMode], gameMode.canEditBallCount {
+                        BallCountEditorView(ballGiven: $ballGiven)
                     }
                 }
             }
-            createGameWorld(gameMode: selectedMode)
+            .frame(width: 350)
+            Spacer()
+            createGameWorld(selectedMode)
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 20)
@@ -73,13 +86,36 @@ struct ControlPanelView: View {
         .background(.white)
     }
 
-    func createGameWorld(gameMode: String) -> some View {
+    func createGameWorld(_ gameMode: String) -> some View {
         NavigationLink(value: Mode.playMode) {
             Button("START") {
                 path.append(Mode.playMode)
-                renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
+
+                guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[selectedMode] else {
+                    fatalError("UI enabled invalid mode selection")
+                }
+
+                selectedGameMode.canEditBallCount
+                ? renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode, ballCount: ballGiven)
+                : renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
             }
             .foregroundColor(Color.blue)
+        }
+    }
+}
+
+struct BallCountEditorView: View {
+    @Binding var ballGiven: Int
+    
+    var body: some View {
+        HStack {
+            Text("Ball Given: \(ballGiven)")
+            Button (action: { ballGiven += 1 }) {
+                Image(systemName: "plus")
+            }
+            Button (action: { ballGiven -= 1 }) {
+                Image(systemName: "minus")
+            }
         }
     }
 }
@@ -106,7 +142,7 @@ struct TransformView: View {
     }
 
     func getScalableAxis() -> some View {
-        return VStack {
+        VStack {
             if designBoardVM.selectedPeg.isCircle {
                 Text("Radius")
                     .font(.headline)

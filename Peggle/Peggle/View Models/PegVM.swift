@@ -31,7 +31,7 @@ class PegVM: Identifiable, Equatable {
         }
     }
     var isCircle: Bool {
-        designPeg.isCircle
+        designPeg.isCircle()
     }
 
     init(designPeg: DesignPeg, parentBoard: DesignBoard) {

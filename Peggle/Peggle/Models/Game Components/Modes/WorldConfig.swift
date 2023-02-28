@@ -57,7 +57,7 @@ class StandardConfig: WorldConfig {
             }
         }
         
-        var totalSurvivability = civilianSurvivability.values.reduce(0, { result, survivability in
+        let totalSurvivability = civilianSurvivability.values.reduce(0, { result, survivability in
             result + survivability
         })
         let allowedKills = civilianSurvivability.count - Int(round(totalSurvivability))
@@ -83,7 +83,7 @@ class TimedBeatScoreConfig: WorldConfig {
         var hostileCount = 0
         // Mid tier streak expected
         let midTierIndex = Int(round(Float(BaseScoreSystem.streakMultipliers.count) / 2))
-        var expectedMultiplier = BaseScoreSystem.streakMultipliers[midTierIndex]
+        let expectedMultiplier = BaseScoreSystem.streakMultipliers[midTierIndex]
         var aggBaseScore = 0
         for pegBody in pegBodies {
             if let hostilePeg = pegBody as? HostilePeg {

@@ -27,7 +27,9 @@ struct GameView: View {
             .onTapGesture { location in
                 renderAdaptor.fireCannonAt(location)
             }
-            
+            .popup(isPresented: $renderAdaptor.gameEnded) {
+                GameEndView(score: renderAdaptor.score, endState: renderAdaptor.endState)
+            }
             BottomBarView()
         }
         .ignoresSafeArea()
@@ -43,7 +45,7 @@ struct GameView: View {
         }
 
         return ZStack {
-            Image("background")
+            Image("BG")
                 .resizable()
                 .scaledToFill()
                 .frame(width: geo.size.width)
@@ -71,7 +73,7 @@ struct TopBarView: View {
 
     var body: some View {
         HStack {
-            Button("EXIT") { path.popLast() }
+            Button("EXIT") { _ = path.popLast() }
             if let numOfBalls = renderAdapter.numOfBalls {
                 BallCountView(ballCount: numOfBalls)
             }
@@ -81,7 +83,33 @@ struct TopBarView: View {
             }
         }
         .padding(20)
+        .padding(.top, 40)
+        .frame(height: 75)
         .background(.white)
+    }
+}
+
+struct GameEndView: View {
+    var score: Int?
+    var endState: String
+
+    var body: some View {
+        VStack {
+            Text("YOU \(endState)")
+                .fontWeight(.black)
+                .fontDesign(.rounded)
+                .font(.largeTitle)
+
+            if let score = score {
+                Text("SCORE: \(score)")
+                    .fontWeight(.black)
+                    .fontDesign(.rounded)
+                    .font(.largeTitle)
+            }
+        }
+        .padding(40)
+        .background(.white)
+        .cornerRadius(10)
     }
 }
 
@@ -107,6 +135,7 @@ struct BottomBarView: View {
             }
         }
         .padding(20)
+        .frame(height: 100)
         .background(.white)
     }
 }
@@ -153,5 +182,6 @@ struct TargetScoreView: View {
     
     var body: some View {
         Text("Target Score: \(targetScore)")
+            .font(.largeTitle)
     }
 }

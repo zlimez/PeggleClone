@@ -35,8 +35,10 @@ class BoomPeg: PegRB, Animated {
         super.init(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
     }
 
-    func explode(deltaTime: Double) -> Bool {
+    lazy var explode: (Double) -> Bool = {
         // Explosion is circular
+        [unowned self]
+        (deltaTime: Double) -> Bool in
         if transform.scale.x < explosionScale {
             transform.scale += explosionSpeed * deltaTime
             return false

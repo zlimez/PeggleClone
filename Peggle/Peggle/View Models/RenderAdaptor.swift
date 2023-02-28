@@ -16,18 +16,29 @@ class RenderAdaptor: GameSystem, ObservableObject {
     @Published var targetScore: Int?
     @Published var prettyTimeLeft: Int?
     @Published var civTally: (Int, Int)?
+    @Published var gameEnded: Bool
+    @Published var endState: String
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
         self.graphicObjects = []
-        gameWorld.onStepCompleted.append(adaptScene)
+        self.endState = ""
+        self.gameEnded = false
+        self.score = nil
+        self.numOfBalls = nil
+        self.targetScore = nil
+        self.prettyTimeLeft = nil
+        self.civTally = nil
+        gameWorld.onStepComplete.append(adaptScene)
+        gameWorld.onEvaluationComplete.append(adaptPlayState)
     }
 
-    func setBoardAndMode(board: Board, gameMode: String) {
-        gameWorld.setNewBoard(board: board, gameMode: gameMode)
+    // Third argument is to cater for the case where player sets the ball count
+    func setBoardAndMode(board: Board, gameMode: String, ballCount: Int? = nil) {
+        gameWorld.setNewBoard(board: board, gameMode: gameMode, startBallCount: ballCount)
     }
 
-    func adaptScene(_ worldObjects: any Collection<WorldObject>) {
+    lazy var adaptScene: (any Collection<WorldObject>) -> Void = { [unowned self] (worldObjects: any Collection<WorldObject>) in
         graphicObjects.removeAll()
         for worldObject in worldObjects {
             if let graphicObject = worldObject as? Renderable {
@@ -36,6 +47,11 @@ class RenderAdaptor: GameSystem, ObservableObject {
                 fatalError("World object without graphic object cannot be rendered")
             }
         }
+    }
+    
+    lazy var adaptPlayState: () -> Void =
+    { [unowned self] in
+        endState = gameWorld.playState == PlayState.won ? "WON" : gameWorld.playState == PlayState.lost ? "LOST" : "IN PROGRESS"
         numOfBalls = gameWorld.ballCount
         score = gameWorld.currScore
         targetScore = gameWorld.scoreToBeat
@@ -43,6 +59,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
             prettyTimeLeft = Int(ceil(timeLeft))
         }
         civTally = gameWorld.civDeath
+        gameEnded = endState == "WON" || endState == "LOST"
     }
 
     func configScene(_ worldDim: CGSize) {
