@@ -26,7 +26,7 @@ struct Vector2: Hashable {
     }
  
     static func angle(from: Vector2, to: Vector2) -> CGFloat {
-        acos(dotProduct(a: from, b: to) / from.length / to.length)
+        acos(dotProduct(a: from, b: to) / from.length / to.length) * Double(Math.sign(crossProduct(a: from, b: to)))
     }
 
     static func - (a: Vector2, b: Vector2) -> Vector2 {

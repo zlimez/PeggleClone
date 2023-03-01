@@ -23,6 +23,7 @@ class BoomPeg: PegRB, Animated {
 
     init(
         peg: Peg,
+        collider: Collider,
         explosionRatio: CGFloat = 5,
         explosionSpeed: Vector2 = Vector2.one * 5,
         explosionImpulse: CGFloat = 10_000
@@ -32,13 +33,11 @@ class BoomPeg: PegRB, Animated {
         self.explosionScale = initScale * explosionRatio
         self.explosionSpeed = explosionSpeed
         self.explosionImpulse = explosionImpulse
-        super.init(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
+        super.init(peg: peg, collider: collider)
     }
 
-    lazy var explode: (Double) -> Bool = {
+    lazy var explode: (Double) -> Bool = { [unowned self] (deltaTime: Double) -> Bool in
         // Explosion is circular
-        [unowned self]
-        (deltaTime: Double) -> Bool in
         if transform.scale.x < explosionScale {
             transform.scale += explosionSpeed * deltaTime
             return false

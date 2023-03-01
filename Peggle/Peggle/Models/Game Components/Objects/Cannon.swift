@@ -45,8 +45,7 @@ class Cannon: WorldObject, Animated {
         super.init(Transform(cannonPosition))
     }
 
-    lazy var makeFireAnimation: () -> (Double) -> Bool = {
-        [unowned self] in
+    lazy var makeFireAnimation: () -> (Double) -> Bool = { [unowned self] in
         guard let activeAnimSequence = animateSequences["fire"] else {
             fatalError("No anim sequence found for cannon")
         }
@@ -85,8 +84,8 @@ class Cannon: WorldObject, Animated {
                 return false
             }
 
-            let rotateDir = Math.sign(currAim.x - targetAim.x)
             let angleBetween = Vector2.angle(from: currAim, to: targetAim)
+            let rotateDir = Math.sign(angleBetween)
             transform.rotation += min(rotationSpeed * deltaTime, abs(angleBetween)) * CGFloat(rotateDir)
             // Should always be kept between 0 and 2pi
             transform.rotation = transform.rotation >= 0 ? transform.rotation : CGFloat.pi * 2 + transform.rotation

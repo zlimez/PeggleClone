@@ -10,8 +10,8 @@ import Foundation
 class HostilePeg: NormalPeg {
     var captureReward: Int
     
-    init(peg: Peg, captureReward: Int = 150) {
+    init(peg: Peg, collider: Collider, captureReward: Int = 150) {
         self.captureReward = captureReward
-        super.init(peg)
+        super.init(peg: peg, collider: collider)
     }
 }

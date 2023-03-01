@@ -10,13 +10,14 @@ import QuartzCore
 
 class GameWorld {
     static var activeGameBoard: GameWorld?
-    var worldBoundsInitialized = false
     let pegRemovalTimeInterval: Double
+    let flipTimeInterval: Double = 0.5
 
     // All game systems
     let physicsWorld: PhysicsWorld
     // Pegs that have been hit during this launch
     private var collidedPegBodies: Set<NormalPeg> = []
+    private var allPegBodies: Set<PegRB> = []
     // For external gamesystems to register their responses
     var onBallHitPeg: [(PegRB) -> Void] = []
     var onPegRemoved: [(PegRB) -> Void] = []
@@ -33,22 +34,6 @@ class GameWorld {
     var targetScore = TargetScore()
     var civTally = CivTally()
 
-    var ballCount: Int? {
-        ballCounter.getBallCount()
-    }
-    var timeLeft: Double? {
-        timer.getTime()
-    }
-    var currScore: Int? {
-        score.getScore(gameModeAttachment)
-    }
-    var scoreToBeat: Int? {
-        targetScore.getTargetScore(gameModeAttachment)
-    }
-    var civDeath: (Int, Int)? {
-        civTally.getCivDeathTally(gameModeAttachment)
-    }
-
     var playState = PlayState.none
     private var gameModeAttachment = GameModeAttachment.defaultMode
 
@@ -62,7 +47,8 @@ class GameWorld {
     private var cannon: Cannon?
     var ballExit = false
     private var bucket: Bucket?
-    var worldDim: CGSize?
+    var worldDim = CGSize(width: 820, height: 980)
+    var worldCenter = Vector2.zero
 
     static func getEmptyWorld() -> GameWorld {
         GameWorld()
@@ -72,6 +58,7 @@ class GameWorld {
         self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
         self.eventLoop = EventLoop(preferredFrameRate: preferredFrameRate)
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
+        self.worldCenter = Vector2(x: worldDim.width / 2, y: worldDim.height / 2)
 
         GameWorld.activeGameBoard = self
     }
@@ -82,6 +69,7 @@ class GameWorld {
         graphicObjects.removeAll()
         coroutines.removeAll()
         collidedPegBodies.removeAll()
+        allPegBodies.removeAll()
         onBallHitPeg.removeAll()
         onPegRemoved.removeAll()
         gameModeAttachment.reset()
@@ -93,36 +81,30 @@ class GameWorld {
         } else {
             gameModeAttachment = GameModeAttachment.defaultMode
         }
-        
+
         if let startBallCount = startBallCount {
             ballCounter.isActive = true
             ballCounter.ballCount = startBallCount
         }
-
-        var pegBodies: [PegRB] = []
 
         for peg in board.allPegs {
             guard let pegRbMaker = PegMapper.pegVariantToPegRbTable[peg.pegVariant] else {
                 fatalError("Palette does not contain this saved peg")
             }
             let pegMade = pegRbMaker(peg)
-            pegBodies.append(pegMade)
             addObject(pegMade)
         }
 
-        gameModeAttachment.setUpWorld(gameWorld: self, pegBodies: pegBodies)
-        worldBoundsInitialized = false
+        gameModeAttachment.setUpWorld(gameWorld: self, pegBodies: allPegBodies)
+        configWorldBounds()
     }
-
-    func configWorldBounds(_ worldDim: CGSize) {
-        self.worldDim = worldDim
-        self.cannon = Cannon(cannonPosition: Vector2(x: worldDim.width / 2, y: 60), spawnOffset: 100)
-
-        guard let cannon = self.cannon else {
-            fatalError("Cannon not assigned")
-        }
-        cannon.onCannonFired.append(addCannonBall)
-        graphicObjects.insert(cannon)
+    
+    // 820 x 980 standard world dimension
+    private func configWorldBounds() {
+        let newCannon = Cannon(cannonPosition: Vector2(x: worldCenter.x, y: 60), spawnOffset: 100)
+        self.cannon = newCannon
+        newCannon.onCannonFired.append(addCannonBall)
+        graphicObjects.insert(newCannon)
 
         let bufferHeight: CGFloat = 100
 
@@ -130,25 +112,25 @@ class GameWorld {
         // Set colliders along the top, left and right borders of the screen
         let topWall = Wall(
             dim: CGSize(width: worldDim.width, height: wallThickness),
-            position: Vector2(x: worldDim.width / 2, y: -wallThickness / 2 - bufferHeight)
+            position: Vector2(x: worldCenter.x, y: -wallThickness / 2 - bufferHeight)
         )
         let rightWall = Wall(
             dim: CGSize(width: wallThickness, height: worldDim.height + 2 * bufferHeight),
-            position: Vector2(x: worldDim.width + wallThickness / 2, y: worldDim.height / 2)
+            position: Vector2(x: worldDim.width + wallThickness / 2, y: worldCenter.y)
         )
         let leftWall = Wall(
             dim: CGSize(width: wallThickness, height: worldDim.height + 2 * bufferHeight),
-            position: Vector2(x: -wallThickness / 2, y: worldDim.height / 2)
+            position: Vector2(x: -wallThickness / 2, y: worldCenter.y)
         )
 
         let ballRecycler = BallRecycler(
             dim: CGSize(width: worldDim.width, height: wallThickness),
-            position: Vector2(x: worldDim.width / 2, y: worldDim.height + wallThickness / 2 + bufferHeight)
+            position: Vector2(x: worldCenter.x, y: worldDim.height + wallThickness / 2 + bufferHeight)
         )
 
         let bucket = Bucket(
-            transform: Transform(Vector2(x: worldDim.width / 2, y: worldDim.height)),
-            center: worldDim.width / 2,
+            transform: Transform(Vector2(x: worldCenter.x, y: worldDim.height)),
+            center: worldCenter.x,
             leftEnd: 0,
             rightEnd: worldDim.width - 60
         )
@@ -172,19 +154,26 @@ class GameWorld {
     func removeCoroutine(_ routine: Coroutine) {
         coroutines.remove(routine)
     }
+    
+    func addObject(_ pegRb: PegRB) {
+        addObject(pegRb as RigidBody)
+        allPegBodies.insert(pegRb)
+    }
+    
+    func addObject(_ body: RigidBody) {
+        addObject(body as WorldObject)
+        physicsWorld.addBody(body)
+    }
 
     func addObject(_ addedObject: WorldObject) {
         if addedObject is Renderable {
             graphicObjects.insert(addedObject)
         }
-
-        if let addedBody = addedObject as? RigidBody {
-            physicsWorld.addBody(addedBody)
-        }
     }
 
     func removePeg(_ pegRb: PegRB) {
         physicsWorld.removeBody(pegRb)
+        allPegBodies.remove(pegRb)
         graphicObjects.remove(pegRb)
         onPegRemoved.forEach { response in response(pegRb) }
     }
@@ -251,6 +240,14 @@ class GameWorld {
     func openBucket() {
         bucket?.open()
     }
+    
+    func flipPegs() {
+        for pegBody in allPegBodies {
+            if pegBody.bodyType == BodyType.stationary {
+                addCoroutine(Coroutine(routine: pegBody.makeFlipRotator(worldCenter), onCompleted: removeCoroutine))
+            }
+        }
+    }
 
     private func startSimulation() {
         eventLoop.start(step)
@@ -265,11 +262,10 @@ class GameWorld {
         }
 
         timer.countDown(deltaTime)
-
+        gameModeAttachment.evaluate(gameWorld: self, playState: &playState)
         for sceneAdaption in onStepComplete {
             sceneAdaption(graphicObjects)
         }
-        gameModeAttachment.evaluate(gameWorld: self, playState: &playState)
         
         for stateAdaption in onEvaluationComplete {
             stateAdaption()
@@ -277,6 +273,29 @@ class GameWorld {
         if playState == PlayState.won || playState == PlayState.lost {
             exitGame()
         }
+    }
+}
+
+extension GameWorld {
+    // UI elements
+    var ballCount: Int? {
+        ballCounter.getBallCount()
+    }
+    var timeLeft: Double? {
+        timer.getTime()
+    }
+    var currScore: Int? {
+        score.getScore(gameModeAttachment)
+    }
+    var scoreToBeat: Int? {
+        targetScore.getTargetScore(gameModeAttachment)
+    }
+    var civDeath: (Int, Int)? {
+        civTally.getCivDeathTally(gameModeAttachment)
+    }
+    
+    var shotComplete: Bool {
+        ballExit && collidedPegBodies.isEmpty
     }
 }
 

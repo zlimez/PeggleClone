@@ -15,11 +15,23 @@ final class DataManager {
                                     create: false)
            .appendingPathComponent(filename)
     }
+    
+    static func readDefault() -> [String: Board] {
+        if let url = Bundle.main.url(forResource: "DefaultLevels", withExtension: "json"),
+            let data = try? Data(contentsOf: url) {
+                let decoder = JSONDecoder()
+                if let defaultLevels = try? decoder.decode(Dictionary<String, Board>.self, from: data) {
+                    return defaultLevels
+                }
+        }
+        fatalError("Preloaded levels file not provided")
+    }
 
     static func load<T: Decodable>(filename: String, initValue: T, completion: @escaping (Result<T, Error>) -> Void) {
           DispatchQueue.global(qos: .background).async {
               do {
                   let fileURL = try fileURL(filename)
+                  print(fileURL)
                   guard let file = try? FileHandle(forReadingFrom: fileURL) else {
                       DispatchQueue.main.async {
                           completion(.success(initValue))

@@ -15,11 +15,11 @@ class CivilianPeg: NormalPeg {
     private var isDead = false
     private var collisionCount = 0
 
-    init(peg: Peg, deathThreshold: Int = 2, deathSprite: String = "peg-grey", deathPenalty: Int = 150) {
+    init(peg: Peg, collider: Collider, deathThreshold: Int = 2, deathSprite: String = "peg-grey", deathPenalty: Int = 150) {
         self.deathPenalty = deathPenalty
         self.deathSprite = deathSprite
         self.deathThreshold = deathThreshold
-        super.init(peg)
+        super.init(peg: peg, collider: collider)
     }
 
     override func onCollisionEnter(_ collision: Collision) {

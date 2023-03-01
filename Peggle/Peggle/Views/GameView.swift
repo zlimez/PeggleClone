@@ -12,23 +12,39 @@ struct GameView: View {
     @Binding var path: [Mode]
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             TopBarView(path: $path)
 
             ZStack {
-                GeometryReader { geo in
-                    generateGameArea(geo)
-                }
+                GeometryReader { geo in generateGameArea(geo) }
 
-                ForEach(renderAdaptor.graphicObjects) { woVM in
-                    WorldObjectView(woVM: woVM)
+                if renderAdaptor.viewDimDetermined {
+                    ZStack {
+                        ForEach(renderAdaptor.graphicObjects) { woVM in
+                            WorldObjectView(woVM: woVM)
+                        }
+                        .zIndex(10)
+
+                        Image("BG")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(
+                                width: renderAdaptor.deviceGameViewSize.width,
+                                height: renderAdaptor.deviceGameViewSize.height
+                            )
+                            .clipped()
+                    }
+                    .frame(
+                        maxWidth: renderAdaptor.deviceGameViewSize.width,
+                        maxHeight: renderAdaptor.deviceGameViewSize.height
+                    )
                 }
             }
             .onTapGesture { location in
                 renderAdaptor.fireCannonAt(location)
             }
             .popup(isPresented: $renderAdaptor.gameEnded) {
-                GameEndView(score: renderAdaptor.score, endState: renderAdaptor.endState)
+                GameEndView(score: renderAdaptor.score, endState: renderAdaptor.endState, path: $path)
             }
             BottomBarView()
         }
@@ -37,19 +53,12 @@ struct GameView: View {
     }
 
     func generateGameArea(_ geo: GeometryProxy) -> some View {
-        if let activeGameBoard = GameWorld.activeGameBoard {
-            if !activeGameBoard.worldBoundsInitialized {
-                activeGameBoard.worldBoundsInitialized = true
-                DispatchQueue.main.async { renderAdaptor.configScene(geo.size) }
-            }
+        if !renderAdaptor.viewDimDetermined {
+            DispatchQueue.main.async { renderAdaptor.configScene(geo.size) }
         }
 
-        return ZStack {
-            Image("BG")
-                .resizable()
-                .scaledToFill()
-                .frame(width: geo.size.width)
-        }
+        return Color.black
+            .scaledToFill()
     }
 }
 
@@ -59,7 +68,6 @@ struct WorldObjectView: View {
     var body: some View {
         Image(woVM.sprite)
             .resizable()
-            .aspectRatio(contentMode: .fit)
             .frame(width: woVM.spriteWidth, height: woVM.spriteHeight)
             .rotationEffect(.radians(woVM.rotation))
             .position(x: woVM.x, y: woVM.y)
@@ -73,18 +81,23 @@ struct TopBarView: View {
 
     var body: some View {
         HStack {
-            Button("EXIT") { _ = path.popLast() }
+            Button("EXIT") {
+                _ = path.popLast()
+                // Temp
+                GameWorld.activeGameBoard?.exitGame()
+            }
+            Spacer()
             if let numOfBalls = renderAdapter.numOfBalls {
                 BallCountView(ballCount: numOfBalls)
             }
-
+            Spacer()
             if let timeLeft = renderAdapter.prettyTimeLeft {
                 TimerView(timeLeft: timeLeft)
             }
         }
-        .padding(20)
-        .padding(.top, 40)
-        .frame(height: 75)
+        .padding(.top, 30)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 20)
         .background(.white)
     }
 }
@@ -92,6 +105,7 @@ struct TopBarView: View {
 struct GameEndView: View {
     var score: Int?
     var endState: String
+    @Binding var path: [Mode]
 
     var body: some View {
         VStack {
@@ -106,6 +120,11 @@ struct GameEndView: View {
                     .fontDesign(.rounded)
                     .font(.largeTitle)
             }
+            Button("EXIT") {
+                _ = path.popLast()
+                // Temp
+                GameWorld.activeGameBoard?.exitGame()
+            }
         }
         .padding(40)
         .background(.white)
@@ -117,7 +136,7 @@ struct BottomBarView: View {
     @EnvironmentObject var renderAdapter: RenderAdaptor
 
     var body: some View {
-        HStack {
+        HStack(alignment: .center) {
             if let civTally = renderAdapter.civTally {
                 CivTallyView(civDeath: civTally.0, allowedDeath: civTally.1)
             }
@@ -134,8 +153,8 @@ struct BottomBarView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(height: 100)
+        .frame(height: 75)
+        .padding(10)
         .background(.white)
     }
 }

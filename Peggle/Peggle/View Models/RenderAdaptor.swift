@@ -18,6 +18,10 @@ class RenderAdaptor: GameSystem, ObservableObject {
     @Published var civTally: (Int, Int)?
     @Published var gameEnded: Bool
     @Published var endState: String
+    
+    private var adaptScaleRatio: CGFloat = 0
+    var viewDimDetermined = false
+    var deviceGameViewSize = CGSize.zero
 
     init() {
         self.gameWorld = GameWorld.getEmptyWorld()
@@ -42,15 +46,14 @@ class RenderAdaptor: GameSystem, ObservableObject {
         graphicObjects.removeAll()
         for worldObject in worldObjects {
             if let graphicObject = worldObject as? Renderable {
-                graphicObjects.append(WorldObjectVM(graphicObject))
+                graphicObjects.append(WorldObjectVM(visibleObject: graphicObject, scaleFactor: adaptScaleRatio))
             } else {
                 fatalError("World object without graphic object cannot be rendered")
             }
         }
     }
-    
-    lazy var adaptPlayState: () -> Void =
-    { [unowned self] in
+
+    lazy var adaptPlayState: () -> Void = { [unowned self] in
         endState = gameWorld.playState == PlayState.won ? "WON" : gameWorld.playState == PlayState.lost ? "LOST" : "IN PROGRESS"
         numOfBalls = gameWorld.ballCount
         score = gameWorld.currScore
@@ -62,8 +65,10 @@ class RenderAdaptor: GameSystem, ObservableObject {
         gameEnded = endState == "WON" || endState == "LOST"
     }
 
-    func configScene(_ worldDim: CGSize) {
-        gameWorld.configWorldBounds(worldDim)
+    func configScene(_ viewDim: CGSize) {
+        adaptScaleRatio = min(viewDim.width / gameWorld.worldDim.width, viewDim.height / gameWorld.worldDim.height)
+        viewDimDetermined = true
+        deviceGameViewSize = CGSize(width: gameWorld.worldDim.width / adaptScaleRatio, height: gameWorld.worldDim.height / adaptScaleRatio)
     }
 
     func fireCannonAt(_ aim: CGPoint) {

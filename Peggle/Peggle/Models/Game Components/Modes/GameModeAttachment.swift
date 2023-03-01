@@ -53,7 +53,7 @@ final class GameModeAttachment {
         self.canEditBallCount = canEditBallCount
     }
 
-    func setUpWorld(gameWorld: GameWorld, pegBodies: [PegRB]) {
+    func setUpWorld(gameWorld: GameWorld, pegBodies: Set<PegRB>) {
         /// Add a world configuration protocol, start timer, set highscore to beat etc add them to graphic objects
         configurer.configWorld(gameWorld: gameWorld, pegBodies: pegBodies, evaluator: winLoseEvaluator)
         scoreSystem.registerListeners(gameWorld)
@@ -64,6 +64,7 @@ final class GameModeAttachment {
     }
 
     func reset() {
+        winLoseEvaluator.reset()
         scoreSystem.reset()
     }
 }

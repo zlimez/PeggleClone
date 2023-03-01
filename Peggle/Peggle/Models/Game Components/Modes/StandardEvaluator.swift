@@ -10,7 +10,12 @@ import Foundation
 class StandardEvaluator: WinLoseEvaluator {
     var allowedKills: Int = 0
     var hostileCount: Int = 0
-    
+
+    func reset() {
+        allowedKills = 0
+        hostileCount = 0
+    }
+
     func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
         /// evaluate when civilian ball is killed
         guard let civScoreSystem = scoreSystem as? CivilianScoreSystem else {
@@ -25,7 +30,7 @@ class StandardEvaluator: WinLoseEvaluator {
             return PlayState.won
         }
 
-        if !gameWorld.ballCounter.hasBallLeft && gameWorld.ballExit {
+        if !gameWorld.ballCounter.hasBallLeft && gameWorld.shotComplete {
             return PlayState.lost
         }
 
@@ -35,6 +40,10 @@ class StandardEvaluator: WinLoseEvaluator {
 
 class TimedHighScoreEvaluator: WinLoseEvaluator {
     var targetScore: Int = 0
+    
+    func reset() {
+        targetScore = 0
+    }
 
     func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
         if !gameWorld.timer.expired {
@@ -46,6 +55,8 @@ class TimedHighScoreEvaluator: WinLoseEvaluator {
 }
 
 class NoHitEvaluator: WinLoseEvaluator {
+    func reset() {}
+
     func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
         guard let noScoreSystem = scoreSystem as? NoScoreSystem else {
             fatalError("No hit evaluator should be associated with no score system")
@@ -53,7 +64,7 @@ class NoHitEvaluator: WinLoseEvaluator {
 
         if noScoreSystem.hasHit {
             return PlayState.lost
-        } else if !gameWorld.ballCounter.hasBallLeft && gameWorld.ballExit {
+        } else if !gameWorld.ballCounter.hasBallLeft && gameWorld.shotComplete {
             return PlayState.won
         }
         return PlayState.inProgress

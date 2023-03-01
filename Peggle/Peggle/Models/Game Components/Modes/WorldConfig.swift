@@ -8,11 +8,11 @@
 import Foundation
 
 protocol WorldConfig {
-    func configWorld(gameWorld: GameWorld, pegBodies: [PegRB], evaluator: WinLoseEvaluator)
+    func configWorld(gameWorld: GameWorld, pegBodies: Set<PegRB>, evaluator: WinLoseEvaluator)
 }
 
 class StandardConfig: WorldConfig {
-    func configWorld(gameWorld: GameWorld, pegBodies: [PegRB], evaluator: WinLoseEvaluator) {
+    func configWorld(gameWorld: GameWorld, pegBodies: Set<PegRB>, evaluator: WinLoseEvaluator) {
         var civilianSurvivability: [CivilianPeg: CGFloat] = [:]
         var hostiles: [HostilePeg] = []
         var bombs: [BoomPeg] = []
@@ -26,12 +26,13 @@ class StandardConfig: WorldConfig {
                 bombs.append(bomb)
             }
         }
-        
+
         let extendedRadius: CGFloat = 100
         let threatModifier: CGFloat = 0.1
         for civilian in civilianSurvivability.keys {
             var thisSurvivability: CGFloat = 1
-            let avgRadius = (civilian.transform.scale.x * civilian.unitWidth + civilian.transform.scale.y * civilian.unitHeight) / 4
+            let avgRadius = (civilian.transform.scale.x * civilian.unitWidth
+                             + civilian.transform.scale.y * civilian.unitHeight) / 4
             let vulnerabilityRadius = avgRadius + extendedRadius
             for hostile in hostiles {
                 let proximity = Vector2.distance(a: hostile.transform.position, b: civilian.transform.position)
@@ -42,10 +43,11 @@ class StandardConfig: WorldConfig {
             }
             civilianSurvivability[civilian] = thisSurvivability
         }
-        
+
         let bombThreat: CGFloat = 0.1
         for bomb in bombs {
-            let bombRadius = (bomb.transform.scale.x * bomb.unitWidth + bomb.transform.scale.y * bomb.unitHeight) / 4 * bomb.explosionScale
+            let bombRadius = (bomb.transform.scale.x * bomb.unitWidth
+                              + bomb.transform.scale.y * bomb.unitHeight) / 4 * bomb.explosionScale
             for civilian in civilianSurvivability.keys {
                 let proximity = Vector2.distance(a: bomb.transform.position, b: civilian.transform.position)
                 if proximity <= bombRadius {
@@ -56,7 +58,7 @@ class StandardConfig: WorldConfig {
                 }
             }
         }
-        
+
         let totalSurvivability = civilianSurvivability.values.reduce(0, { result, survivability in
             result + survivability
         })
@@ -79,7 +81,7 @@ class StandardConfig: WorldConfig {
 }
 
 class TimedBeatScoreConfig: WorldConfig {
-    func configWorld(gameWorld: GameWorld, pegBodies: [PegRB], evaluator: WinLoseEvaluator) {
+    func configWorld(gameWorld: GameWorld, pegBodies: Set<PegRB>, evaluator: WinLoseEvaluator) {
         var hostileCount = 0
         // Mid tier streak expected
         let midTierIndex = Int(round(Float(BaseScoreSystem.streakMultipliers.count) / 2))
@@ -91,11 +93,11 @@ class TimedBeatScoreConfig: WorldConfig {
                 hostileCount += 1
             }
         }
-        
+
         guard let timedBeatScoreEvaluator = evaluator as? TimedHighScoreEvaluator else {
             fatalError("Evaluator associated with beat score config must be timed high score evaluator")
         }
-        
+
         let perBallDropTime = 7.5
         let expectedHit: Double = 7
         let timeGiven = perBallDropTime * Double(hostileCount) / expectedHit
@@ -110,7 +112,7 @@ class TimedBeatScoreConfig: WorldConfig {
 }
 
 class siamConfig: WorldConfig {
-    func configWorld(gameWorld: GameWorld, pegBodies: [PegRB], evaluator: WinLoseEvaluator) {
+    func configWorld(gameWorld: GameWorld, pegBodies: Set<PegRB>, evaluator: WinLoseEvaluator) {
         // Let player determine the number of balls to clear
         gameWorld.timer.isActive = false
         gameWorld.ballCounter.isActive = true

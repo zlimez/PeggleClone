@@ -57,11 +57,11 @@ class PhysicsWorld {
     func step(_ deltaTime: CGFloat) {
         applyGravity(deltaTime)
         applyDrag(deltaTime)
-        resolveCollisions()
+        resolveCollisions(getCollisions())
         updateBodies(deltaTime)
     }
-
-    func resolveCollisions() {
+    
+    func getCollisions() -> ([Collision], [Collision]) {
         var collisions: [Collision] = []
         var triggers: [Collision] = []
         for i in 0..<bodies.count {
@@ -93,6 +93,13 @@ class PhysicsWorld {
                 }
             }
         }
+        
+        return (collisions, triggers)
+    }
+
+    func resolveCollisions(_ collisionAndTriggers: ([Collision], [Collision])) {
+        let collisions = collisionAndTriggers.0
+        let triggers = collisionAndTriggers.1
 
         for collision in collisions {
             PositionSolver.solve(collision)

@@ -8,6 +8,7 @@
 import Foundation
 
 protocol WinLoseEvaluator {
+    func reset()
     func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState
 }
 

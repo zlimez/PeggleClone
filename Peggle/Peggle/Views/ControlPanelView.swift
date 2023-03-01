@@ -94,10 +94,16 @@ struct ControlPanelView: View {
                 guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[selectedMode] else {
                     fatalError("UI enabled invalid mode selection")
                 }
-
-                selectedGameMode.canEditBallCount
-                ? renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode, ballCount: ballGiven)
-                : renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
+                
+                if selectedGameMode.canEditBallCount {
+                    renderAdaptor.setBoardAndMode(
+                        board: designBoardVM.designedBoard,
+                        gameMode: gameMode,
+                        ballCount: ballGiven
+                    )
+                } else {
+                    renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
+                }
             }
             .foregroundColor(Color.blue)
         }
@@ -106,14 +112,14 @@ struct ControlPanelView: View {
 
 struct BallCountEditorView: View {
     @Binding var ballGiven: Int
-    
+
     var body: some View {
         HStack {
             Text("Ball Given: \(ballGiven)")
-            Button (action: { ballGiven += 1 }) {
+            Button(action: { ballGiven += 1 }) {
                 Image(systemName: "plus")
             }
-            Button (action: { ballGiven -= 1 }) {
+            Button(action: { ballGiven -= 1 }) {
                 Image(systemName: "minus")
             }
         }

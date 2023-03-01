@@ -14,12 +14,15 @@ final class Levels: ObservableObject {
 
     init() {
         let initValue: [String: Board] = [:]
-        DataManager.load(filename: "PeggleLevels.json", initValue: initValue) { result in
+        DataManager.load(filename: "peggleLevels.json", initValue: initValue) { result in
             switch result {
             case .failure(let error):
                 fatalError(error.localizedDescription)
             case .success(let levelTable):
                 self.levelTable = levelTable
+                for defaultLevel in DataManager.readDefault() {
+                    self.levelTable[defaultLevel.key] = defaultLevel.value
+                }
             }
         }
     }
@@ -36,7 +39,7 @@ final class Levels: ObservableObject {
         }
 
         levelTable[levelName] = updatedBoard.getCopy()
-        DataManager.save(values: levelTable, filename: "PeggleLevels.json") { result in
+        DataManager.save(values: levelTable, filename: "peggleLevels.json") { result in
             if case .failure(let error) = result {
                 fatalError(error.localizedDescription)
             }

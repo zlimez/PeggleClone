@@ -85,6 +85,12 @@ class CivilianScoreSystem: BaseScoreSystem {
         super.updateBaseScore(hostilePeg)
         hostileKilled += 1
     }
+    
+    override func reset() {
+        super.reset()
+        civilianKilled = 0
+        hostileKilled = 0
+    }
 }
 
 class NoScoreSystem: ScoreSystem {

@@ -11,10 +11,12 @@ import Foundation
 class WorldObjectVM: Identifiable {
     let id: Int
     let visibleObject: Renderable
+    let scaleFactor: CGFloat
 
-    init(_ visibleObject: Renderable) {
+    init(visibleObject: Renderable, scaleFactor: CGFloat) {
         self.id = visibleObject.id
         self.visibleObject = visibleObject
+        self.scaleFactor = scaleFactor
     }
 
     var sprite: String {
@@ -22,11 +24,11 @@ class WorldObjectVM: Identifiable {
     }
 
     var x: CGFloat {
-        visibleObject.x
+        visibleObject.x * scaleFactor
     }
 
     var y: CGFloat {
-        visibleObject.y
+        visibleObject.y * scaleFactor
     }
 
     var spriteOpacity: CGFloat {
@@ -34,11 +36,11 @@ class WorldObjectVM: Identifiable {
     }
 
     var spriteWidth: CGFloat {
-        visibleObject.spriteWidth
+        visibleObject.spriteWidth * scaleFactor
     }
 
     var spriteHeight: CGFloat {
-        visibleObject.spriteHeight
+        visibleObject.spriteHeight * scaleFactor
     }
 
     var rotation: CGFloat {
