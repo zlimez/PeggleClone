@@ -21,14 +21,19 @@ class BaseScoreSystem: ScoreSystem {
         gameWorld.onShotFinalized.append(scoreUpdater)
     }
 
-    lazy var baseScoreUpdater: (PegRB) -> Void = { [unowned self] (pegRemoved: PegRB) in
+    lazy var baseScoreUpdater: (PegRB) -> Void = { [weak self] (pegRemoved: PegRB) in
+        guard let self = self else {
+            print("Object have been destroyed before its coroutine")
+            return
+        }
+
         if let enemyPeg = pegRemoved as? HostilePeg {
-            updateBaseScore(enemyPeg)
+            self.updateBaseScore(enemyPeg)
             return
         }
 
         if let civilian = pegRemoved as? CivilianPeg {
-            updateBaseScore(civilian)
+            self.updateBaseScore(civilian)
             return
         }
     }

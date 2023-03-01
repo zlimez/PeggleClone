@@ -81,6 +81,7 @@
 		6AE1869629AE702900B3CDE4 /* ConfusePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1869529AE702900B3CDE4 /* ConfusePeg.swift */; };
 		6AE1869829AF590100B3CDE4 /* peggleLevels.json in Resources */ = {isa = PBXBuildFile; fileRef = 6AE1869729AF590100B3CDE4 /* peggleLevels.json */; };
 		6AE1869C29AF5A8E00B3CDE4 /* DefaultLevels.json in Resources */ = {isa = PBXBuildFile; fileRef = 6AE1869B29AF5A8E00B3CDE4 /* DefaultLevels.json */; };
+		6AE186A029AF617E00B3CDE4 /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE1869F29AF617E00B3CDE4 /* SelectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +180,7 @@
 		6AE1869529AE702900B3CDE4 /* ConfusePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfusePeg.swift; sourceTree = "<group>"; };
 		6AE1869729AF590100B3CDE4 /* peggleLevels.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = peggleLevels.json; sourceTree = "<group>"; };
 		6AE1869B29AF5A8E00B3CDE4 /* DefaultLevels.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DefaultLevels.json; sourceTree = "<group>"; };
+		6AE1869F29AF617E00B3CDE4 /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,6 +263,7 @@
 				6A83B365299A99C500B893AE /* RootView.swift */,
 				6AE1868C29AE152000B3CDE4 /* FrameGetter.swift */,
 				6AE1868E29AE155700B3CDE4 /* Popup.swift */,
+				6AE1869F29AF617E00B3CDE4 /* SelectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -647,6 +650,7 @@
 				6AA2286F29811C2000823F43 /* PeggleApp.swift in Sources */,
 				6AD927F629884277004E7963 /* Levels.swift in Sources */,
 				6AE1865329A941F400B3CDE4 /* BoomPeg.swift in Sources */,
+				6AE186A029AF617E00B3CDE4 /* SelectionView.swift in Sources */,
 				6A83B34C29974D4600B893AE /* BoxCollider.swift in Sources */,
 				6AE1864129A89CA400B3CDE4 /* EventLoop.swift in Sources */,
 				6AE1865529A942DB00B3CDE4 /* PegRB.swift in Sources */,

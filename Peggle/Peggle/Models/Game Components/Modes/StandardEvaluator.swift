@@ -40,7 +40,7 @@ class StandardEvaluator: WinLoseEvaluator {
 
 class TimedHighScoreEvaluator: WinLoseEvaluator {
     var targetScore: Int = 0
-    
+
     func reset() {
         targetScore = 0
     }
@@ -49,7 +49,7 @@ class TimedHighScoreEvaluator: WinLoseEvaluator {
         if !gameWorld.timer.expired {
             return PlayState.inProgress
         }
-        
+
         return scoreSystem.score >= targetScore ? PlayState.won : PlayState.lost
     }
 }

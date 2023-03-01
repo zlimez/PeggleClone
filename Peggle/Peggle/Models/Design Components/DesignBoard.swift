@@ -11,99 +11,6 @@ struct DesignBoard {
     static let dummyBoard = DesignBoard(board: Board(allPegs: []))
     static var viewDim: CGSize?
     static var maxDim: Int = 0
-    static var blockPalette: [PegVariant] = {
-        let brickBlock = PegVariant(
-            pegSprite: "brick-block",
-            pegLitSprite: "brick-block",
-            size: Vector2(x: 96.5, y: 56)
-        )
-        PegMapper.pegVariantToPegRbTable[brickBlock] = { block in
-            Block(block)
-        }
-        PegMapper.pegVariantToPegTable[brickBlock] = { block in
-            BoxPeg(block)
-        }
-        return [brickBlock]
-    }()
-    static var palette: [PegVariant] = {
-        let orangePeg = PegVariant(
-            pegSprite: "peg-orange",
-            pegLitSprite: "peg-orange-glow",
-            size: Vector2.one * 50
-        )
-        let bluePeg = PegVariant(
-            pegSprite: "peg-blue",
-            pegLitSprite: "peg-blue-glow",
-            size: Vector2.one * 50
-        )
-        let purplePeg = PegVariant(
-            pegSprite: "peg-purple",
-            pegLitSprite: "peg-purple-glow",
-            size: Vector2.one * 50
-        )
-        let greenPeg = PegVariant(
-            pegSprite: "peg-green",
-            pegLitSprite: "peg-green-glow",
-            size: Vector2.one * 50
-        )
-        let yellowPeg = PegVariant(
-            pegSprite: "peg-yellow",
-            pegLitSprite: "peg-yellow-glow",
-            size: Vector2.one * 50
-        )
-        let trianglePurplePeg = PegVariant(
-            pegSprite: "peg-purple-triangle",
-            pegLitSprite: "peg-purple-glow-triangle",
-            size: Vector2(x: 50, y: 25 * sqrt(3))
-        )
-        PegMapper.pegVariantToPegRbTable[orangePeg] = { peg in
-            HostilePeg(peg: peg, collider: CircleCollider(peg.unitWidth / 2), captureReward: 150)
-        }
-        PegMapper.pegVariantToPegTable[orangePeg] = { peg in
-            CirclePeg(peg)
-        }
-        PegMapper.pegVariantToPegRbTable[bluePeg] = { peg in
-            CivilianPeg(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
-        }
-        PegMapper.pegVariantToPegTable[bluePeg] = { peg in
-            CirclePeg(peg)
-        }
-        PegMapper.pegVariantToPegRbTable[purplePeg] = { peg in
-            BoomPeg(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
-        }
-        PegMapper.pegVariantToPegTable[purplePeg] = { peg in
-            CirclePeg(peg)
-        }
-        PegMapper.pegVariantToPegRbTable[greenPeg] = { peg in
-            BondPeg(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
-        }
-        PegMapper.pegVariantToPegTable[greenPeg] = { peg in
-            CirclePeg(peg)
-        }
-        PegMapper.pegVariantToPegRbTable[yellowPeg] = { peg in
-            LoidPeg(peg: peg, collider: CircleCollider(peg.unitWidth / 2))
-        }
-        PegMapper.pegVariantToPegTable[yellowPeg] = { peg in
-            CirclePeg(peg)
-        }
-        PegMapper.pegVariantToPegRbTable[trianglePurplePeg] = { peg in
-            ConfusePeg(
-                peg: peg,
-                collider: PolygonCollider(
-                    stdVertices: [
-                        Vector2(x: -peg.unitWidth / 2, y: -peg.unitHeight / 3),
-                        Vector2(x: 0, y: peg.unitHeight / 3 * 2),
-                        Vector2(x: peg.unitWidth / 2, y: -peg.unitHeight / 3)
-                    ],
-                    isBox: false
-                )
-            )
-        }
-        PegMapper.pegVariantToPegTable[trianglePurplePeg] = { peg in
-            TrianglePeg(peg)
-        }
-        return [orangePeg, bluePeg, purplePeg, greenPeg, yellowPeg, trianglePurplePeg]
-    }()
     static var dimInitialized = false
 
     var board: Board
@@ -118,18 +25,14 @@ struct DesignBoard {
         self.board = board
         designPegs = []
         for peg in board.allPegs {
-            guard let pegMaker = PegMapper.pegVariantToPegTable[peg.pegVariant] else {
-                fatalError("Peg variant does not exist in mapper")
-            }
+            let pegMaker = PegMapper.getPegMaker(peg.pegVariant)
             designPegs.insert(pegMaker(peg))
         }
         boundaries = []
     }
 
     mutating func tryAddPegAt(pegVariant: PegVariant, x: CGFloat, y: CGFloat) -> DesignPeg? {
-        guard let pegMaker = PegMapper.pegVariantToPegTable[pegVariant] else {
-            fatalError("No peg maker matches the peg variant")
-        }
+        let pegMaker = PegMapper.getPegMaker(pegVariant)
         let candidatePeg = pegMaker(Peg(pegVariant: pegVariant, transform: Transform(Vector2(x: x, y: y))))
         if willCollide(candidatePeg) {
             return nil
@@ -175,7 +78,7 @@ struct DesignBoard {
     mutating func initDim(_ viewDim: CGSize) {
         DesignBoard.viewDim = viewDim
         DesignBoard.dimInitialized = true
-        
+
         let topBound = Boundary(
             boxCollider: BoxCollider(halfWidth: viewDim.width / 2, halfHeight: Boundary.boundHalfThickness),
             transform: Transform(Vector2(x: viewDim.width / 2, y: -Boundary.boundHalfThickness))

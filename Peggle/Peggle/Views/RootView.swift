@@ -14,15 +14,23 @@ struct RootView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            Button("Design") {
-                path.append(Mode.designMode)
-                print("path is \(path)")
+            VStack {
+                Button("Design") {
+                    path.append(Mode.designMode)
+                    print("path is \(path)")
+                }
+                Button("Select") {
+                    path.append(Mode.selectMode)
+                    print("path is \(path)")
+                }
             }
             .navigationDestination(for: Mode.self) { mode in
                 if mode == Mode.designMode {
                     BoardView(path: $path)
-                } else {
+                } else if mode == Mode.playMode {
                     GameView(path: $path)
+                } else if mode == Mode.selectMode {
+                    SelectionView(path: $path)
                 }
             }
             .foregroundColor(Color.blue)
@@ -35,6 +43,7 @@ struct RootView: View {
 struct Mode: Hashable {
     static let designMode = Mode(name: "design")
     static let playMode = Mode(name: "play")
+    static let selectMode = Mode(name: "select")
     let name: String
 }
 

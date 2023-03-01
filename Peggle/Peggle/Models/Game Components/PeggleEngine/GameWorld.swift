@@ -75,7 +75,7 @@ class GameWorld {
         gameModeAttachment.reset()
     }
 
-    func setNewBoard(board: Board, gameMode: String, startBallCount: Int?) {
+    func setNewBoard(board: Board, gameMode: String, startBallCount: Int? = nil) {
         if let modeAttachment = ModeMapper.modeToGameAttachmentTable[gameMode] {
             gameModeAttachment = modeAttachment
         } else {
@@ -88,9 +88,7 @@ class GameWorld {
         }
 
         for peg in board.allPegs {
-            guard let pegRbMaker = PegMapper.pegVariantToPegRbTable[peg.pegVariant] else {
-                fatalError("Palette does not contain this saved peg")
-            }
+            let pegRbMaker = PegMapper.getPegRbMaker(peg.pegVariant)
             let pegMade = pegRbMaker(peg)
             addObject(pegMade)
         }

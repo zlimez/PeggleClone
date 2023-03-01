@@ -18,7 +18,12 @@ class NormalPeg: PegRB {
         activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
     }
 
-    lazy var fade: (Double) -> Bool = { [unowned self] (deltaTime: Double) -> Bool in
+    lazy var fade: (Double) -> Bool = { [weak self] (deltaTime: Double) -> Bool in
+        guard let self = self else {
+            print("Object have been destroyed before its coroutine")
+            return true
+        }
+
         self.spriteContainer.opacity -= deltaTime / self.pegFadeTime
         if self.spriteContainer.opacity <= 0 {
             GameWorld.activeGameBoard?.removePeg(self)

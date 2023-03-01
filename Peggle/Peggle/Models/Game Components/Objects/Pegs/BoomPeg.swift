@@ -86,7 +86,7 @@ class BoomPeg: PegRB, Animated {
             guard let activeGameBoard = GameWorld.activeGameBoard else {
                 fatalError("No active board")
             }
-            activeGameBoard.queuePegRemoval(normalPeg)
+
             normalPeg.makeFade()
             return
         }

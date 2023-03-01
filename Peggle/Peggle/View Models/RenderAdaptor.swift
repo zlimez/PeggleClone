@@ -38,8 +38,16 @@ class RenderAdaptor: GameSystem, ObservableObject {
     }
 
     // Third argument is to cater for the case where player sets the ball count
-    func setBoardAndMode(board: Board, gameMode: String, ballCount: Int? = nil) {
-        gameWorld.setNewBoard(board: board, gameMode: gameMode, startBallCount: ballCount)
+    func setBoardAndMode(board: Board, gameMode: String, ballCount: Int) {
+        guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[gameMode] else {
+            fatalError("UI enabled invalid mode selection")
+        }
+
+        if selectedGameMode.canEditBallCount {
+            gameWorld.setNewBoard(board: board, gameMode: gameMode, startBallCount: ballCount)
+        } else {
+            gameWorld.setNewBoard(board: board, gameMode: gameMode)
+        }
     }
 
     lazy var adaptScene: (any Collection<WorldObject>) -> Void = { [unowned self] (worldObjects: any Collection<WorldObject>) in

@@ -14,7 +14,6 @@ struct GameView: View {
     var body: some View {
         VStack(spacing: 0) {
             TopBarView(path: $path)
-
             ZStack {
                 GeometryReader { geo in generateGameArea(geo) }
 

@@ -64,17 +64,7 @@ struct ControlPanelView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(Color.gray, lineWidth: 2)
                     )
-                HStack {
-                    Picker("Game Mode", selection: $selectedMode) {
-                        ForEach(ModeMapper.codeNames, id: \.self) { mode in
-                            Text(mode)
-                        }
-                    }
-                    
-                    if let gameMode = ModeMapper.modeToGameAttachmentTable[selectedMode], gameMode.canEditBallCount {
-                        BallCountEditorView(ballGiven: $ballGiven)
-                    }
-                }
+                ModeSelectionView(selectedMode: $selectedMode, ballGiven: $ballGiven)
             }
             .frame(width: 350)
             Spacer()
@@ -90,38 +80,13 @@ struct ControlPanelView: View {
         NavigationLink(value: Mode.playMode) {
             Button("START") {
                 path.append(Mode.playMode)
-
-                guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[selectedMode] else {
-                    fatalError("UI enabled invalid mode selection")
-                }
-                
-                if selectedGameMode.canEditBallCount {
-                    renderAdaptor.setBoardAndMode(
-                        board: designBoardVM.designedBoard,
-                        gameMode: gameMode,
-                        ballCount: ballGiven
-                    )
-                } else {
-                    renderAdaptor.setBoardAndMode(board: designBoardVM.designedBoard, gameMode: gameMode)
-                }
+                renderAdaptor.setBoardAndMode(
+                    board: designBoardVM.designedBoard,
+                    gameMode: selectedMode,
+                    ballCount: ballGiven
+                )
             }
             .foregroundColor(Color.blue)
-        }
-    }
-}
-
-struct BallCountEditorView: View {
-    @Binding var ballGiven: Int
-
-    var body: some View {
-        HStack {
-            Text("Ball Given: \(ballGiven)")
-            Button(action: { ballGiven += 1 }) {
-                Image(systemName: "plus")
-            }
-            Button(action: { ballGiven -= 1 }) {
-                Image(systemName: "minus")
-            }
         }
     }
 }
@@ -191,11 +156,11 @@ struct PaletteView: View {
     let columns = [GridItem(.flexible())]
 
     var body: some View {
-        layoutPalette(DesignBoard.palette)
-        layoutPalette(DesignBoard.blockPalette)
+        layoutPalette(PegMapper.palette)
+        layoutPalette(PegMapper.blockPalette)
             .offset(CGSize(width: -80, height: 0))
     }
-    
+
     func layoutPalette(_ palette: [PegVariant]) -> some View {
         LazyVGrid(columns: columns) {
             ForEach(adaptPalette(palette: palette, groupSize: 3), id: \.self) { variantGroup in
