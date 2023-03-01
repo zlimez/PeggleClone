@@ -8,8 +8,9 @@
 import Foundation
 
 protocol WinLoseEvaluator {
+    associatedtype Scorer: ScoreSystem
     func reset()
-    func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState
+    func evaluateGameState(gameWorld: GameWorld, scoreSystem: Scorer) -> PlayState
 }
 
 // TODO: Add in pauseGame for GameWorld

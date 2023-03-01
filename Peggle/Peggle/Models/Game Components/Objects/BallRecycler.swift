@@ -32,5 +32,11 @@ class BallRecycler: RigidBody {
             GameWorld.activeGameBoard?.removeCannonBall(cannonBall)
             GameWorld.activeGameBoard?.fadeCollidedPegs()
         }
+
+        if let loidPeg = collision.rbB as? LoidPeg, loidPeg.isDynamic {
+            GameWorld.activeGameBoard?.activeBallCount -= 1
+            GameWorld.activeGameBoard?.removePeg(loidPeg)
+            GameWorld.activeGameBoard?.fadeCollidedPegs()
+        }
     }
 }

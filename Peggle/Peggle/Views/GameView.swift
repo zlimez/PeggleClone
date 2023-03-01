@@ -146,7 +146,7 @@ struct BottomBarView: View {
                 if let targetScore = renderAdapter.targetScore {
                     TargetScoreView(targetScore: targetScore)
                 }
-                
+
                 if let score = renderAdapter.score {
                     ScoreView(score: score)
                 }

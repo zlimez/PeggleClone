@@ -43,7 +43,7 @@ struct BallCounter: Optional {
 struct CivTally: Optional {
     var isActive = true
 
-    func getCivDeathTally(_ gameModeAttachment: GameModeAttachment) -> (Int, Int)? {
+    func getCivDeathTally(_ gameModeAttachment: any GameModeAttachment) -> (Int, Int)? {
         if !isActive {
             return nil
         }
@@ -60,7 +60,7 @@ struct CivTally: Optional {
 struct Score: Optional {
     var isActive = true
 
-    func getScore(_ gameModeAttachment: GameModeAttachment) -> Int? {
+    func getScore(_ gameModeAttachment: any GameModeAttachment) -> Int? {
         if !isActive {
             return nil
         }
@@ -72,7 +72,7 @@ struct Score: Optional {
 struct TargetScore: Optional {
     var isActive = false
 
-    func getTargetScore(_ gameModeAttachment: GameModeAttachment) -> Int? {
+    func getTargetScore(_ gameModeAttachment: any GameModeAttachment) -> Int? {
         if !isActive {
             return nil
         }

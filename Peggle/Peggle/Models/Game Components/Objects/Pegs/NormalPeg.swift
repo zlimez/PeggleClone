@@ -7,29 +7,14 @@
 
 import Foundation
 
-class NormalPeg: PegRB {
+class NormalPeg: PegRB, Fadable {
+    var fadableBody: some PegRB { self }
     var ballHitStartTime: Double = 0
-    var pegFadeTime: Double = 1
+    var fadeTime: Double = 1
+    var pegHitCount: Int = 0
 
-    func makeFade() {
-        guard let activeGameBoard = GameWorld.activeGameBoard else {
-            fatalError("No active board")
-        }
-        activeGameBoard.addCoroutine(Coroutine(routine: fade, onCompleted: activeGameBoard.removeCoroutine))
-    }
-
-    lazy var fade: (Double) -> Bool = { [weak self] (deltaTime: Double) -> Bool in
-        guard let self = self else {
-            print("Object have been destroyed before its coroutine")
-            return true
-        }
-
-        self.spriteContainer.opacity -= deltaTime / self.pegFadeTime
-        if self.spriteContainer.opacity <= 0 {
-            GameWorld.activeGameBoard?.removePeg(self)
-            return true
-        }
-        return false
+    lazy var afterFade: () -> Void = { [unowned self] in
+        GameWorld.activeGameBoard?.removePeg(self)
     }
 
     override func onCollisionEnter(_ collision: Collision) {
@@ -41,6 +26,11 @@ class NormalPeg: PegRB {
             spriteContainer.sprite = peg.pegLitSprite
             ballHitStartTime = activeGameBoard.gameTime
             activeGameBoard.queuePegRemoval(self)
+            pegHitCount += 1
+
+            if pegHitCount == GameWorld.activeGameBoard?.pegRemovalHitCount {
+                makeFade()
+            }
         }
     }
 

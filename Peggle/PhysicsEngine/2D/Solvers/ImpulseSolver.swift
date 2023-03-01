@@ -8,6 +8,7 @@
 import Foundation
 
 final class ImpulseSolver: Solver {
+    static let noBounceThreshold: CGFloat = 25
     static func solve(_ collision: Collision) {
         let rbA = collision.rbA
         let rbB = collision.rbB
@@ -47,6 +48,12 @@ final class ImpulseSolver: Solver {
         let rSpd = Vector2.dotProduct(a: Vector2.zero - rbA.velocity, b: contact.normal)
 
         if rSpd >= 0 {
+            return
+        }
+        
+        if abs(rSpd) < ImpulseSolver.noBounceThreshold {
+            let stoppageImpulse = contact.normal * Vector2.dotProduct(a: rbA.momentum, b: contact.normal)
+            rbA.applyImpulse(-stoppageImpulse)
             return
         }
 

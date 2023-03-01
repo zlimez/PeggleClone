@@ -90,7 +90,7 @@ class CivilianScoreSystem: BaseScoreSystem {
         super.updateBaseScore(hostilePeg)
         hostileKilled += 1
     }
-    
+
     override func reset() {
         super.reset()
         civilianKilled = 0
@@ -102,14 +102,12 @@ class NoScoreSystem: ScoreSystem {
     var score: Int = 0
     var hasHit = false
     var scoreUpdater: () -> Void = {}
-    
+
     func registerListeners(_ gameWorld: GameWorld) {
         gameWorld.onBallHitPeg.append(loseOnCollision)
     }
 
-    private lazy var loseOnCollision: (PegRB) -> Void = {
-        [unowned self]
-        _ in
+    private lazy var loseOnCollision: (PegRB) -> Void = { [unowned self] _ in
         hasHit = true
     }
 

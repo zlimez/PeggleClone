@@ -11,6 +11,9 @@ import QuartzCore
 class GameWorld {
     static var activeGameBoard: GameWorld?
     let pegRemovalTimeInterval: Double
+    // If a peg is hit more than this number of times it might be trapping the ball,
+    // and hence should be removed prematurely
+    let pegRemovalHitCount: Int
     let flipTimeInterval: Double = 0.5
 
     // All game systems
@@ -18,6 +21,7 @@ class GameWorld {
     // Pegs that have been hit during this launch
     private var collidedPegBodies: Set<NormalPeg> = []
     private var allPegBodies: Set<PegRB> = []
+    private var graphicObjects: Set<WorldObject> = []
     // For external gamesystems to register their responses
     var onBallHitPeg: [(PegRB) -> Void] = []
     var onPegRemoved: [(PegRB) -> Void] = []
@@ -25,7 +29,6 @@ class GameWorld {
 
     var onStepComplete: [(any Collection<WorldObject>) -> Void] = []
     var onEvaluationComplete: [() -> Void] = []
-    private var graphicObjects: Set<WorldObject> = []
 
     // Contains information such as score, civilians killed etc. determined by game mode configurer
     var ballCounter = BallCounter()
@@ -35,7 +38,7 @@ class GameWorld {
     var civTally = CivTally()
 
     var playState = PlayState.none
-    private var gameModeAttachment = GameModeAttachment.defaultMode
+    private var gameModeAttachment = ModeMapper.defaultMode
 
     let eventLoop: EventLoop
     private var coroutines: Set<Coroutine> = []
@@ -45,33 +48,45 @@ class GameWorld {
 
     // Game specific objects
     private var cannon: Cannon?
-    var ballExit = false
+    // Include loid pegs
+    var activeBallCount: Int = 0
     private var bucket: Bucket?
-    var worldDim = CGSize(width: 820, height: 980)
-    var worldCenter = Vector2.zero
+    let worldDim = CGSize(width: 820, height: 980)
+    let worldCenter: Vector2
 
     static func getEmptyWorld() -> GameWorld {
         GameWorld()
     }
 
-    init(preferredFrameRate: Float = 90, pegRemovalTimeInterval: Double = 2) {
+    init(preferredFrameRate: Float = 90, pegRemovalTimeInterval: Double = 2, pegRemovalHitCount: Int = 10) {
         self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
         self.eventLoop = EventLoop(preferredFrameRate: preferredFrameRate)
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
         self.worldCenter = Vector2(x: worldDim.width / 2, y: worldDim.height / 2)
+        self.pegRemovalHitCount = pegRemovalHitCount
 
         GameWorld.activeGameBoard = self
     }
 
     func exitGame() {
         eventLoop.stop()
+
         physicsWorld.removeAllBodies()
         graphicObjects.removeAll()
-        coroutines.removeAll()
         collidedPegBodies.removeAll()
         allPegBodies.removeAll()
+
+        coroutines.removeAll()
+
         onBallHitPeg.removeAll()
         onPegRemoved.removeAll()
+        onStepComplete.removeAll()
+        onShotFinalized.removeAll()
+        onEvaluationComplete.removeAll()
+
+        activeBallCount = 0
+        playState = PlayState.none
+
         gameModeAttachment.reset()
     }
 
@@ -79,7 +94,7 @@ class GameWorld {
         if let modeAttachment = ModeMapper.modeToGameAttachmentTable[gameMode] {
             gameModeAttachment = modeAttachment
         } else {
-            gameModeAttachment = GameModeAttachment.defaultMode
+            gameModeAttachment = ModeMapper.defaultMode
         }
 
         if let startBallCount = startBallCount {
@@ -96,7 +111,7 @@ class GameWorld {
         gameModeAttachment.setUpWorld(gameWorld: self, pegBodies: allPegBodies)
         configWorldBounds()
     }
-    
+
     // 820 x 980 standard world dimension
     private func configWorldBounds() {
         let newCannon = Cannon(cannonPosition: Vector2(x: worldCenter.x, y: 60), spawnOffset: 100)
@@ -152,12 +167,12 @@ class GameWorld {
     func removeCoroutine(_ routine: Coroutine) {
         coroutines.remove(routine)
     }
-    
+
     func addObject(_ pegRb: PegRB) {
         addObject(pegRb as RigidBody)
         allPegBodies.insert(pegRb)
     }
-    
+
     func addObject(_ body: RigidBody) {
         addObject(body as WorldObject)
         physicsWorld.addBody(body)
@@ -174,13 +189,13 @@ class GameWorld {
         allPegBodies.remove(pegRb)
         graphicObjects.remove(pegRb)
         onPegRemoved.forEach { response in response(pegRb) }
+        tryFinalizeShot()
     }
 
     func removePeg(_ normalPeg: NormalPeg) {
         let pegRb: PegRB = normalPeg
-        removePeg(pegRb)
         collidedPegBodies.remove(normalPeg)
-        tryFinalizeShot()
+        removePeg(pegRb)
     }
 
     func queuePegRemoval(_ hitPegRb: NormalPeg) {
@@ -188,6 +203,10 @@ class GameWorld {
     }
 
     func fadeCollidedPegs() {
+        if activeBallCount > 0 {
+            return
+        }
+
         for hitPeg in collidedPegBodies {
             hitPeg.makeFade()
         }
@@ -203,19 +222,17 @@ class GameWorld {
 
     private lazy var addCannonBall: (CannonBall) -> Void = { [unowned self] (cannonBall: CannonBall) in
         addObject(cannonBall)
-        ballExit = false
+        activeBallCount += 1
         ballCounter.onBallFired(1)
     }
 
     func removeCannonBall(_ cannonBall: CannonBall) {
         physicsWorld.removeBody(cannonBall)
         graphicObjects.remove(cannonBall)
-        ballExit = true
+        activeBallCount -= 1
 
         // To proceed with score and ready cannon for next shot
-        if collidedPegBodies.isEmpty {
-            tryFinalizeShot()
-        }
+        tryFinalizeShot()
     }
 
     func recycleBall() {
@@ -224,7 +241,7 @@ class GameWorld {
 
     func tryFinalizeShot() {
         /// All pegs must be removed and the ball must exit the screen before cannon is ready again
-        if !ballExit || !collidedPegBodies.isEmpty {
+        if !shotComplete {
             return
         }
         onShotFinalized.forEach { response in response() }
@@ -248,6 +265,7 @@ class GameWorld {
     }
 
     private func startSimulation() {
+        playState = PlayState.inProgress
         eventLoop.start(step)
     }
 
@@ -264,7 +282,7 @@ class GameWorld {
         for sceneAdaption in onStepComplete {
             sceneAdaption(graphicObjects)
         }
-        
+
         for stateAdaption in onEvaluationComplete {
             stateAdaption()
         }
@@ -293,7 +311,7 @@ extension GameWorld {
     }
     
     var shotComplete: Bool {
-        ballExit && collidedPegBodies.isEmpty
+        activeBallCount == 0 && collidedPegBodies.isEmpty
     }
 }
 

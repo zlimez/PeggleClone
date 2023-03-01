@@ -20,6 +20,7 @@ class LoidPeg: PegRB {
         super.onCollisionEnter(collision)
         if bodyType == BodyType.stationary && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
             bodyType = BodyType.dynamic
+            GameWorld.activeGameBoard?.activeBallCount += 1
 
             let rSpd = Vector2.dotProduct(a: collision.rbB.velocity, b: collision.contact.normal)
 

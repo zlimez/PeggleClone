@@ -17,6 +17,11 @@ class ConfusePeg: NormalPeg {
             spriteContainer.sprite = peg.pegLitSprite
             ballHitStartTime = activeGameBoard.gameTime
             activeGameBoard.queuePegRemoval(self)
+            
+            pegHitCount += 1
+            if pegHitCount == GameWorld.activeGameBoard?.pegRemovalHitCount {
+                makeFade()
+            }
         }
     }
 }

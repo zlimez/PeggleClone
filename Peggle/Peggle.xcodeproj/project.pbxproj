@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6A23A26A29AFA7540066858D /* Fadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A23A26929AFA7540066858D /* Fadable.swift */; };
 		6A3B8204299B63F8007A1AC6 /* BallRecycler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */; };
 		6A3B8208299B6A8D007A1AC6 /* RenderAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8207299B6A8D007A1AC6 /* RenderAdaptor.swift */; };
 		6A3B820A299B8225007A1AC6 /* DesignBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8209299B8225007A1AC6 /* DesignBoard.swift */; };
@@ -102,6 +103,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6A23A26929AFA7540066858D /* Fadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fadable.swift; sourceTree = "<group>"; };
 		6A3B8203299B63F8007A1AC6 /* BallRecycler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallRecycler.swift; sourceTree = "<group>"; };
 		6A3B8207299B6A8D007A1AC6 /* RenderAdaptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderAdaptor.swift; sourceTree = "<group>"; };
 		6A3B8209299B8225007A1AC6 /* DesignBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignBoard.swift; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 				6AE1865929A95F1000B3CDE4 /* BondPeg.swift */,
 				6AE1865B29A966A200B3CDE4 /* LoidPeg.swift */,
 				6AE1869529AE702900B3CDE4 /* ConfusePeg.swift */,
+				6A23A26929AFA7540066858D /* Fadable.swift */,
 			);
 			path = Pegs;
 			sourceTree = "<group>";
@@ -658,6 +661,7 @@
 				6AE1864B29A8FA4100B3CDE4 /* Animated.swift in Sources */,
 				6AE1867829ABAC3600B3CDE4 /* Block.swift in Sources */,
 				6A7A8A922986A71A001C15A7 /* DesignBoardVM.swift in Sources */,
+				6A23A26A29AFA7540066858D /* Fadable.swift in Sources */,
 				6A83B354299905E400B893AE /* ImpulseSolver.swift in Sources */,
 				6A3B8216299CF07C007A1AC6 /* SpriteContainer.swift in Sources */,
 				6A83B340299721DA00B893AE /* WorldObject.swift in Sources */,

@@ -33,8 +33,6 @@ class RenderAdaptor: GameSystem, ObservableObject {
         self.targetScore = nil
         self.prettyTimeLeft = nil
         self.civTally = nil
-        gameWorld.onStepComplete.append(adaptScene)
-        gameWorld.onEvaluationComplete.append(adaptPlayState)
     }
 
     // Third argument is to cater for the case where player sets the ball count
@@ -42,6 +40,9 @@ class RenderAdaptor: GameSystem, ObservableObject {
         guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[gameMode] else {
             fatalError("UI enabled invalid mode selection")
         }
+        
+        gameWorld.onStepComplete.append(adaptScene)
+        gameWorld.onEvaluationComplete.append(adaptPlayState)
 
         if selectedGameMode.canEditBallCount {
             gameWorld.setNewBoard(board: board, gameMode: gameMode, startBallCount: ballCount)

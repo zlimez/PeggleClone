@@ -17,3 +17,9 @@ protocol Renderable {
     var spriteHeight: CGFloat { get }
     var rotation: CGFloat { get }
 }
+
+extension Renderable {
+    var spriteOpacity: CGFloat {
+        spriteContainer.opacity
+    }
+}

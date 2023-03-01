@@ -8,6 +8,8 @@
 import Foundation
 
 class StandardEvaluator: WinLoseEvaluator {
+    typealias Scorer = CivilianScoreSystem
+    
     var allowedKills: Int = 0
     var hostileCount: Int = 0
 
@@ -16,17 +18,12 @@ class StandardEvaluator: WinLoseEvaluator {
         hostileCount = 0
     }
 
-    func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
-        /// evaluate when civilian ball is killed
-        guard let civScoreSystem = scoreSystem as? CivilianScoreSystem else {
-            fatalError("Standard evaluator should be associated with civilian score system")
-        }
-
-        if civScoreSystem.civilianKilled > allowedKills {
+    func evaluateGameState(gameWorld: GameWorld, scoreSystem: CivilianScoreSystem) -> PlayState {
+        if scoreSystem.civilianKilled > allowedKills {
             return PlayState.lost
         }
 
-        if civScoreSystem.hostileKilled == hostileCount {
+        if scoreSystem.hostileKilled == hostileCount {
             return PlayState.won
         }
 
@@ -39,13 +36,14 @@ class StandardEvaluator: WinLoseEvaluator {
 }
 
 class TimedHighScoreEvaluator: WinLoseEvaluator {
+    typealias Scorer = BaseScoreSystem
     var targetScore: Int = 0
 
     func reset() {
         targetScore = 0
     }
 
-    func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
+    func evaluateGameState(gameWorld: GameWorld, scoreSystem: BaseScoreSystem) -> PlayState {
         if !gameWorld.timer.expired {
             return PlayState.inProgress
         }
@@ -55,14 +53,11 @@ class TimedHighScoreEvaluator: WinLoseEvaluator {
 }
 
 class NoHitEvaluator: WinLoseEvaluator {
+    typealias Scorer = NoScoreSystem
     func reset() {}
 
-    func evaluateGameState(gameWorld: GameWorld, scoreSystem: ScoreSystem) -> PlayState {
-        guard let noScoreSystem = scoreSystem as? NoScoreSystem else {
-            fatalError("No hit evaluator should be associated with no score system")
-        }
-
-        if noScoreSystem.hasHit {
+    func evaluateGameState(gameWorld: GameWorld, scoreSystem: NoScoreSystem) -> PlayState {
+        if scoreSystem.hasHit {
             return PlayState.lost
         } else if !gameWorld.ballCounter.hasBallLeft && gameWorld.shotComplete {
             return PlayState.won
