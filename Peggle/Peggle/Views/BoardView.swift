@@ -10,7 +10,7 @@ import Foundation
 
 struct BoardView: View {
     @StateObject var designBoardVM = DesignBoardVM()
-    @Binding var path: [Mode]
+    @Binding var path: [Page]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -32,7 +32,7 @@ struct BoardView: View {
             PegPanelView(designBoardVM: designBoardVM)
         }
         .ignoresSafeArea()
-        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 
     func fillPlayArea(_ geo: GeometryProxy) -> some View {
@@ -40,7 +40,7 @@ struct BoardView: View {
             DispatchQueue.main.async { designBoardVM.initDim(geo.size) }
         }
 
-        return Image("BG")
+        return Image("poster")
             .resizable()
             .scaledToFill()
             .frame(width: geo.size.width)

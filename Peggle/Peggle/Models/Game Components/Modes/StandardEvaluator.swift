@@ -9,7 +9,7 @@ import Foundation
 
 class StandardEvaluator: WinLoseEvaluator {
     typealias Scorer = CivilianScoreSystem
-    
+
     var allowedKills: Int = 0
     var hostileCount: Int = 0
 

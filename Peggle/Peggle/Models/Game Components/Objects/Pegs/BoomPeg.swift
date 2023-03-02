@@ -83,10 +83,6 @@ class BoomPeg: PegRB, Animated {
         }
 
         if let normalPeg = collision.rbB as? NormalPeg {
-            guard let activeGameBoard = GameWorld.activeGameBoard else {
-                fatalError("No active board")
-            }
-
             normalPeg.makeFade()
             return
         }

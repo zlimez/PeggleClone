@@ -15,7 +15,7 @@ final class DataManager {
                                     create: false)
            .appendingPathComponent(filename)
     }
-    
+
     static func readDefault() -> [String: Board] {
         if let url = Bundle.main.url(forResource: "DefaultLevels", withExtension: "json"),
             let data = try? Data(contentsOf: url) {

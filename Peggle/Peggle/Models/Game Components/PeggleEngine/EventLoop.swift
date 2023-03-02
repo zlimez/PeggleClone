@@ -33,7 +33,7 @@ final class EventLoop {
 
         activeDisplayLink?.add(to: .current, forMode: .default)
     }
-    
+
     func stop() {
         activeDisplayLink?.invalidate()
     }

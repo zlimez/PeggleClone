@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameView: View {
     @EnvironmentObject var renderAdaptor: RenderAdaptor
-    @Binding var path: [Mode]
+    @Binding var path: [Page]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,7 +48,7 @@ struct GameView: View {
             BottomBarView()
         }
         .ignoresSafeArea()
-        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 
     func generateGameArea(_ geo: GeometryProxy) -> some View {
@@ -76,58 +76,68 @@ struct WorldObjectView: View {
 
 struct TopBarView: View {
     @EnvironmentObject var renderAdapter: RenderAdaptor
-    @Binding var path: [Mode]
+    @Binding var path: [Page]
 
     var body: some View {
         HStack {
-            Button("EXIT") {
-                _ = path.popLast()
-                // Temp
-                GameWorld.activeGameBoard?.exitGame()
-            }
-            Spacer()
-            if let numOfBalls = renderAdapter.numOfBalls {
-                BallCountView(ballCount: numOfBalls)
+            ActionButtonView(text: "MENU") {
+                renderAdapter.exitGame()
+                path.removeAll()
             }
             Spacer()
             if let timeLeft = renderAdapter.prettyTimeLeft {
                 TimerView(timeLeft: timeLeft)
             }
+            Spacer()
+            if let numOfBalls = renderAdapter.numOfBalls {
+                BallCountView(ballCount: numOfBalls)
+            }
         }
         .padding(.top, 30)
-        .padding(.bottom, 10)
+        .padding(.bottom, 15)
         .padding(.horizontal, 20)
-        .background(.white)
+        .background(Color("dark grey"))
     }
 }
 
 struct GameEndView: View {
     var score: Int?
     var endState: String
-    @Binding var path: [Mode]
+    @Binding var path: [Page]
+    @EnvironmentObject var renderAdaptor: RenderAdaptor
 
     var body: some View {
         VStack {
             Text("YOU \(endState)")
                 .fontWeight(.black)
-                .fontDesign(.rounded)
+                .fontDesign(.monospaced)
                 .font(.largeTitle)
+                .padding(.bottom, 5)
 
             if let score = score {
                 Text("SCORE: \(score)")
                     .fontWeight(.black)
-                    .fontDesign(.rounded)
+                    .fontDesign(.monospaced)
                     .font(.largeTitle)
             }
-            Button("EXIT") {
-                _ = path.popLast()
-                // Temp
-                GameWorld.activeGameBoard?.exitGame()
+            
+            HStack(spacing: 30) {
+                ActionButtonView(text: "BACK", color: Color("dark green")) {
+                    _ = path.popLast()
+                }
+                ActionButtonView(text: "MENU", color: Color("dark green")) {
+                    path.removeAll()
+                }
             }
         }
-        .padding(40)
-        .background(.white)
+        .padding(.horizontal, 40)
+        .padding(.vertical, 30)
+        .background(Color("yellow"))
         .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black, lineWidth: 2)
+        )
     }
 }
 
@@ -142,7 +152,7 @@ struct BottomBarView: View {
 
             Spacer()
 
-            VStack {
+            VStack(alignment: .leading, spacing: 10) {
                 if let targetScore = renderAdapter.targetScore {
                     TargetScoreView(targetScore: targetScore)
                 }
@@ -151,10 +161,12 @@ struct BottomBarView: View {
                     ScoreView(score: score)
                 }
             }
+            .padding()
+            .background(Color("grey"))
+            .cornerRadius(10)
         }
-        .frame(height: 75)
-        .padding(10)
-        .background(.white)
+        .padding(20)
+        .background(Color("dark grey"))
     }
 }
 
@@ -162,8 +174,17 @@ struct BallCountView: View {
     var ballCount: Int
 
     var body: some View {
-        Text("Balls left: \(ballCount)")
-            .font(.largeTitle)
+        HStack {
+            Image("volleyball")
+                .resizable()
+                .frame(width: 30, height: 30)
+
+            Text("\(ballCount)")
+                .font(.title3)
+                .fontDesign(.monospaced)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+        }
     }
 }
 
@@ -172,34 +193,63 @@ struct ScoreView: View {
 
     var body: some View {
         Text("Score: \(score)")
-            .font(.largeTitle)
+            .font(.title3)
+            .fontDesign(.monospaced)
+            .fontWeight(.bold)
+            .foregroundColor(.white)
     }
 }
 
 struct CivTallyView: View {
     var civDeath: Int
     var allowedDeath: Int
-    
+
     var body: some View {
-        Text("Civilian Death: \(civDeath)/\(allowedDeath)")
-            .font(.largeTitle)
+        HStack {
+            Image("death")
+                .resizable()
+                .frame(width: 60, height: 60)
+            Text("\(civDeath)/\(allowedDeath)")
+                .font(.title3)
+                .fontDesign(.monospaced)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+        }
     }
 }
 
 struct TimerView: View {
     var timeLeft: Int
-    
+
     var body: some View {
-        Text("Time Left: \(timeLeft)")
-            .font(.largeTitle)
+        HStack {
+            Image(systemName: "timer")
+                .resizable()
+                .frame(width: 20, height: 20)
+
+            Text("\(timeLeft)")
+                .font(.title3)
+                .fontDesign(.monospaced)
+                .fontWeight(.bold)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.red, lineWidth: 3)
+        )
+        .foregroundColor(.white)
     }
 }
 
 struct TargetScoreView: View {
     var targetScore: Int
-    
+
     var body: some View {
         Text("Target Score: \(targetScore)")
-            .font(.largeTitle)
+            .font(.title3)
+            .fontDesign(.monospaced)
+            .fontWeight(.bold)
+            .foregroundColor(.white)
     }
 }

@@ -60,7 +60,7 @@ class PhysicsWorld {
         resolveCollisions(getCollisions())
         updateBodies(deltaTime)
     }
-    
+
     func getCollisions() -> ([Collision], [Collision]) {
         var collisions: [Collision] = []
         var triggers: [Collision] = []
@@ -93,7 +93,7 @@ class PhysicsWorld {
                 }
             }
         }
-        
+
         return (collisions, triggers)
     }
 

@@ -13,7 +13,7 @@ extension View {
         modifier(FrameGetter(frame: frame))
     }
 }
-  
+
 struct FrameGetter: ViewModifier {
     @Binding var frame: CGRect
 

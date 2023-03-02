@@ -25,7 +25,7 @@ struct PegPanelView: View {
             .opacity(designBoardVM.selectedAction == Action.delete ? 1 : 0.5)
         }
         .padding(.all, 20)
-        .background(.white)
+        .background(Color("dark grey"))
     }
 }
 
@@ -36,58 +36,88 @@ struct ControlPanelView: View {
     @State private var selectedMode = ModeMapper.codeNames[0]
     @State private var ballGiven = 0
     @ObservedObject var designBoardVM: DesignBoardVM
-    @Binding var path: [Mode]
+    @Binding var path: [Page]
 
     var body: some View {
         HStack {
-            Grid {
+            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
                 GridRow {
-                    Button("LOAD") {
+                    ActionButtonView(text: "LOAD") {
                         if let loadedBoard = levels.loadLevel(levelName) {
                             designBoardVM.setNewBoard(DesignBoard(board: loadedBoard))
                         } else {
                             designBoardVM.setNewBoard(DesignBoard.getEmptyBoard())
                         }
                     }
-                    Button("SAVE") { levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard) }
+                    ActionButtonView(text: "SAVE") {
+                        levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard)
+                    }
                 }
                 GridRow {
-                    Button("RESET") { designBoardVM.removeAllPegs() }
-                    Button("DONE") { _ = path.popLast() }
+                    ActionButtonView(text: "RESET") { designBoardVM.removeAllPegs() }
+                    ActionButtonView(text: "MENU") {
+                        path.removeAll()
+                    }
                 }
             }
             Spacer()
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) {
                 TextField("Level Name", text: $levelName)
                     .padding(5)
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(Color.gray, lineWidth: 2)
                     )
-                ModeSelectionView(selectedMode: $selectedMode, ballGiven: $ballGiven)
+                    .foregroundColor(.white)
+
+                ModeSelectionView(selectedMode: $selectedMode, ballGiven: $ballGiven, pickerColor: Color("dark green"))
             }
             .frame(width: 350)
             Spacer()
             createGameWorld(selectedMode)
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 20)
         .padding(.top, 40)
-        .background(.white)
+        .padding(.bottom, 20)
+        .background(Color("dark grey"))
     }
 
     func createGameWorld(_ gameMode: String) -> some View {
-        NavigationLink(value: Mode.playMode) {
-            Button("START") {
-                path.append(Mode.playMode)
-                renderAdaptor.setBoardAndMode(
-                    board: designBoardVM.designedBoard,
-                    gameMode: selectedMode,
-                    ballCount: ballGiven
-                )
-            }
-            .foregroundColor(Color.blue)
+        Button("GO!") {
+            path.append(Page.playPage)
+            renderAdaptor.setBoardAndMode(
+                board: designBoardVM.designedBoard,
+                gameMode: selectedMode,
+                ballCount: ballGiven
+            )
         }
+        .font(.title2)
+        .fontDesign(.monospaced)
+        .fontWeight(.semibold)
+        .foregroundColor(.white)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 15)
+        .background(Color("grey"))
+        .cornerRadius(20)
+    }
+}
+
+struct ActionButtonView: View {
+    var text: String
+    var color = Color("grey")
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(text)
+                .fontDesign(.monospaced)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+        }
+        .frame(width: 75)
+        .padding(.vertical, 5)
+        .background(color)
+        .cornerRadius(5)
     }
 }
 
@@ -104,7 +134,7 @@ struct TransformView: View {
                     value: $designBoardVM.selectedPeg.sliderRotation,
                     in: -180...180,
                     step: 0.01,
-                    label: { Text("Rotation") },
+                    label: { Text("Rotation").fontDesign(.monospaced).fontWeight(.semibold).foregroundColor(.white) },
                     minimumValueLabel: { Text("-180") },
                     maximumValueLabel: { Text("180") }
                 )
@@ -121,7 +151,7 @@ struct TransformView: View {
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
                     step: 0.01,
-                    label: { Text("Radius") },
+                    label: { Text("Radius").fontDesign(.monospaced).fontWeight(.semibold).foregroundColor(.white) },
                     minimumValueLabel: { Text("1") },
                     maximumValueLabel: { Text("3") }
                 )
@@ -132,7 +162,7 @@ struct TransformView: View {
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
                     step: 0.01,
-                    label: { Text("Width") },
+                    label: { Text("Width").fontDesign(.monospaced).fontWeight(.semibold).foregroundColor(.white) },
                     minimumValueLabel: { Text("1") },
                     maximumValueLabel: { Text("3") }
                 )
@@ -142,7 +172,7 @@ struct TransformView: View {
                     value: $designBoardVM.selectedPeg.sliderYScale,
                     in: 1...3,
                     step: 0.01,
-                    label: { Text("Height") },
+                    label: { Text("Height").fontDesign(.monospaced).fontWeight(.semibold).foregroundColor(.white) },
                     minimumValueLabel: { Text("1") },
                     maximumValueLabel: { Text("3") }
                 )
@@ -156,9 +186,14 @@ struct PaletteView: View {
     let columns = [GridItem(.flexible())]
 
     var body: some View {
-        layoutPalette(PegMapper.palette)
-        layoutPalette(PegMapper.blockPalette)
-            .offset(CGSize(width: -80, height: 0))
+        HStack {
+            layoutPalette(PegMapper.palette)
+            layoutPalette(PegMapper.blockPalette)
+        }
+        .frame(width: 300)
+        .padding()
+        .background(Color("grey"))
+        .cornerRadius(5)
     }
 
     func layoutPalette(_ palette: [PegVariant]) -> some View {
@@ -169,7 +204,7 @@ struct PaletteView: View {
                         PegButtonView(
                             pegVariant: variant.pegSprite,
                             action: { designBoardVM.switchToAddPeg(variant) },
-                            unitSize: variant.size)
+                            unitSize: variant.size * 0.8)
                         .opacity(designBoardVM.isVariantActive(variant) ? 1 : 0.5)
                     }
                 }

@@ -110,19 +110,19 @@ final class PegMapper {
             _ = PegMapper.palette
             _ = PegMapper.blockPalette
         }
-        
+
         guard let pegMaker = pegVariantToPegTable[pegVariant] else {
             fatalError("Palette does not contain this saved peg")
         }
         return pegMaker
     }
-    
+
     static func getPegRbMaker(_ pegVariant: PegVariant) -> (Peg) -> PegRB {
         if pegVariantToPegTable.isEmpty || pegVariantToPegRbTable.isEmpty {
             _ = PegMapper.palette
             _ = PegMapper.blockPalette
         }
-        
+
         guard let pegRbMaker = pegVariantToPegRbTable[pegVariant] else {
             fatalError("Palette does not contain this saved peg")
         }

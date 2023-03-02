@@ -255,7 +255,7 @@ class GameWorld {
     func openBucket() {
         bucket?.open()
     }
-    
+
     func flipPegs() {
         for pegBody in allPegBodies {
             if pegBody.bodyType == BodyType.stationary {
@@ -309,7 +309,7 @@ extension GameWorld {
     var civDeath: (Int, Int)? {
         civTally.getCivDeathTally(gameModeAttachment)
     }
-    
+
     var shotComplete: Bool {
         activeBallCount == 0 && collidedPegBodies.isEmpty
     }

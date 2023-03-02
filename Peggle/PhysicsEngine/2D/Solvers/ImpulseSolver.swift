@@ -50,7 +50,7 @@ final class ImpulseSolver: Solver {
         if rSpd >= 0 {
             return
         }
-        
+
         if abs(rSpd) < ImpulseSolver.noBounceThreshold {
             let stoppageImpulse = contact.normal * Vector2.dotProduct(a: rbA.momentum, b: contact.normal)
             rbA.applyImpulse(-stoppageImpulse)

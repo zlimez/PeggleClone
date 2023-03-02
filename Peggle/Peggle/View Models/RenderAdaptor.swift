@@ -18,7 +18,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
     @Published var civTally: (Int, Int)?
     @Published var gameEnded: Bool
     @Published var endState: String
-    
+
     private var adaptScaleRatio: CGFloat = 0
     var viewDimDetermined = false
     var deviceGameViewSize = CGSize.zero
@@ -40,7 +40,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
         guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[gameMode] else {
             fatalError("UI enabled invalid mode selection")
         }
-        
+
         gameWorld.onStepComplete.append(adaptScene)
         gameWorld.onEvaluationComplete.append(adaptPlayState)
 
@@ -63,7 +63,9 @@ class RenderAdaptor: GameSystem, ObservableObject {
     }
 
     lazy var adaptPlayState: () -> Void = { [unowned self] in
-        endState = gameWorld.playState == PlayState.won ? "WON" : gameWorld.playState == PlayState.lost ? "LOST" : "IN PROGRESS"
+        endState = gameWorld.playState == PlayState.won
+        ? "WON" : gameWorld.playState == PlayState.lost
+        ? "LOST" : "IN PROGRESS"
         numOfBalls = gameWorld.ballCount
         score = gameWorld.currScore
         targetScore = gameWorld.scoreToBeat
@@ -73,11 +75,18 @@ class RenderAdaptor: GameSystem, ObservableObject {
         civTally = gameWorld.civDeath
         gameEnded = endState == "WON" || endState == "LOST"
     }
+    
+    func exitGame() {
+        gameWorld.exitGame()
+    }
 
     func configScene(_ viewDim: CGSize) {
         adaptScaleRatio = min(viewDim.width / gameWorld.worldDim.width, viewDim.height / gameWorld.worldDim.height)
         viewDimDetermined = true
-        deviceGameViewSize = CGSize(width: gameWorld.worldDim.width / adaptScaleRatio, height: gameWorld.worldDim.height / adaptScaleRatio)
+        deviceGameViewSize = CGSize(
+            width: gameWorld.worldDim.width / adaptScaleRatio,
+            height: gameWorld.worldDim.height / adaptScaleRatio
+        )
     }
 
     func fireCannonAt(_ aim: CGPoint) {

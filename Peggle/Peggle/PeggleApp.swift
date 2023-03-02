@@ -11,7 +11,7 @@ import SwiftUI
 struct PeggleApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            MenuView()
         }
     }
 }

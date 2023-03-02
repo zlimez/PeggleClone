@@ -9,7 +9,7 @@ import Foundation
 
 class HostilePeg: NormalPeg {
     var captureReward: Int
-    
+
     init(peg: Peg, collider: Collider, captureReward: Int = 150) {
         self.captureReward = captureReward
         super.init(peg: peg, collider: collider)

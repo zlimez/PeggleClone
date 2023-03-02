@@ -146,7 +146,7 @@ class CannonBall: VisibleRigidBody {
             initVelocity: initVelocity
         )
     }
-    
+
     override func onCollisionEnter(_ collision: Collision) {
         if let pegRb = collision.rbB as? PegRB {
             GameWorld.activeGameBoard?.onBallHitPeg.forEach { response in response(pegRb) }

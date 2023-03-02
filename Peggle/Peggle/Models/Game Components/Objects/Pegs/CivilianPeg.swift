@@ -15,7 +15,12 @@ class CivilianPeg: NormalPeg {
     private var isDead = false
     private var collisionCount = 0
 
-    init(peg: Peg, collider: Collider, deathThreshold: Int = 2, deathSprite: String = "peg-grey", deathPenalty: Int = 150) {
+    init(peg: Peg,
+         collider: Collider,
+         deathThreshold: Int = 2,
+         deathSprite: String = "peg-grey",
+         deathPenalty: Int = 150
+    ) {
         self.deathPenalty = deathPenalty
         self.deathSprite = deathSprite
         self.deathThreshold = deathThreshold

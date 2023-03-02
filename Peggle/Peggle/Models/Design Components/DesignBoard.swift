@@ -114,7 +114,7 @@ struct DesignBoard {
     // Pegs yet to be created will have the special id -1
     private func willCollide(_ targetPeg: DesignPeg) -> Bool {
         // Collides with play area border
-        if boundaries.contains(where: { boundary in boundary.isCollidingWith(targetPeg)} ) {
+        if boundaries.contains(where: { boundary in boundary.isCollidingWith(targetPeg) }) {
             return true
         }
 

@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-
 struct Popup<PopupContent>: ViewModifier where PopupContent: View {
     /// Controls if the sheet should be presented or not
     @Binding var isPresented: Bool

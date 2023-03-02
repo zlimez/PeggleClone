@@ -92,7 +92,10 @@ class DesignBoardVM: ObservableObject {
 
     func tryMovePeg(targetPegVM: PegVM, destination: CGPoint) {
         pegPositionUpdate *= -1
-        designBoard.tryMovePeg(targetPeg: targetPegVM.designPeg, destination: Vector2(x: destination.x, y: destination.y))
+        designBoard.tryMovePeg(
+            targetPeg: targetPegVM.designPeg,
+            destination: Vector2(x: destination.x, y: destination.y)
+        )
     }
 
     func removeAllPegs() {

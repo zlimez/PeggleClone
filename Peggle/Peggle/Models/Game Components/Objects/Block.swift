@@ -8,7 +8,7 @@
 import Foundation
 
 class Block: PegRB, Fadable {
-    static var removalHitCountThreshold: Int = 200
+    static var removalHitCountThreshold: Int = 100
     var fadeTime: Double = 1
     var fadableBody: some PegRB { self }
     var ballHitStartTime: Double = 0
@@ -29,7 +29,7 @@ class Block: PegRB, Fadable {
             }
             ballHitStartTime = activeGameBoard.gameTime
             blockHitCount += 1
-            if blockHitCount == Block.removalHitCountThreshold  {
+            if blockHitCount == Block.removalHitCountThreshold {
                 makeFade()
             }
         }

@@ -41,7 +41,7 @@ final class Levels: ObservableObject {
             print("Empty level name cannot be saved")
             return
         }
-        
+
         if levelTable[levelName] == nil {
             levelNames.append(levelName)
         }

@@ -11,7 +11,7 @@ class WorldObject: Hashable, Identifiable {
     private static var objectCounter = 0
     let id: Int
     var transform: Transform
-    
+
     static func resetCounter() {
         objectCounter = 0
     }
@@ -21,7 +21,7 @@ class WorldObject: Hashable, Identifiable {
         self.transform = transform
         WorldObject.objectCounter += 1
     }
-    
+
     static func == (lhs: WorldObject, rhs: WorldObject) -> Bool {
         lhs.id == rhs.id
     }
