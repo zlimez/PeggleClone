@@ -310,6 +310,7 @@
 				6A89F0DA29B082DA0024B979 /* Testing */,
 				6A7A8A8B2985721E001C15A7 /* ControlPanelView.swift */,
 				6A7A8A8929857160001C15A7 /* BoardView.swift */,
+				6A4E3AA729B12191009ACAC9 /* PegInfoView.swift */,
 				6A83B363299A907B00B893AE /* GameView.swift */,
 				6A83B365299A99C500B893AE /* MenuView.swift */,
 				6AE1868C29AE152000B3CDE4 /* FrameGetter.swift */,
@@ -384,7 +385,6 @@
 				6A89F0DB29B082F40024B979 /* PanelView.swift */,
 				6A89F0DD29B0891A0024B979 /* SelectView.swift */,
 				6A89F0DF29B09B5A0024B979 /* TopView.swift */,
-				6A4E3AA729B12191009ACAC9 /* PegInfoView.swift */,
 			);
 			path = Testing;
 			sourceTree = "<group>";
