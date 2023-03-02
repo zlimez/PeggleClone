@@ -24,7 +24,7 @@ struct SelectView: View {
             }
             .padding()
             .padding(.top, 25)
-            
+
             Spacer()
         }
         .background(Color("dull green").opacity(0.8))

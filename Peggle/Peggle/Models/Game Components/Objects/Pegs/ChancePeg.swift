@@ -66,5 +66,5 @@ class ChancePeg: PegRB, Fadable {
             }
         }
     }
-    
+
 }

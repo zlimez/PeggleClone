@@ -13,7 +13,7 @@ class BoomPeg: PegRB, Animated, Audible {
     var spriteSheet: [String] = []
     var animateSequences: [String: [Int]] = [:]
     var frameRate: Float = 0
-    
+
     var audioClip = "boom"
 
     var explosionScale: CGFloat

@@ -11,6 +11,7 @@ import Foundation
 struct BoardView: View {
     @StateObject var designBoardVM = DesignBoardVM()
     @Binding var path: [Page]
+    @State private var showPaletteInfo = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,9 +29,13 @@ struct BoardView: View {
                     designBoardVM.deselectPeg()
                 }
             }
+            .popup(isPresented: $showPaletteInfo) {
+                PegInfoView()
+            }
 
-            PegPanelView(designBoardVM: designBoardVM)
+            PegPanelView(designBoardVM: designBoardVM, showPaletteInfo: $showPaletteInfo)
         }
+        .onAppear { TrackPlayer.instance.playBGM("bgm") }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
     }

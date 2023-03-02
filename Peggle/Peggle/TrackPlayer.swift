@@ -14,6 +14,8 @@ final class TrackPlayer {
     let bgmPlayer: AVAudioPlayerNode
     var sfxPlayers: [AVAudioPlayerNode] = []
     let trackNum: Int
+    let defaultBgm = "bgm"
+    private var currBgm: String = ""
 
     init(trackNum: Int = 10) {
         self.trackNum = trackNum
@@ -22,7 +24,7 @@ final class TrackPlayer {
         let mixer = audioEngine.mainMixerNode
         audioEngine.attach(bgmPlayer)
         audioEngine.connect(bgmPlayer, to: mixer, format: nil)
-        
+
         for _ in 0..<trackNum {
             let sfxPlayer = AVAudioPlayerNode()
             audioEngine.attach(sfxPlayer)
@@ -39,6 +41,10 @@ final class TrackPlayer {
 
     func playBGM(_ trackName: String) {
         guard let url = Bundle.main.url(forResource: trackName, withExtension: "mp3") else {
+            return
+        }
+
+        if trackName == currBgm {
             return
         }
 
@@ -65,6 +71,7 @@ final class TrackPlayer {
                 try audioEngine.start()
             }
             bgmPlayer.play()
+            currBgm = trackName
         } catch {
             print(error.localizedDescription)
         }

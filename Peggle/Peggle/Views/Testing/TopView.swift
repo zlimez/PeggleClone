@@ -168,7 +168,7 @@ struct GameComponents_Preview: PreviewProvider {
             VStack {
                 TopView()
                 Spacer()
-                EndView(score: 1000, endState: "LOSE")
+                EndView(score: 1_000, endState: "LOSE")
                 Spacer()
                 BottomView()
             }

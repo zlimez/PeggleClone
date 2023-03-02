@@ -51,7 +51,7 @@ class Bucket: VisibleRigidBody {
         isTrigger = true
     }
 
-    lazy var oscillate: (Double) -> Bool = { [unowned self] (deltaTime: Double) -> Bool in
+    lazy var oscillate: (Double) -> Bool = { [unowned self] (_: Double) -> Bool in
         guard let activeGameBoard = GameWorld.activeGameBoard else {
             return true
         }

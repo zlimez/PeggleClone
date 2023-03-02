@@ -9,20 +9,28 @@ import SwiftUI
 
 struct PegPanelView: View {
     @ObservedObject var designBoardVM: DesignBoardVM
+    @Binding var showPaletteInfo: Bool
 
     var body: some View {
         HStack(spacing: 20) {
             /// Assumes palette is static upon loaded
             if designBoardVM.hasSelectedPeg {
                 TransformView(designBoardVM: designBoardVM)
+                ActionButtonView(text: "PALETTE", action: { designBoardVM.deselectPeg() })
             } else {
                 PaletteView(designBoardVM: designBoardVM)
+                Button(action: { showPaletteInfo = !showPaletteInfo }) {
+                    Image(systemName: "info.circle")
+                        .resizable()
+                        .foregroundColor(.white)
+                        .frame(width: 40, height: 40)
+                }
                 Spacer()
+                PegButtonView(pegVariant: "delete", action: {
+                    designBoardVM.switchToDeletePeg()
+                }, unitSize: Vector2.one * 60)
+                .opacity(designBoardVM.selectedAction == Action.delete ? 1 : 0.5)
             }
-            PegButtonView(pegVariant: "delete", action: {
-                designBoardVM.switchToDeletePeg()
-            }, unitSize: Vector2.one * 60)
-            .opacity(designBoardVM.selectedAction == Action.delete ? 1 : 0.5)
         }
         .padding(.all, 20)
         .background(Color("dark grey"))
@@ -40,26 +48,7 @@ struct ControlPanelView: View {
 
     var body: some View {
         HStack {
-            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
-                GridRow {
-                    ActionButtonView(text: "LOAD") {
-                        if let loadedBoard = levels.loadLevel(levelName) {
-                            designBoardVM.setNewBoard(DesignBoard(board: loadedBoard))
-                        } else {
-                            designBoardVM.setNewBoard(DesignBoard.getEmptyBoard())
-                        }
-                    }
-                    ActionButtonView(text: "SAVE") {
-                        levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard)
-                    }
-                }
-                GridRow {
-                    ActionButtonView(text: "RESET") { designBoardVM.removeAllPegs() }
-                    ActionButtonView(text: "MENU") {
-                        path.removeAll()
-                    }
-                }
-            }
+            getControlGroup()
             Spacer()
             VStack(alignment: .leading, spacing: 10) {
                 TextField("Level Name", text: $levelName)
@@ -80,6 +69,29 @@ struct ControlPanelView: View {
         .padding(.top, 40)
         .padding(.bottom, 20)
         .background(Color("dark grey"))
+    }
+    
+    func getControlGroup() -> some View {
+        Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+            GridRow {
+                ActionButtonView(text: "LOAD") {
+                    if let loadedBoard = levels.loadLevel(levelName) {
+                        designBoardVM.setNewBoard(DesignBoard(board: loadedBoard))
+                    } else {
+                        designBoardVM.setNewBoard(DesignBoard.getEmptyBoard())
+                    }
+                }
+                ActionButtonView(text: "SAVE") {
+                    levels.saveLevel(levelName: levelName, updatedBoard: designBoardVM.designedBoard)
+                }
+            }
+            GridRow {
+                ActionButtonView(text: "RESET") { designBoardVM.removeAllPegs() }
+                ActionButtonView(text: "MENU") {
+                    path.removeAll()
+                }
+            }
+        }
     }
 
     func createGameWorld(_ gameMode: String) -> some View {
@@ -148,8 +160,7 @@ struct TransformView: View {
     func getScalableAxis() -> some View {
         VStack {
             if designBoardVM.selectedPeg.isCircle {
-                Text("Radius")
-                    .font(.headline)
+                Text("Radius").font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
@@ -159,8 +170,7 @@ struct TransformView: View {
                     maximumValueLabel: { Text("3") }
                 )
             } else {
-                Text("Width")
-                    .font(.headline)
+                Text("Width").font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderXScale,
                     in: 1...3,
@@ -169,8 +179,7 @@ struct TransformView: View {
                     minimumValueLabel: { Text("1") },
                     maximumValueLabel: { Text("3") }
                 )
-                Text("Height")
-                    .font(.headline)
+                Text("Height").font(.headline)
                 Slider(
                     value: $designBoardVM.selectedPeg.sliderYScale,
                     in: 1...3,
@@ -190,19 +199,21 @@ struct PaletteView: View {
 
     var body: some View {
         HStack {
-            layoutPalette(PegMapper.palette)
+            layoutPalette(PegMapper.getPalette())
+            Spacer()
             layoutPalette(PegMapper.blockPalette)
         }
-        .padding(.vertical, 20)
+        .padding(.vertical, 10)
         .padding(.leading, 30)
         .padding(.trailing, -30)
         .background(Color("grey"))
+        .frame(width: 400)
         .cornerRadius(5)
     }
 
     func layoutPalette(_ palette: [PegVariant]) -> some View {
         LazyVGrid(columns: columns) {
-            ForEach(adaptPalette(palette: palette, groupSize: 4), id: \.self) { variantGroup in
+            ForEach(PaletteView.adaptPalette(palette: palette, groupSize: 4), id: \.self) { variantGroup in
                 HStack {
                     ForEach(variantGroup, id: \.self) { variant in
                         PegButtonView(
@@ -216,7 +227,7 @@ struct PaletteView: View {
         }
     }
 
-    func adaptPalette(palette: [PegVariant], groupSize: Int) -> [[PegVariant]] {
+    static func adaptPalette(palette: [PegVariant], groupSize: Int) -> [[PegVariant]] {
         var groups: [[PegVariant]] = []
         var i = 0
         var currGroup: [PegVariant] = []
