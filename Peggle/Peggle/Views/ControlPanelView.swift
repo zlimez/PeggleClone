@@ -19,7 +19,7 @@ struct PegPanelView: View {
                 ActionButtonView(text: "PALETTE", action: { designBoardVM.deselectPeg() })
             } else {
                 PaletteView(designBoardVM: designBoardVM)
-                Button(action: { showPaletteInfo = !showPaletteInfo }) {
+                Button(action: { showPaletteInfo.toggle() }) {
                     Image(systemName: "info.circle")
                         .resizable()
                         .foregroundColor(.white)
