@@ -7,11 +7,13 @@
 
 import Foundation
 
-class BondPeg: NormalPeg {
+class BondPeg: NormalPeg, Audible {
     var chargeGiven = false
+    var audioClip = "woof"
 
     override func onCollisionEnter(_ collision: Collision) {
         super.onCollisionEnter(collision)
+        TrackPlayer.instance.playSFX(audioClip)
         if !chargeGiven, let cannonBall = collision.rbB as? CannonBall {
             cannonBall.spookCharge += 1
             chargeGiven = true

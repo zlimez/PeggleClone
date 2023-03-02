@@ -75,7 +75,7 @@ class RenderAdaptor: GameSystem, ObservableObject {
         civTally = gameWorld.civDeath
         gameEnded = endState == "WON" || endState == "LOST"
     }
-    
+
     func exitGame() {
         gameWorld.exitGame()
     }

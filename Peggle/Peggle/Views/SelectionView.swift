@@ -28,6 +28,7 @@ struct SelectionView: View {
 
             Spacer()
         }
+        .onAppear { TrackPlayer.instance.playBGM("risk") }
         .background(Color("dull green").opacity(0.8))
         .ignoresSafeArea()
     }
@@ -108,7 +109,6 @@ struct BallCountEditorView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
 
-            
             Button(action: { ballGiven += 1 }) {
                 Image(systemName: "plus")
                     .foregroundColor(.white)

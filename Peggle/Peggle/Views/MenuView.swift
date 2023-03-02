@@ -45,6 +45,7 @@ struct MenuView: View {
                     .scaledToFill()
                     .clipped()
             }
+            .onAppear { TrackPlayer.instance.playBGM("bgm") }
         }
         .environmentObject(levels)
         .environmentObject(renderAdaptor)

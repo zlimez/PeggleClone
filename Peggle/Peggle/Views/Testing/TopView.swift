@@ -65,14 +65,13 @@ struct BottomView: View {
             CivView(civDeath: 3, allowedDeath: 5)
             Spacer()
             VStack(alignment: .leading, spacing: 10) {
-                TargetView(targetScore: 12500)
-                Scorer(score: 1300)
+                TargetView(targetScore: 12_500)
+                Scorer(score: 1_300)
             }
             .padding()
             .background(Color("grey"))
             .cornerRadius(10)
         }
-//        .padding(.bottom, 5)
         .padding(.top, 20)
         .padding(.horizontal, 20)
         .background(Color("dark grey"))

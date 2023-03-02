@@ -14,7 +14,7 @@ class ChancePeg: PegRB, Fadable {
     var fadeTime: Double = 1
     var pegHitCount: Int = 0
     var chance: Double
-    
+
     init(peg: Peg, collider: Collider, chance: Double = 1 / 3) {
         self.chance = chance
         super.init(peg: peg, collider: collider)
@@ -23,7 +23,7 @@ class ChancePeg: PegRB, Fadable {
     lazy var afterFade: () -> Void = { [unowned self] in
         GameWorld.activeGameBoard?.removePeg(self)
     }
-    
+
     func giveFreeBallOnChance() -> Bool {
         let randNum = Int.random(in: 0...100)
         if Double(randNum) / 100 <= chance {

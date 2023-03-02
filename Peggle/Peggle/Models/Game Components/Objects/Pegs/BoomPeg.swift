@@ -7,12 +7,14 @@
 
 import Foundation
 
-class BoomPeg: PegRB, Animated {
+class BoomPeg: PegRB, Animated, Audible {
     // TODO: Animate explosion
     var idleSprite: String = ""
     var spriteSheet: [String] = []
     var animateSequences: [String: [Int]] = [:]
     var frameRate: Float = 0
+    
+    var audioClip = "boom"
 
     var explosionScale: CGFloat
     // Increments by scaling the trigger object
@@ -59,6 +61,7 @@ class BoomPeg: PegRB, Animated {
         // TODO: Nicer animation for explosion
         spriteContainer.sprite = peg.pegLitSprite
         spriteContainer.opacity = 0.25
+        TrackPlayer.instance.playSFX(audioClip)
         activeGameBoard.addCoroutine(Coroutine(routine: explode, onCompleted: activeGameBoard.removeCoroutine))
     }
 

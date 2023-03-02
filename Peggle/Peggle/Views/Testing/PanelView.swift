@@ -1,5 +1,5 @@
 //
-//  PanelLayout.swift
+//  PanelView.swift
 //  Peggle
 //
 //  Created by James Chiu on 2/3/23.
@@ -70,7 +70,7 @@ struct PanelView: View {
 struct ActionView: View {
     var text: String
     var color = Color("grey")
-    
+
     var body: some View {
         Button(action: {}) {
             Text(text)

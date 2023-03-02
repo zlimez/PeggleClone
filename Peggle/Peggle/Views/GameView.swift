@@ -50,6 +50,7 @@ struct GameView: View {
 
             BottomBarView()
         }
+        .onAppear { TrackPlayer.instance.playBGM("catch-it") }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
     }

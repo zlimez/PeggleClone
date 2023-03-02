@@ -7,11 +7,13 @@
 
 import Foundation
 
-class Cannon: WorldObject, Animated {
+class Cannon: WorldObject, Animated, Audible {
     let idleSprite = "cannon-static"
     var spriteSheet = ["cannon-static", "cannon-fire"]
     var animateSequences = ["fire": [0, 1]]
     var frameRate: Float = 12
+
+    var audioClip = "anya-waku"
 
     var spriteContainer = SpriteContainer(sprite: "cannon-static", unitWidth: 150, unitHeight: 150)
 
@@ -57,6 +59,7 @@ class Cannon: WorldObject, Animated {
         func rotateAndFire(deltaTime: Double) -> Bool {
             if rotationCompleted {
                 if animCompleted {
+                    TrackPlayer.instance.playSFX(audioClip)
                     // returned to idle sprite fire cannon ball
                     let initVelocity = targetAim * cannonSpeed
                     let ballSpawnPoint = Transform(transform.position + targetAim * spawnOffset)
