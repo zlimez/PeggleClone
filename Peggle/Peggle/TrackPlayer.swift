@@ -13,6 +13,7 @@ final class TrackPlayer {
     let audioEngine: AVAudioEngine
     let bgmPlayer: AVAudioPlayerNode
     var sfxPlayers: [AVAudioPlayerNode] = []
+    var playerReadiness: [Bool] = []
     let trackNum: Int
     let defaultBgm = "bgm"
     private var currBgm: String = ""
@@ -30,6 +31,7 @@ final class TrackPlayer {
             audioEngine.attach(sfxPlayer)
             audioEngine.connect(sfxPlayer, to: mixer, format: nil)
             sfxPlayers.append(sfxPlayer)
+            playerReadiness.append(true)
         }
 
         do {
@@ -78,6 +80,7 @@ final class TrackPlayer {
     }
 
     func stopBGM() {
+        currBgm = ""
         bgmPlayer.stop()
         sfxPlayers.forEach { player in player.stop() }
         audioEngine.stop()
@@ -89,10 +92,12 @@ final class TrackPlayer {
             return
         }
 
-        guard let sfxPlayer = sfxPlayers.first(where: { !$0.isPlaying }) else {
+        guard let playerIndex = playerReadiness.firstIndex(where: { $0 }) else {
             print("No available sfx players")
+//            sfxQueue.append(trackName)
             return
         }
+        let sfxPlayer = sfxPlayers[playerIndex]
 
         do {
             let audioFile = try AVAudioFile(forReading: url)
@@ -104,11 +109,13 @@ final class TrackPlayer {
             }
             try audioFile.read(into: audioFileBuffer!)
 
-            sfxPlayer.volume = 0.8
             let mixer = audioEngine.mainMixerNode
             audioEngine.attach(sfxPlayer)
             audioEngine.connect(sfxPlayer, to: mixer, format: avBuffer.format)
-            sfxPlayer.scheduleBuffer(avBuffer)
+            sfxPlayer.scheduleBuffer(avBuffer, at: nil, completionCallbackType: .dataPlayedBack) { [unowned self] _ in
+                playerReadiness[playerIndex] = true
+                print("play back complete")
+            }
 
             if !audioEngine.isRunning {
                 try audioEngine.start()
