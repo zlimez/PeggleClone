@@ -49,18 +49,16 @@ struct LevelRowView: View {
                 .fontDesign(.monospaced)
             Spacer()
             ModeSelectionView(selectedMode: $selectedMode, ballGiven: $ballGiven, pickerColor: Color("dark green"))
-            NavigationLink(value: Page.playPage) {
-                Button(action: {
-                    path.append(Page.playPage)
-                    renderAdaptor.setBoardAndMode(
-                        board: levels.levelTable[levelName]!,
-                        gameMode: selectedMode,
-                        ballCount: ballGiven
-                    )
-                }) {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.white)
-                }
+            Button(action: {
+                path.append(Page.playPage)
+                renderAdaptor.setBoardAndMode(
+                    board: levels.levelTable[levelName]!,
+                    gameMode: selectedMode,
+                    ballCount: ballGiven
+                )
+            }) {
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.white)
             }
         }
         .padding(10)
@@ -105,7 +103,7 @@ struct BallCountEditorView: View {
 
     var body: some View {
         HStack {
-            Text("Ball Given: \(ballGiven)")
+            Text("Balls: \(ballGiven)")
                 .fontDesign(.monospaced)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
@@ -115,11 +113,12 @@ struct BallCountEditorView: View {
                 Image(systemName: "plus")
                     .foregroundColor(.white)
             }
-            .padding(.leading, 25)
+            .padding(.leading, 15)
             Button(action: { ballGiven -= 1 }) {
                 Image(systemName: "minus")
                     .foregroundColor(.white)
             }
         }
+        .padding(.leading, 15)
     }
 }

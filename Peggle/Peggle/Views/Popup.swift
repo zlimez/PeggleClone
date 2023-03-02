@@ -81,9 +81,7 @@ extension View {
         isPresented: Binding<Bool>,
         view: @escaping () -> PopupContent) -> some View {
         self.modifier(
-            Popup(
-                isPresented: isPresented,
-                view: view)
+            Popup(isPresented: isPresented, view: view)
         )
     }
 }

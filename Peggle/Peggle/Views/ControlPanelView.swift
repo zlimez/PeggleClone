@@ -140,6 +140,9 @@ struct TransformView: View {
                 )
             }
         }
+        .fontDesign(.monospaced)
+        .foregroundColor(.white)
+        .fontWeight(.semibold)
     }
 
     func getScalableAxis() -> some View {
@@ -190,15 +193,16 @@ struct PaletteView: View {
             layoutPalette(PegMapper.palette)
             layoutPalette(PegMapper.blockPalette)
         }
-        .frame(width: 300)
-        .padding()
+        .padding(.vertical, 20)
+        .padding(.leading, 30)
+        .padding(.trailing, -30)
         .background(Color("grey"))
         .cornerRadius(5)
     }
 
     func layoutPalette(_ palette: [PegVariant]) -> some View {
         LazyVGrid(columns: columns) {
-            ForEach(adaptPalette(palette: palette, groupSize: 3), id: \.self) { variantGroup in
+            ForEach(adaptPalette(palette: palette, groupSize: 4), id: \.self) { variantGroup in
                 HStack {
                     ForEach(variantGroup, id: \.self) { variant in
                         PegButtonView(

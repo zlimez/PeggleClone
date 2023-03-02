@@ -21,6 +21,7 @@ class LoidPeg: PegRB {
         if bodyType == BodyType.stationary && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
             bodyType = BodyType.dynamic
             GameWorld.activeGameBoard?.activeBallCount += 1
+            spriteContainer.sprite = peg.pegLitSprite
 
             let rSpd = Vector2.dotProduct(a: collision.rbB.velocity, b: collision.contact.normal)
 

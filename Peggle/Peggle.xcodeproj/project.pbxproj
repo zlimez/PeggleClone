@@ -18,6 +18,7 @@
 		6A3B8216299CF07C007A1AC6 /* SpriteContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */; };
 		6A3B8218299CF9DE007A1AC6 /* Coroutine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B8217299CF9DE007A1AC6 /* Coroutine.swift */; };
 		6A3B822C299D0FC3007A1AC6 /* LineUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3B822B299D0FC3007A1AC6 /* LineUtilsTest.swift */; };
+		6A4E3A9029B0D569009ACAC9 /* ChancePeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A4E3A8F29B0D569009ACAC9 /* ChancePeg.swift */; };
 		6A7A8A8729851D99001C15A7 /* Peg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8629851D99001C15A7 /* Peg.swift */; };
 		6A7A8A8A29857160001C15A7 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8929857160001C15A7 /* BoardView.swift */; };
 		6A7A8A8C2985721E001C15A7 /* ControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A8A8B2985721E001C15A7 /* ControlPanelView.swift */; };
@@ -115,6 +116,7 @@
 		6A3B8215299CF07C007A1AC6 /* SpriteContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteContainer.swift; sourceTree = "<group>"; };
 		6A3B8217299CF9DE007A1AC6 /* Coroutine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coroutine.swift; sourceTree = "<group>"; };
 		6A3B822B299D0FC3007A1AC6 /* LineUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineUtilsTest.swift; sourceTree = "<group>"; };
+		6A4E3A8F29B0D569009ACAC9 /* ChancePeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChancePeg.swift; sourceTree = "<group>"; };
 		6A7A8A8629851D99001C15A7 /* Peg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Peg.swift; sourceTree = "<group>"; };
 		6A7A8A8929857160001C15A7 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		6A7A8A8B2985721E001C15A7 /* ControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanelView.swift; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 			isa = PBXGroup;
 			children = (
 				6A83B35B2999EF4100B893AE /* NormalPeg.swift */,
+				6A4E3A8F29B0D569009ACAC9 /* ChancePeg.swift */,
 				6AE1866529AA288300B3CDE4 /* HostilePeg.swift */,
 				6AE1866329AA240800B3CDE4 /* CivilianPeg.swift */,
 				6AE1865229A941F400B3CDE4 /* BoomPeg.swift */,
@@ -644,6 +647,7 @@
 				6AE1867C29ABCDA400B3CDE4 /* GameModeAttachment.swift in Sources */,
 				6AE1866429AA240800B3CDE4 /* CivilianPeg.swift in Sources */,
 				6A83B3502998C9AE00B893AE /* LineUtils.swift in Sources */,
+				6A4E3A9029B0D569009ACAC9 /* ChancePeg.swift in Sources */,
 				6A3B820A299B8225007A1AC6 /* DesignBoard.swift in Sources */,
 				6AE1865C29A966A200B3CDE4 /* LoidPeg.swift in Sources */,
 				6A3B8208299B6A8D007A1AC6 /* RenderAdaptor.swift in Sources */,

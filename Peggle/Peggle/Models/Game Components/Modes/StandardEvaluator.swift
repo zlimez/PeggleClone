@@ -23,7 +23,7 @@ class StandardEvaluator: WinLoseEvaluator {
             return PlayState.lost
         }
 
-        if scoreSystem.hostileKilled == hostileCount {
+        if scoreSystem.hostileKilled == hostileCount && gameWorld.shotComplete {
             return PlayState.won
         }
 

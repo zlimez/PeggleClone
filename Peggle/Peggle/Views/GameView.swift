@@ -14,6 +14,8 @@ struct GameView: View {
     var body: some View {
         VStack(spacing: 0) {
             TopBarView(path: $path)
+                .zIndex(100)
+
             ZStack {
                 GeometryReader { geo in generateGameArea(geo) }
 
@@ -37,14 +39,15 @@ struct GameView: View {
                         maxWidth: renderAdaptor.deviceGameViewSize.width,
                         maxHeight: renderAdaptor.deviceGameViewSize.height
                     )
+                    .onTapGesture { location in
+                        renderAdaptor.fireCannonAt(location)
+                    }
                 }
-            }
-            .onTapGesture { location in
-                renderAdaptor.fireCannonAt(location)
             }
             .popup(isPresented: $renderAdaptor.gameEnded) {
                 GameEndView(score: renderAdaptor.score, endState: renderAdaptor.endState, path: $path)
             }
+
             BottomBarView()
         }
         .ignoresSafeArea()
@@ -120,7 +123,7 @@ struct GameEndView: View {
                     .fontDesign(.monospaced)
                     .font(.largeTitle)
             }
-            
+
             HStack(spacing: 30) {
                 ActionButtonView(text: "BACK", color: Color("dark green")) {
                     _ = path.popLast()

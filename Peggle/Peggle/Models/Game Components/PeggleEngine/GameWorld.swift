@@ -313,6 +313,14 @@ extension GameWorld {
     var shotComplete: Bool {
         activeBallCount == 0 && collidedPegBodies.isEmpty
     }
+    
+    func addBallToCount() {
+        if !ballCounter.isActive {
+            return
+        }
+        
+        ballCounter.ballCount += 1
+    }
 }
 
 class Wall: RigidBody {

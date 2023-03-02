@@ -100,12 +100,12 @@ class Cannon: WorldObject, Animated {
             return
         }
 
-        cannonReady = false
         targetAim = (targetPoint - transform.position).normalize
         // Cannon should not fire downwards
         if targetAim.y < 0 {
             return
         }
+        cannonReady = false
 
         guard let activeGameBoard = GameWorld.activeGameBoard else {
             fatalError("No active board")
@@ -132,7 +132,7 @@ class CannonBall: VisibleRigidBody {
         material: Material = CannonBall.defaultMaterial
     ) {
         let spriteContainer = SpriteContainer(
-            sprite: "ball",
+            sprite: "anya-spy",
             unitWidth: radius * 2,
             unitHeight: radius * 2
         )

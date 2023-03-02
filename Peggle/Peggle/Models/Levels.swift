@@ -32,7 +32,7 @@ final class Levels: ObservableObject {
     }
 
     func loadLevel(_ levelName: String) -> Board? {
-        levelTable[levelName]
+        levelTable[levelName]?.getCopy()
     }
 
     // Copy is being saved to prevent two boards from sharing same peg reference
