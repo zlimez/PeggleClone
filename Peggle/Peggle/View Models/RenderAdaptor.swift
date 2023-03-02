@@ -84,8 +84,8 @@ class RenderAdaptor: GameSystem, ObservableObject {
         adaptScaleRatio = min(viewDim.width / gameWorld.worldDim.width, viewDim.height / gameWorld.worldDim.height)
         viewDimDetermined = true
         deviceGameViewSize = CGSize(
-            width: gameWorld.worldDim.width / adaptScaleRatio,
-            height: gameWorld.worldDim.height / adaptScaleRatio
+            width: gameWorld.worldDim.width * adaptScaleRatio,
+            height: gameWorld.worldDim.height * adaptScaleRatio
         )
     }
 
