@@ -90,45 +90,88 @@ The peggle game engine is built atop of the Physics Engine with added utilities 
 
 `GameWorld` maintains the state of the world, including the bucket, the cannon ball and all the pegs on the board. Once a routine completes, it is removed from the `coroutines` set. One direct application of a `Coroutine` will be animations. `GameWorld` has a fixed dimension of `820 X 980`. To cater for different view dimensions the scaling is handled by `RenderAdaptor`.
 
+#### `RenderAdaptor`
+`RenderAdaptor` implements `GameSystem` and subscribes its `adaptScene` closure property to `onStepCompleted` closure array. The class is directly observed by the view, acting like a view model. `@Published` properties include `numOFBalls`, `prettyTimeLeft`, `civTally` etc.. As mentioned above, since the `GameWorld` is fixed size the `RenderAdaptor` determine a stretch ratio to fit the world onto the display area and applies these ratio onto `WorldObjectVM` via access from `graphicObjects` an array of `WorldObjectVM`.
+
+`WorldObject` demands a `scaleFactor` used to stretch the position and scale of the `visibleObject`. The `scaleFactor` is assigned from `RenderAdaptor`.
+
 #### Protocols
-- `GameSystem`: Implementers must define the function `adaptScene(Collection<WorldObject>)`, processing the world objects accordingly.
+- `GameSystem`: Implementers must define the closure property `adaptScene(Collection<WorldObject>)`, processing the world objects accordingly.
 - `Renderable`: Implementers have a `SpriteContainer` property to enable the UI to display the object.
 - `Animated`: A protocol that extends `Renderable`. Contains a `spritesheet`, `animationSequences` and `frameRate`
 - `Fadable`: A protocol that demands a `PegRB`. It has a closure `fade` that reduces the opacity of the peg object.
 - `WinLoseEvaluator`: Implementers must specify the type of `ScoreSystem` associated with the evaluator and define the `evaluateGameState` function.
 - `ScoreSystem`: Implementers register their responses to relevant game events that determines the score via `registerListeners`.
 - `GameModeAttachment`: Couples a `ScoreSystem`, `WinLoseEvaluator` and `WorldConfig` object together defining a Game Mode e.g. _Operation Eden_. Implementers must define `setUpWorld` that sets the `GameWorld` to the state needed e.g. `ballCounter`, `civTally` is active while the `timer` is inactive in `GameWorld` for `Operation Strix` aka standard mode.
+- `Audible`: Implementers must specify the property `audioClip`.
 
 #### Pegs
-`VisibleRigidBody` inherits from `RigidBody` and implements `Renderable` defining objects in the world that are physics enabled and can be display on the UI. `PegRB` is the parent of all pegs including block. It inherits from `VisibleRigidBody`
+`VisibleRigidBody` inherits `RigidBody` and implements `Renderable` defining objects that are physics enabled and displayable. `PegRB` is the parent of all pegs including blocks. It inherits `VisibleRigidBody` and possesses the function `makeFlipRotator` that returns a closure that can be wrapped into a `Coroutine` and added to `coroutines` in `GameWorld` to rotate the pegs by 180 degrees about the world center. _Note: Trivial properties and methods are omitted from the guide_.
 
-`PegRB` overrides the `RigidBody` lifecycle methods `onCollisionEnter` and `onCollisionStay` to enable peg lighting and peg removal after collision. It includes the additional property `Peg` which contains specifications of the peg being represented.
+- `NormalPeg`: A peg that is faded and removed if collided.
+- `HostilePeg`: Inherits `NormalPeg` with the added property `captureReward` which could be captured by the `ScoreSystem` via events in `GameWorld`
+- `CivilianPeg`: Inherits `NormalPeg` with the added property `deathPenalty` which could be captured by the `ScoreSystem` via events in `GameWorld`
+- `LoidPeg`: Aka Zombie peg, when hit by a `CannonBall` turns into a pseudo cannon ball that could aid the player in clearing the hostile pegs
+- `BoomPeg`: When hit by `CannonBall`, peg explodes and removes pegs in its collision radius immediately also applying an impulse onto any dynamic bodies in range.
+- `ConfusePeg`: Inherits `ConfusePeg`. When hit by a `CannonBall` or dynamic `LoidPeg` would trigger `GameWorld` to rotate all static pegs and blocks by 180 degrees.
+- `ChancePeg`: Implements `Fadable`. When hit has a probability of rewarding players a free ball. Once rewarded, the peg will fade.
+- `BondPeg`: Aka Spooky peg. When hit by a `CannonBall` or dynamic `LoidPeg`, the peg will trigger `GameWorld` to shut the bucket and add a spook charge to the `CannonBall` which is consumed when ball exits the screen to allow the ball to reappear at the top of the screen continuing its trajectory.
 
 #### `Cannon`
-`Cannon` is responsible for determining the initial velocity and launch location of the `CannonBall` when fired.
+`Cannon` is responsible for determining the initial velocity and launch location of the `CannonBall` when fired. It implements `Animated` as it has a sprite progression for firing. To fire the cannon, player taps on the screen, cannon will rotate to point in that direction and fire the `CannonBall` provided the previous shot has been completed.
+
+#### `PegMapper`
+A final class that is not supposed to be instantiated. The class statically initializes the palette
+
+#### A Bit More on Supported Game Modes
+Standard game mode is titled _Operation Strix_. Objective of the player is to clear all the `Hostile pegs` namely the orange and green colored pegs without killing more than the heuristically computed number of civilians indicated at the bottom left corner of the screen. The game mode is supported by `CivilianScoreSystem` and `StandardEvaluator`.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 01 44 42](https://user-images.githubusercontent.com/39835365/222921160-17245ae2-e43c-46eb-9ad3-412ea7d05bfd.png)
+
+Beat high score mode is titled _Operation Eden_. There will be a countdown atop and a target score below. Objective is to reach the target score before the timer expires. The game mode is supported by `BaseScoreSystem` and `TimedHighScoreEvaluator`. Countdown start value and target score is again heuristically calculated.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 01 45 01](https://user-images.githubusercontent.com/39835365/222921135-93ba93d6-6a98-439c-8dd8-2771eabc5400.png)
+
+Siam mode is titled _Operation Gigi_. Players will specify the number of balls that they need to fire without hitting any peg on the screen. The game mode is supported by `NoScoreSystem` and `NoHitEvaluator`.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 01 50 24](https://user-images.githubusercontent.com/39835365/222921215-224c5cae-b73e-4a51-aa3b-615753f79d2d.png)
+
+Aside from the `ScoreSystem` and `WinLoseEvaluator`, the heuristic computation for the parameters of the first two game modes is done within `WorldConfig` via the closure property `configurer`.
+
+`BaseScoreSystem` computes the score update by streak length and the pegs that have been hit per shot. The longer the "net streak" the higher the multiplier. Hitting civilian pegs deduct the score, and hitting hostile pegs increases the score based on the capture reward. Hence, a streak can magnify not only the plus but the minus as well if many civilians are killed by the shot.
 
 #### Supporting class and structs include:
+- `Bucket` oscillates at the bottom of the screen. If `isTrigger` is true and a `CannonBall` enters the bucket, the ball is "recycled" replenishing the ball count.
 - `Wall`: A `RigidBody` subclass used to bound the play area
 - `BallRecycler`: A `RigidBody` subclass serving as a trigger zone that destroys the `CannonBall` when it fall below the screen and asks the `GameWorld` to remove the pegs that were hit
 - `Coroutine`: Takes in a routine function to be executed and a completion callback to be executed when the routine function completes after repeated invocation in the event loop.
 
-### Peggle Game View Model
-#### `RigidBodyVM`
-`RIgidBodyVM` adapts a `VisibleRigidBody` into a format compatible with `RigidBodyView`.
-
-#### `RenderAdaptor`
-**Properties**
-- graphic
-When player selects a new board to play, `GameBoardVM` asks `GameWorld` to reinitialize the world state with the new peg layout.
-
 ### Peggle Game View
 #### `GameView`
-`GameView` can be entered from `BoardView` when the player clicks on the START button on `ControlPanelView`. `GameView` takes the board state from `BoardView` and delegates `GameBoardVM` to initialize the world state accordingly. `GameView` has a subview `CannonView` that is currently static. Players can launch the cannon ball by tapping on the screen and a cannon ball will fire towards the direction, subject to the effects of gravity.
+`GameView` can be entered from `BoardView` when the player clicks on the GO! button on `ControlPanelView`. `GameView` takes the board state from `BoardView` and delegates `renderAdaptor` to initialize the world state accordingly. Players can launch the cannon ball by tapping on the screen and a cannon ball will fire towards the direction, subject to the effects of gravity. `GameView` have several subviews and subview within subviews, but in essence there is the play area the top bar which hosts the timer and the ball count if either or both is required for the mode and the bottom bar which holds the civilian death tally, the target score and score stack to the right if either of them or some of them are needed.
 
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 01 44 42](https://user-images.githubusercontent.com/39835365/222921160-17245ae2-e43c-46eb-9ad3-412ea7d05bfd.png)
+
+#### `ControlPanelView`
+Similar to `GameView`, in essense `ControlPanelView` consists of a top bar, a board area where players can place the peg and a bottom bar. The top bar provides buttons for player to return to the main menu, load an existing level, save an existing level/ a new level (by the level name entered in the text field) or reset the board to an empty state. Since player can enter play mode from the level designer, there is also a picker under the text field that allows player to choose the game mode.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 02 08 15](https://user-images.githubusercontent.com/39835365/222921917-6184fc5c-3459-4b9d-bfcb-5b07248f1cd3.png)
+
+#### `MenuView`
+The `MenuView` allows player to choose between going into the `SelectionView` to play a preloaded or previously designed level or going into the `BoardView` to design and possibly play a level.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 02 08 20](https://user-images.githubusercontent.com/39835365/222921967-5fe66369-58c8-4ff5-b225-0ece47a3dfe9.png)
+
+#### `SelectionView`
+`SelectionView` contains rows of levels where player can select a mode from the picker and start playing by pressing the right arrow button at the end of the level row.
+
+![Simulator Screen Shot - iPad (10th generation) - 2023-03-05 at 01 45 11](https://user-images.githubusercontent.com/39835365/222922005-6d766f87-c38f-499e-8712-c3d612fab8a5.png)
+
+The bottom bar consists of a palette to the right, which is a collection of peg types along with a block the player can use to design a level, an information button to the right that hints at the behaviour of each peg type and a delete peg button at the right end that enables player to tap and delete any peg on the board.
+
+### Audio
+`TrackPlayer` is responsible for playing all the background music and SFX for the game. It merely provides two functions `playBGM(trackName)` and `playSFX(trackName)`. Only one bgm can be played at a time while up to 10 sfx tracks can be played on top of one another. More than that the sfx track will not be processed and emitted.
 
 ## Testing
-### Unit Test
 
-
-### Integration Test
 
