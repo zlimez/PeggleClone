@@ -1,4 +1,4 @@
-# CS3217 Problem Set 2
+# CS3217 Problem Set 4
 
 **Name:** Chiu Chi Kuan
 
@@ -64,25 +64,50 @@ There are six lifecycle methods for `RigidBody`:
 ### Peggle Game Engine
 The peggle game engine is built atop of the Physics Engine with added utilities to support the Peggle gameplay. There are three core components in the peggle game engine:
 - `GameWorld`
-- `GameWorldVM`
-- `VisibleRigidBody`
-- `Cannon`
+- `RenderAdaptor`
+- `EventLoop`
 
 #### `GameWorld`
-`GameWorld` is powered by its `physicsWorld` property. `GameWorld` asks `physicsWorld` to resolve the physical states of all the physics enabled objects (`RigidBody`) in the world. `GameWorld` is the environment where all game objects interact, specifically the pegs, the cannon ball, and the invisible walls along the top, left and right boundaries of the world. `GameWorld` runs an event loop via `CADisplayLink`, and steps the world state forwards accordingly by the time slice advanced per loop iteration. After which, `GameWorld` askes the `renderAdaptor` in this case `GameBoardVM` to `adaptScene` such that the world state is translated to a format that can be consumed and rendered by the view (`GameView`).
+`GameWorld` is powered by its `physicsWorld` property. `GameWorld` asks `physicsWorld` to resolve the physical states of all the physics enabled objects (`RigidBody`) in the world. `GameWorld` is the environment where all game objects interact, specifically the pegs, the cannon ball, and the invisible walls along the top, left and right boundaries of the world. 
 
-In addition to stepping the `physicsWorld` forward in a loop iteration, `GameWorld` maintains a set of active coroutines that are also executed per loop iteration. Once a routine completes, it is removed from the `coroutines` set. One direct application of a `Coroutine` will be animations.
+**`Properties`**
+- `pegRemovalTimeInterval`: The time threshold where a peg will be prematurely removed after prolonged contact with a `CannonBall` or `LoidPeg` (Zombie peg).
+- `pegRemovalHitCount`: Once a peg has been hit by a `CannonBall` or `LoidPeg` for this number of times, it will be removed prematurely.
+- `collidedPegBodies`: A `Set` of `NormalPeg` that have been hit during on peggle shot iteration, waiting to be faded then removed after the shot completes.
+- `allPegBodies`: A `Set` of all pegs and blocks in the world. (Block is considered a peg, as there is no behaviour difference except the score which is actually handles externally via `GameModeAttachment`)`
+- `graphicObjects`: All world objects that will be rendered onto the display.
+- `gameModeAttachment`: A `GameModeAttachment` activates and deactivates selected properties such as `timer`, `ballCounter`, `civTally` etc. and configures a corresponding `ScoreSystem` and `WinLoseEvaluator` to support the game mode chosen by the player.
+- `eventLoop`: The `EventLoop` that will advance the world state forward.
+- `coroutines`: A `Set` of coroutine to be executed at every step that affects the world state.
+- `playState`: The play state of the game, whether it is has been won, lost, in progress etc..
+- `onStepComplete`: An `Array` of closures that take in a `Collection` of `WorldObjects` and process them accordingly.
 
-#### `VisibleRigidBody`
-`VisibleRigidBody` inherits from `RigidBody` and includes a `SpriteContainer` property that contains information on how the body will be displayed -> `sprite`, sprite `width`, sprite `height` and sprite `opacity`. Subclasses of `VisibleRigidBody` include `PegRigidBody` and `CannonBall`.
+**`Methods`**
+- `step(deltaTime)`: Advances the state of the world by delta time, executing the `physicsWorld` update, coroutines in the `Coroutine` set, asking the `gameModeAttachment` to evaluate the world to check if the game has been won, lost or is still in progress.
+- `addObject(WorldObject)`: Adds a `WorldObject` to the world. There are several overloaded methods with the same name but increasing specificity. Purpose is to add an object to all the data structures relevant to the components the object. For instance, if the gameobject is `Renderable`, the added object is inserted into the `graphicObjects` set.
+- `startSimulation()`: Asks the `eventLoop` to start and advance the world forward.
+- `tryFinalizeShot()`: Checks whether the next `CannonBall` can be fired (All collided pegs have faded and all ball-like objects have exited the screen)
 
-`PegRigidBody` overrides the `RigidBody` lifecycle methods `onCollisionEnter` and `onCollisionStay` to enable peg lighting and peg removal after collision. It includes the additional property `Peg` which contains specifications of the peg being represented.
+`GameWorld` maintains the state of the world, including the bucket, the cannon ball and all the pegs on the board. Once a routine completes, it is removed from the `coroutines` set. One direct application of a `Coroutine` will be animations. `GameWorld` has a fixed dimension of `820 X 980`. To cater for different view dimensions the scaling is handled by `RenderAdaptor`.
+
+#### Protocols
+- `GameSystem`: Implementers must define the function `adaptScene(Collection<WorldObject>)`, processing the world objects accordingly.
+- `Renderable`: Implementers have a `SpriteContainer` property to enable the UI to display the object.
+- `Animated`: A protocol that extends `Renderable`. Contains a `spritesheet`, `animationSequences` and `frameRate`
+- `Fadable`: A protocol that demands a `PegRB`. It has a closure `fade` that reduces the opacity of the peg object.
+- `WinLoseEvaluator`: Implementers must specify the type of `ScoreSystem` associated with the evaluator and define the `evaluateGameState` function.
+- `ScoreSystem`: Implementers register their responses to relevant game events that determines the score via `registerListeners`.
+- `GameModeAttachment`: Couples a `ScoreSystem`, `WinLoseEvaluator` and `WorldConfig` object together defining a Game Mode e.g. _Operation Eden_. Implementers must define `setUpWorld` that sets the `GameWorld` to the state needed e.g. `ballCounter`, `civTally` is active while the `timer` is inactive in `GameWorld` for `Operation Strix` aka standard mode.
+
+#### Pegs
+`VisibleRigidBody` inherits from `RigidBody` and implements `Renderable` defining objects in the world that are physics enabled and can be display on the UI. `PegRB` is the parent of all pegs including block. It inherits from `VisibleRigidBody`
+
+`PegRB` overrides the `RigidBody` lifecycle methods `onCollisionEnter` and `onCollisionStay` to enable peg lighting and peg removal after collision. It includes the additional property `Peg` which contains specifications of the peg being represented.
 
 #### `Cannon`
 `Cannon` is responsible for determining the initial velocity and launch location of the `CannonBall` when fired.
 
 #### Supporting class and structs include:
-- `RenderAdapter`: A protocol that demands its implementing classes to provide a method `adaptScene`
 - `Wall`: A `RigidBody` subclass used to bound the play area
 - `BallRecycler`: A `RigidBody` subclass serving as a trigger zone that destroys the `CannonBall` when it fall below the screen and asks the `GameWorld` to remove the pegs that were hit
 - `Coroutine`: Takes in a routine function to be executed and a completion callback to be executed when the routine function completes after repeated invocation in the event loop.
@@ -91,121 +116,19 @@ In addition to stepping the `physicsWorld` forward in a loop iteration, `GameWor
 #### `RigidBodyVM`
 `RIgidBodyVM` adapts a `VisibleRigidBody` into a format compatible with `RigidBodyView`.
 
-#### `GameBoardVM`
-`GameBoardVM` lies between the view and the engine as stated above. It has a `@Published` property `bodyVMs` that is observed by `GameView`. `bodyVMs` is a collection of the `RigidBodyVM`. When player selects a new board to play, `GameBoardVM` asks `GameWorld` to reinitialize the world state with the new peg layout.
+#### `RenderAdaptor`
+**Properties**
+- graphic
+When player selects a new board to play, `GameBoardVM` asks `GameWorld` to reinitialize the world state with the new peg layout.
 
 ### Peggle Game View
 #### `GameView`
 `GameView` can be entered from `BoardView` when the player clicks on the START button on `ControlPanelView`. `GameView` takes the board state from `BoardView` and delegates `GameBoardVM` to initialize the world state accordingly. `GameView` has a subview `CannonView` that is currently static. Players can launch the cannon ball by tapping on the screen and a cannon ball will fire towards the direction, subject to the effects of gravity.
 
-## Design Tradeoffs
-The first design tradeoff I faced was whether to implement the collection of rigidbodies in `PhysivsWorld` as an array or a set. By implementing as an array, it is easy to prevent duplicate collisions. Every body only checks collision against bodies after it in the array. However, body removal will be O(n). If implemented as a set, an auxiliary variable must be used to store all the body pairs checked to prevent collision AB and collision BA from both being registered. The benefit is the constant time body removal. Given that the number of pegs that can be fitted on screen is limited. I do not expect the linear time peg removal to stress the CPU hence I opted for the simpler but concise array approach,
-
-The second design tradeoff I faced was for the implementation of lifecycle methods for `RigidBody`. The alternative I had in mind was to create an array of callbacks for each lifecycle stage, e.g. `collisionEnterResponse: [(Collision) -> Void]`. Such that in `onCollisionEnter` method, all callbacks in `collisionEnterResponse` array is invoked. Similarly for other lifecycle functions. In the case of `PegRigidBody`, instead of overriding `onCollisionEnter` and `onCollisionStay`, `GameWorld` will add a function say `tryRegisterPegForRemoval` to `collisionEnterResponse` array. This removes the need to override lifecycle functions in `RigidBody` subclasses and reduces the coupling between a subclass of `RigidBody` and the environment it exists in. The drawback is that it these callbacks "listemers" must be identifiable such that one can be removed when it is no longer required. That requires perhaps a wrapper. Whereas, with overriding, to alter the responses triggered in the function body, states of the party relevant to the response will simply be evaluated. 
 
 ## Testing
 ### Unit Test
-#### Physics Engine
-#### `CircleCollider`, `BoxCollider`, `PolygonCollider`
-Define standard `Transform` as position (0, 0), scale (1, 1), rotation 0. If not specified in case to be transformed. This is the value taken.
 
-- `testCollision` with another `CircleCollider`
-1. Case 1: Two circle do not intersect -> expect no contact
-2. Case 2: Two circle colliders intersect -> expect contact with correct normal, depth and points
-3. Case 3: One circle collider within another -> expect contact with correct normal, depth and points
-4. Case 4: Two circle colliders, both transformed such that they intersect -> expect contact with correct normal, depth and points
-5. Case 5: Two circle colliders, both transformed such that they no longer intersect -> expect no contact
-
-The same 5 test cases can be adapted to every concrete `testCollision` function for all collider pair combination.
-
-**`BoxCollider`**
-- `polygonizedCollider` computed property of `BoxCollider`: Provide a `halfWidth` and `halfHeight` check that the computed vertices are correct.
-
-**`PolygonCollider`**
-- `findCenter`
-1. Provide a regular polygon as input -> expect (0, 0)
-2. Provide an irregular polygon as input -> expect matching center
-- `projectVertices`
-3.  Provide a square of side length 2 and axis as (1, 0) -> expect (-1, 0) for min and (1, 0) for max
-4.  Provide an irregular polygon and non-x or y axis -> expect matching min and max projection
-
-#### `PhysicsWorld`
-When not specifed assume a `RigidBody` to have the specs: `isDynamic = true`, `mass = 1`, `transform = standardTranform`, `isTrigger = false`, `velocity = (0, 0)`. Before each test, instantiate a new `PhysicsWorld`
-
-- `addBody` 
-1. Provide a `RigidBody` as input -> expect the `getBodies` to retrieve one body that is equal to the input
-
-- `removeBody`
-1. Add `RigidBody` A and B with `addBody`
-2. Remove B with `removeBody`
-3. Expect `getBodies` to retrieve one body that is not equal to B
-
-- `removeBodies`
-1. Add `RigidBody` A, B and C with `addBody`
-2. Create set removedBodies containing A and B and provide as input to `removeBodies`
-3. Expect `getBodies` to retrieve one body that is equal to C
-
-- `removeBodies`
-1. Add `RigidBody` A and B with `addBody`
-2. Invoke `removeBodies`
-3. Expect `getBodies` to return an empty array
-
-- `applyGravity`
-1. Add `RigidBody` A with `addBody`
-2. Invoke `applyGravity(deltaTime: 1)`
-3. Expect the velocity of A to be `(0, 9.81)` 
-4. 5. Repeat steps 1 - 4 with a `isDynamic = false` body -> expect no change in velocity
-
-- `applyDrag`
-1. Initialize a `PhysicsWorld` with `drag = 1` and `scaleFactor = 1`
-2. Add `RigidBody` A `velocity = (0, 9.81)` with `addBody`
-3. Invoke `applyDrag(deltaTime: 1)`
-4. Expect the velocity of A to be `(0, 0)`
-5. Repeat steps 1 - 4 with a `isDynamic = false` body -> expect no change in velocity
-
-- `updateBodies`
-1. Add `RigidBody` A `velocity = (10, 0)` with `addBody`
-2. Invoke `updatePosition(deltaTime: 1)`
-3. Expect the `tranform.positon` of A to be equal to `(10, 0)`
-
-#### `PositionSolver`, `ImpulseSolver`
-**`PositionSolver`**
-
-- `solve`
-1. Initialize `RigidBody` A and B (`CircleCollider` of radius 10) and transform position `(5, 0)` and `(-5, 0)` respectively
-2. Run `testCollision` with these two colliders -> `ContactPoints` to be `(-5, 0)` and `(5, 0)`, normal `(-1, 0)`, depth `10`
-3. Initialize a `Collision` with A, B and the contact points from 2
-4. Provide the `Collision` as input to the function
-5. Expect new `transform.position` of A and B to be `(10, 0)` and `(-10, 0)` respectively
-6. Repeat 1 - 5, with B `isDynamic = false`, expect position of B to remain unchanged and A to be `(15, 0)`
-
-**`ImpulseSolver`**
-
--`solve`
-1. Initialize `RigidBody` A and B (`CircleCollider` of radius 10) and transform position `(5, 0)` and `(-5, 0)` 
-2. During step 1, A set `velocity = (-10, 0)`, B set `isDynamic = false`
-3. Run `testCollision` with these two colliders -> `ContactPoints` to be `(-5, 0)` and `(5, 0)`, normal `(-1, 0)`, depth `10`
-4. Initialize a `Collision` with A, B and the contact points from 2
-5. Provide the `Collision` as input to the function
-6. Expect new `velocity` of A to be `(10, 0)` and that of B to be unchanged
-7. Case of both dynamic not tested as the resolution follows [Rigidbody dynamics paper](https://chrishecker.com/images/e/e7/Gdmphys3.pdf) by Chris Hecker
 
 ### Integration Test
-1. Design a board in the level designer
-2. Press Start at the bottom right corner of the control panel
-3. Expect transition to a view that has the same background as the level designer interface, the same peg layout and a cannon on the upper center point of the screen
-4. Tap on any point of the screen, a cannon ball should fire in the direction of your tap position
-5. The trajectory of the cannon ball should be curved with increasing steepness due to gravity
-6. Upon hitting the bounds of the screen, the ball should bounce back in the x-direction
-7. Upon hitting a peg, the ball should bounce back in the direction of the normal of the contact point
-8. The collided peg should light up, orange peg glowing to be whitish, blue beg glowing to light bluish
-9. If the ball is stuck between multiple pegs for a second, these pegs should fade and disappear to free the ball
-10. Tapping again on the screen before the ball exits the screen should not fire another cannon ball
-11. If a peg is hit by the cannon ball for more than five times, the peg should fade and disappear (To prevent ball form being trapped bouncing with a concave shaped arrangement of pegs)
-12. When the cannon ball exits the screen, the lit pegs should be fade and disappear
-13. Tap the Back button on the top left corner of the screen, the pegs should remain in the same state you left off
-14. Save the level as _Mai_
-15. Alter the peg layout and save as _Dino_
-16. Alter the peg layout again and save as _Josun_
-17. Load _Dino_, and repeat steps 2 - 4
-18. Repeat steps 1 - 4, the first step via loading or designing to ensure that all scenarios from 6 - 12 is covered
+
