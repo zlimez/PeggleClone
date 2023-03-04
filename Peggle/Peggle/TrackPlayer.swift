@@ -94,7 +94,6 @@ final class TrackPlayer {
 
         guard let playerIndex = playerReadiness.firstIndex(where: { $0 }) else {
             print("No available sfx players")
-//            sfxQueue.append(trackName)
             return
         }
         let sfxPlayer = sfxPlayers[playerIndex]

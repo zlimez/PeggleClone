@@ -34,12 +34,23 @@ class RenderAdaptor: GameSystem, ObservableObject {
         self.prettyTimeLeft = nil
         self.civTally = nil
     }
+    
+    func reset() {
+        self.endState = ""
+        self.gameEnded = false
+        self.score = nil
+        self.numOfBalls = nil
+        self.targetScore = nil
+        self.prettyTimeLeft = nil
+        self.civTally = nil
+    }
 
     // Third argument is to cater for the case where player sets the ball count
     func setBoardAndMode(board: Board, gameMode: String, ballCount: Int) {
         guard let selectedGameMode = ModeMapper.modeToGameAttachmentTable[gameMode] else {
             fatalError("UI enabled invalid mode selection")
         }
+        reset()
 
         gameWorld.onStepComplete.append(adaptScene)
         gameWorld.onEvaluationComplete.append(adaptPlayState)
