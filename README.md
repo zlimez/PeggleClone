@@ -173,5 +173,72 @@ The bottom bar consists of a palette to the right, which is a collection of peg 
 `TrackPlayer` is responsible for playing all the background music and SFX for the game. It merely provides two functions `playBGM(trackName)` and `playSFX(trackName)`. Only one bgm can be played at a time while up to 10 sfx tracks can be played on top of one another. More than that the sfx track will not be processed and emitted.
 
 ## Testing
+_Note: For Operation Strix, there must be at least one orange or green peg in the level (hostile peg) for meaningul gameplay._
+
+### Rotation and Scaling
+1. Layout several pegs and blocks in the level designer at least one of each type.
+2. Tap on a peg, a scaling and rotation panel should appear below.
+3. If the peg is circular, the panel should have radius and rotation sliders.
+4. If the peg is non-circular, the panel should have width, height and rotation sliders.
+5. Move the rotation slider, the peg should rotate accordingly.
+6. Move the radius/width/height slider, the peg/block should scale accordingly.
+7. If radius/width/height/rotation stops reacting to their sliders, the peg should be colliding with the board boundaries or other pegs.
+8. Repeat 2-7 for each peg type.
+9. Save the board under "Slider test"
+10. Reset the board.
+11. Load "Slider test", the board should reappear.
+12. Press Start, the game board should match the design board.
+13. Fire cannon balls at the transformed pegs, the collision response should match the graphics.
+
+### Peg variants + Cannon ball
+**Boom Peg**
+![yor-flustered](https://user-images.githubusercontent.com/39835365/223088562-72727087-2dee-44ed-ab53-7836183ee243.png)
+
+**Loid Peg (aka zombie peg)**
+![loid-happy](https://user-images.githubusercontent.com/39835365/223155768-e97e0abb-183b-4674-bf51-2521dc87d076.png)
+
+**Bond Peg (aka spooky peg)*
+![bond-stone](https://user-images.githubusercontent.com/39835365/223155804-909ade16-3d24-4b7f-bfbb-19b234457daf.png)
+
+**Franky Peg (aka chance peg)**
+![franky-annoyed](https://user-images.githubusercontent.com/39835365/223155827-addd22b4-fd7c-4178-8580-49352a702b33.jpg)
+
+**Cannon Ball**
+![anya-spy](https://user-images.githubusercontent.com/39835365/223155862-5176ba95-57f0-42f8-976f-c785ae1733ed.png)
+
+**Confuse Peg**
+![peg-purple-triangle@1x](https://user-images.githubusercontent.com/39835365/223156093-f161dbec-3ae8-4a29-837b-9f4e7f43b4c9.png)
+
+1. Layout a boom peg, near another orange, green, blue or spooky peg, and near another boom peg.
+2. Have at least one orange peg on the board such that you can Start playing the level in _Operation Strix_ game mode.
+3. Fire the cannon ball at the boom peg/pegs. The boom peg should explode. The explosion raius visually should be 5 times of that of the boom peg in question.
+4. If another boom peg is caught in the explosion, it should explode too triggering a chain reaction of sort.
+5. If any orange, green, blue or bond peg is caught in the explosion. They should fade immediately.
+6. If a dynamic loid peg or cannon ball is caught in the explosion, their trajectory should be affected realistically by an impulse.
+7. Back to step 1, scale the boom peg the explosion radius should scale accordingly for steps 4-6.
+8. If _Operation Strix_ or _Operation Eden_ is chosen, the score line of the pegs should reflect the civilian and hostile pegs removed.
+9. If _Operation Gigi__ is chosen, hitting the boom peg should result in game loss.
+
+1. Layout two or more bond pegs, along with other pegs of your choice.
+2. Press Start, fire the cannon ball at the bond pegs.
+3. Upon any collision, you should hear a dog bark sfx being played.
+4. Upon collision with the cannon ball, the bond peg sprite should change.
+5. If the ball hits the bucket before exiting the screen, the bucket should act like a solid body instead of a trigger causing the ball to bounce off.
+6. When the ball exits the screen, the collided pegs should not fade just yet.
+7. The ball should reappear at the top of the screen at the same x-axis position.
+8. Each collision with a different bond peg will grant the ball an extra "charge" for it to reappear. Each time the ball exits the screen, one of these charges is consumed.
+9. Before the "charge" of the ball reaches 0, steps 4-6 should repeat. 
+10. When all charges are expended and the ball exits the screen, all collided pegs accumulated through iterations should fade and be removed,
+11. The scoreline if present should not be affected directly by collision with bond peg.
+12. If _Operation Gigi__ is chosen, hitting the bond peg should result in game loss.
+
+1. Layout two or more loid pegs, along with other pegs of your choice.
+2. Press Start, fire the cannon ball at the loid pegs.
+3. Upon collision with a cannon ball or another dynamic loid peg, the original static loid peg should become dynamic affected by gravity and the impulse from the initial impact.
+4. If a loid peg collides with a hostile or civilian peg, the hostile and civilian pegs should react identically to how they react to a cannon ball.
+5. A loid peg should rebound more drastically than a cannon ball upon collision.
+6. Collided pegs should only fade and be removed once cannon ball (charges expended) and all dynamic loid pegs exit the screen.
+7. The scoreline if presented should react to a collision between loid peg and another the same way it reacts to cannon ball and another.
+8. If _Operation Gigi__ is chosen, hitting the loid peg should result in game loss.
 
 
