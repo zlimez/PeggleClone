@@ -215,6 +215,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 
 <img src="https://user-images.githubusercontent.com/39835365/223156093-f161dbec-3ae8-4a29-837b-9f4e7f43b4c9.png" height="80" width="80">
 
+**Civilian Peg (aka blue peg)**
 1. Layout some blue pegs, along with orange and green pegs.
 2. Fire the cannon at the blue pegs.
 3. Upon first collision with a cannon ball or dynamic loid peg the blue peg should light up.
@@ -222,7 +223,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 5. If in _Operation Strix_ game mode, the civilian death tally at the bottom left corner of the play screen should increment by one.
 6. When the ball and all dynamic loid pegs exit the screen, the greyed pegs should fade and be removed.
 
-
+**Boom Peg**
 1. Layout a boom peg, near another orange, green, blue or spooky peg, and near another boom peg.
 2. Have at least one orange peg on the board such that you can Start playing the level in _Operation Strix_ game mode.
 3. Fire the cannon ball at the boom peg/pegs. The boom peg should explode. The explosion raius visually should be 5 times of that of the boom peg in question.
@@ -234,7 +235,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 9. If _Operation Gigi__ is chosen, hitting the boom peg should result in game loss.
 10. _Note: Multiple boom peg explosions successively can accelerate dynamic bodies such as loid peg and cannon ball to a speed that collision detection fails for object below a threshold size_
 
-
+**Bond Peg**
 1. Layout two or more bond pegs, along with other pegs of your choice.
 2. Press Start, fire the cannon ball at the bond pegs.
 3. Upon any collision, you should hear a dog bark sfx being played.
@@ -248,7 +249,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 11. The scoreline if present should not be affected directly by collision with bond peg.
 12. If _Operation Gigi__ is chosen, hitting the bond peg should result in game loss.
 
-
+**Loid Peg**
 1. Layout two or more loid pegs, along with other pegs of your choice.
 2. Press Start, fire the cannon ball at the loid pegs.
 3. Upon collision with a cannon ball or another dynamic loid peg, the original static loid peg should become dynamic affected by gravity and the impulse from the initial impact.
@@ -258,7 +259,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 7. The scoreline if presented should react to a collision between loid peg and another the same way it reacts to cannon ball and another.
 8. If _Operation Gigi__ is chosen, hitting the loid peg should result in game loss.
 
-
+**Franky Peg**
 1. Layout two or more Franky pegs, along with other pegs of your choice.
 2. Press Start, fire the cannon ball at the franky pegs.
 3. There is a 1/3 chance that a franky peg will react to a collision with a loid peg or cannon ball
@@ -267,7 +268,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 6. The scoreline if present should not be affected directly by collision with franky peg.
 7. If _Operation Gigi__ is chosen, hitting the bond peg should result in game loss.
 
-
+**Confuse Peg**
 1. Layout two or more confuse pegs, along with other pegs of your choice.
 2. Press Start, fire the cannon ball at the confuse pegs.
 3. Upon collision with a loid peg, the board should rotate by 180 degrees.
@@ -283,7 +284,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 2. Select _Operation Gigi_, a subview should appear that allows you to adjust the number of balls.
 3. Repeat 1-2 at level selection view.
 
-
+**Operation Strix**
 1. Either via one of the levels in selection view or from level designer, select _Operation Strix_ and press Start.
 2. Play the game. There should be a ball count on the top right corner, a tombstone icon indicating the number of civilian death over allowed civilian death at the bottom left corner and a score at the bottom right corner.
 3. Hitting a blue more than twice should case civiliam death tally to increase by one.
@@ -293,7 +294,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 7. If all green and blue pegs are cleared before ball count reaches 0 and the 5 is not violated, a game win pop up with your final score should emerge.
 8. Repeat steps 1-7 with a drastically different board layout, the allowed civilian death and number of balls given should change sensibly.
 
-
+**Operation Eden**
 1. Either via one of the levels in selection view or from level designer, select _Operation Eden_ and press Start.
 2. Play the game. There should timer in the middle of the top bar counting down. There should be a target score and score at the bottom right corner.
 3. Score calculation should be identical to that of _Operation Strix_.
@@ -301,7 +302,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 5. If 4 never evaluates to true by the time the timer expires the game lost popup with your score should emerge.
 6. Repeat steps 1-5 with a drastically different board layout, the timer start time and target score should change sensibly.
 
-
+**Operation Gigi**
 1. Either via one of the levels in selection view or from level designer, select _Operation Gigi_.
 2. Provide the number of balls to clear.
 3. The moment the ball collides with a peg excluding blocks, a game lost popup should appear.
@@ -310,6 +311,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 
 
 ### Level Saving and Pre-Loaded Levels
+**Level Savin and Loading**
 1. There should be three pre-loaded levels arranged in no particular order: "Orphanage", "Assassin?!" and "Find Gigi" available at the level selection view.
 2. Go to level designer, layout a board of pegs save it under "Befriend Damien".
 3. Head to the selection view, "Befriend Damien" should be added to the list of available levels.
@@ -319,7 +321,7 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 7. Exit the app, clear the window.
 8. Start the app again, and head to selection view and start the pre-loaded level you changed again, the changes should remain.
 
-
+**Screen adaption**
 1. Try the pre-loaded levels across various devices, the game area should be appropriately letter boxed.
 2. Each peg should be scaled without distortion and preserve the same relative layout.
 
