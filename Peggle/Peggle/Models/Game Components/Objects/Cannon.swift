@@ -151,7 +151,7 @@ class CannonBall: VisibleRigidBody {
     }
 
     override func onCollisionEnter(_ collision: Collision) {
-        if let pegRb = collision.rbB as? PegRB {
+        if let pegRb = collision.rbB as? PegRB, !(pegRb is Block) {
             GameWorld.activeGameBoard?.onBallHitPeg.forEach { response in response(pegRb) }
         }
     }

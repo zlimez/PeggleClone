@@ -10,9 +10,11 @@ import Foundation
 class LoidPeg: PegRB {
     // Scaled by velocity of incoming cannonball
     var baseImpulse: CGFloat
+    let dynamicMaterial: Material
 
-    init(peg: Peg, collider: Collider, baseImpulse: CGFloat = 15) {
+    init(peg: Peg, collider: Collider, baseImpulse: CGFloat = 15, dynamicMaterial: Material = Material(restitution: 0.8)) {
         self.baseImpulse = baseImpulse
+        self.dynamicMaterial = dynamicMaterial
         super.init(peg: peg, collider: collider)
     }
 
@@ -20,6 +22,7 @@ class LoidPeg: PegRB {
         super.onCollisionEnter(collision)
         if bodyType == BodyType.stationary && (collision.rbB is CannonBall || collision.rbB is LoidPeg) {
             bodyType = BodyType.dynamic
+            material = dynamicMaterial
             GameWorld.activeGameBoard?.activeBallCount += 1
             spriteContainer.sprite = peg.pegLitSprite
 
