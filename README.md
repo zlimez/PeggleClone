@@ -193,27 +193,27 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 ### Peg variants + Cannon ball
 **Boom Peg**
 
-![yor-flustered](https://user-images.githubusercontent.com/39835365/223088562-72727087-2dee-44ed-ab53-7836183ee243.png =100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223088562-72727087-2dee-44ed-ab53-7836183ee243.png" height="80" width="80">
 
 **Loid Peg (aka zombie peg)**
 
-![loid-happy](https://user-images.githubusercontent.com/39835365/223155768-e97e0abb-183b-4674-bf51-2521dc87d076.png = 100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223155768-e97e0abb-183b-4674-bf51-2521dc87d076.png" height="80" width="80">
 
 **Bond Peg (aka spooky peg)**
 
-![bond-stone](https://user-images.githubusercontent.com/39835365/223155804-909ade16-3d24-4b7f-bfbb-19b234457daf.png =100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223155804-909ade16-3d24-4b7f-bfbb-19b234457daf.png" height="80" width="80">
 
 **Franky Peg (aka chance peg)**
 
-![franky-annoyed](https://user-images.githubusercontent.com/39835365/223155827-addd22b4-fd7c-4178-8580-49352a702b33.jpg =100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223155827-addd22b4-fd7c-4178-8580-49352a702b33.jpg" height="80" width="80">
 
 **Cannon Ball**
 
-![anya-spy](https://user-images.githubusercontent.com/39835365/223155862-5176ba95-57f0-42f8-976f-c785ae1733ed.png =100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223155862-5176ba95-57f0-42f8-976f-c785ae1733ed.png" height="80" width="80">
 
 **Confuse Peg**
 
-![peg-purple-triangle@1x](https://user-images.githubusercontent.com/39835365/223156093-f161dbec-3ae8-4a29-837b-9f4e7f43b4c9.png =100x100)
+<img src="https://user-images.githubusercontent.com/39835365/223156093-f161dbec-3ae8-4a29-837b-9f4e7f43b4c9.png" height="80" width="80">
 
 1. Layout some blue pegs, along with orange and green pegs.
 2. Fire the cannon at the blue pegs.
@@ -313,4 +313,8 @@ _Note: For Operation Strix, there must be at least one orange or green peg in th
 2. Each peg should be scaled without distortion and preserve the same relative layout.
 
 ## Reflection
-There were some shortcomings of my previous design. First, after the feedback from ps3, I realized none of my game specific classes should have inherited rigidbody cause that results in tight coupling of the game engine and physics engine. Although it did not impede my development, it does present concerns on the independence of my peggle game engine. Secondly, I did not abstract out the concept of shapes for peg in PS2. Then I limited pegs to circular objects. As such, to accomodate for triangles and blocks I had to remove the concept of radius from the peg and add a wrapper around peg consisting of a shaped collider for level designer to support collision detection Lastly, related to the first point if I have decoupled my game objects away from rigidbody, I will likely have a mapper that translate collision between two rigidobjects in the physics world to one between peggle game objects.
+There were some shortcomings of my previous design. First, after the feedback from ps3, I realized none of my game specific classes should have inherited rigidbody cause that results in tight coupling of the game engine and physics engine. Although it did not impede my development, it does present concerns on the independence of my peggle game engine. Secondly, I did not abstract out the concept of shapes for peg in PS2. Then I limited pegs to circular objects. As such, to accomodate for triangles and blocks I had to remove the concept of radius from the peg and add a wrapper around peg consisting of a shaped collider for level designer to support collision detection Lastly, related to the first point if I have decoupled my game objects away from rigidbody, I will likely have a mapper that translate collision between two rigidobjects in the physics world to one between peggle game objects. This would allow me to create a custom parent classes for peggle game objects. As such I can add in support to group gameobjects under another gameobject recursively, which would make confuse peg implementation alot neater by simply rotating a parent gameobject of all pegs on the board.
+
+The technical debt I had to clean up was to move event loop out of the peggle game engine which increasingly looks like a God class through my development. In addition, related to my second point in the paragraph above, I had to tweak my model and move the concept of shape elsewhere.
+
+If I get to redo the application, first and foremost I will have opted into POP a lot earlier. Towards the end as there were more and more variants that shared behaviours yet does not conform completely to a sense of hierarchy, the overriding implementation becomes nasty. Though I did made an effort to refactor some bits into protocols such `Fadable`, `Animated` more could be done. 
