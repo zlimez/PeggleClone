@@ -14,19 +14,16 @@ class PegVM: Identifiable, Equatable {
     var designPeg: DesignPeg
     var sliderXScale: CGFloat = 1 {
         willSet {
-            print(newValue)
             fwdSliderScale()
         }
     }
     var sliderYScale: CGFloat = 1 {
         willSet {
-            print(newValue)
             fwdSliderScale()
         }
     }
     var sliderRotation: CGFloat = 0 {
         willSet {
-            print(newValue)
             fwdSliderRotation()
         }
     }

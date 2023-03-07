@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import QuartzCore
 
 class GameWorld {
     static var activeGameBoard: GameWorld?
@@ -54,11 +53,13 @@ class GameWorld {
     let worldDim = CGSize(width: 820, height: 980)
     let worldCenter: Vector2
 
+    private var isFlipping = false
+
     static func getEmptyWorld() -> GameWorld {
         GameWorld()
     }
 
-    init(preferredFrameRate: Float = 90, pegRemovalTimeInterval: Double = 2, pegRemovalHitCount: Int = 10) {
+    init(preferredFrameRate: Float = 90, pegRemovalTimeInterval: Double = 1, pegRemovalHitCount: Int = 5) {
         self.physicsWorld = PhysicsWorld(gravity: PhysicsWorld.defaultGravity, scaleFactor: 75)
         self.eventLoop = EventLoop(preferredFrameRate: preferredFrameRate)
         self.pegRemovalTimeInterval = pegRemovalTimeInterval
@@ -246,6 +247,9 @@ class GameWorld {
         }
         onShotFinalized.forEach { response in response() }
         cannon?.cannonReady = true
+        if isFlipping {
+            isFlipping = false
+        }
     }
 
     func shutBucket() {
@@ -257,6 +261,11 @@ class GameWorld {
     }
 
     func flipPegs() {
+        if isFlipping {
+            return
+        }
+
+        isFlipping = true
         for pegBody in allPegBodies {
             if pegBody.bodyType == BodyType.stationary {
                 addCoroutine(Coroutine(routine: pegBody.makeFlipRotator(worldCenter), onCompleted: removeCoroutine))

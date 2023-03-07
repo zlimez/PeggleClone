@@ -17,7 +17,7 @@ enum BodyType {
 class RigidBody: WorldObject {
     private static let defaultStaticMass: CGFloat = 10
     var bodyType: BodyType
-    let material: Material
+    var material: Material
     var velocity: Vector2
     let mass: CGFloat
     let collider: Collider

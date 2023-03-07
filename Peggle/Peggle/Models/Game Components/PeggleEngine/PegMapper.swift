@@ -77,7 +77,7 @@ final class PegMapper {
         pegSet.append(contentsOf: initSecondPegSet())
         return pegSet
     }
-    
+
     private static func initSecondPegSet() -> [PegVariant] {
         let bondPeg = PegVariant(
             pegSprite: "bond-stone",

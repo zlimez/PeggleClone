@@ -113,7 +113,6 @@ final class TrackPlayer {
             audioEngine.connect(sfxPlayer, to: mixer, format: avBuffer.format)
             sfxPlayer.scheduleBuffer(avBuffer, at: nil, completionCallbackType: .dataPlayedBack) { [unowned self] _ in
                 playerReadiness[playerIndex] = true
-                print("play back complete")
             }
 
             if !audioEngine.isRunning {
